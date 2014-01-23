@@ -10,7 +10,8 @@ package org.team3309.frc2014.drive;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.SpeedController;
-
+import org.team3309.friarlib.constants.ConstantsManager;
+import edu.wpi.first.wpilibj.PIDController;
 
 /**
  *
@@ -24,12 +25,16 @@ public class OctonumModule {
     private double[] multipliers;
     private boolean isTank;
     private boolean enabled;
-    static final double configP = 1;
-    static final double configI = 0;
-    static final double configD = 0;
-    private double integral;
-    private double lastRate;
+    private static final double configPTank = ConstantsManager.getConstant("Octonum.configPTank").getDouble(); 
+    private static final double configPMecc = ConstantsManager.getConstant("Octonum.configPMecc").getDouble(); 
+    private static final double configITank = ConstantsManager.getConstant("Octonum.configITank").getDouble(); 
+    private static final double configIMecc = ConstantsManager.getConstant("Octonum.configIMecc").getDouble(); 
+    private static final double configDTank = ConstantsManager.getConstant("Octonum.configDTank").getDouble(); 
+    private static final double configDMecc = ConstantsManager.getConstant("Octonum.configDMecc").getDouble(); 
+    //private double integral;
+    //private double lastRate;
     private long lastTime;
+    private PIDController pidControl;
     
     public OctonumModule( Solenoid modePiston,SpeedController speedMotor, Encoder encoder, double[] multipliers ) {
         
@@ -37,7 +42,8 @@ public class OctonumModule {
         this.speedMotor = speedMotor;
         this.encoder = encoder;
         this.multipliers = multipliers;
-        
+        this.pidControl = new PIDController(configPMecc, configIMecc, configDMecc, encoder, speedMotor);
+                
     }
             
     void drive(double drive, double rot, double strafe){
@@ -54,12 +60,13 @@ public class OctonumModule {
                 double strafeModified = strafe * multipliers[2];
                    
                 double setpoint = driveModified + rotModified + strafeModified;
-                double current = encoder.getRate();
+                //double current = encoder.getRate();
                 if (isTank){
                     setpoint = (drive + rot);
                 }
+                pidControl.setSetpoint(setpoint);
                 
-                long currentTime = System.currentTimeMillis();
+                /*long currentTime = System.currentTimeMillis();
                 double err = current - setpoint;
                 integral = integral + err;
                 
@@ -67,10 +74,11 @@ public class OctonumModule {
                 double output = err * configP + integral * configI + ((current - lastRate) / (currentTime - lastTime)) * configD;
                 speedMotor.set(output);
                 lastRate = current; 
-                lastTime = currentTime;
+                lastTime = currentTime;*/
+                
                } else {
                    lastTime = System.currentTimeMillis();
-               }
+               } 
                
             }
         
@@ -81,7 +89,20 @@ public class OctonumModule {
     }
     
     void enableMechanum(boolean pistonStatus){
-        modePiston.set(pistonStatus);
+        if (enabled){
+            modePiston.set(pistonStatus);
+            //extend = tank
+            if (pistonStatus)
+            {
+                pidControl.setPID(configPTank, configITank, configDTank);
+        
+            }
+            else {
+                pidControl.setPID(configPMecc, configIMecc, configDMecc);
+            }
+            
+        }
+        
         
     }
     

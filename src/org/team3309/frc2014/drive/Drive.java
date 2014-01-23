@@ -60,5 +60,19 @@ public class Drive {
     
     }
     
+    public void enable (boolean active){
+        
+        topleftwheel.enable(active);
+        toprightwheel.enable(active);
+        bottomleftwheel.enable(active);
+        bottomrightwheel.enable(active);
+    }
+    
+    public void enableMeccanum (boolean active){
+        topleftwheel.enable(active);
+        toprightwheel.enable(active);
+        bottomleftwheel.enable(active);
+        bottomrightwheel.enable(active);
+    }
     
 }

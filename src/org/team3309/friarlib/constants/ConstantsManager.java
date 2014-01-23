@@ -53,6 +53,9 @@ public class ConstantsManager {
         constants.put(c.getName(), c);
     }
 
+    public static Constant getConstant(String key){
+        return (Constant) constants.get(key);
+    }
     /**
      * Load constants from a txt file on the cRIO
      *
