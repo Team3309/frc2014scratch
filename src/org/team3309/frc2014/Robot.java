@@ -30,6 +30,7 @@ public class Robot extends IterativeRobot {
     private XboxController driveXbox = new XboxController(1);
     private XboxController operatorXbox = new XboxController(2);
     private Compressor compressor = null;
+    private Pickup pickup;
     /**
      * This function is run when the robot is first started up and should be
      * used for any initialization code.
@@ -65,6 +66,8 @@ public class Robot extends IterativeRobot {
         double leftX = driveXbox.getLeftX();
         double leftY = driveXbox.getLeftY();
         drive.drive(leftY, rightX, leftX);
+        double rightTrigger = operatorXbox.getRightTrigger();
+        pickup.pickup(rightTrigger);
         
     }
     
