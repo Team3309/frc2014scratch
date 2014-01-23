@@ -45,7 +45,14 @@ public class OctonumModule {
         this.pidControl = new PIDController(configPMecc, configIMecc, configDMecc, encoder, speedMotor);
                 
     }
-            
+         
+    /**
+     * calculate how the motor should move based on the joystick input
+     * @param drive - forward/backward
+     * @param rot - rotation
+     * @param strafe - left/right (only for Meccanum)
+     */
+    
     void drive(double drive, double rot, double strafe){
         
       
@@ -83,12 +90,22 @@ public class OctonumModule {
             }
         
     }
+    /** 
+     * enable OctonumModule
+     * @param active 
+     */
+    
     
     void enable( boolean active ){
         enabled = active;
     }
     
-    void enableMechanum(boolean pistonStatus){
+    /**
+     * enable TankMode by enabling Piston
+     * @param pistonStatus 
+     */
+    
+    void enableTank (boolean pistonStatus){
         if (enabled){
             modePiston.set(pistonStatus);
             //extend = tank

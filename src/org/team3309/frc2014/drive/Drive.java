@@ -50,7 +50,7 @@ public class Drive {
     static final double[] bottomleftmultiplier = {1, 1, -1};
     static final double[] bottomrightmultiplier = {1, -1, 1};
     
-    void drive(double drive, double rot, double strafe) {
+    public void drive(double drive, double rot, double strafe) {
         topleftwheel.drive(drive, rot, strafe);
         toprightwheel.drive(drive, rot, strafe);
         bottomleftwheel.drive(drive, rot, strafe);
@@ -68,11 +68,11 @@ public class Drive {
         bottomrightwheel.enable(active);
     }
     
-    public void enableMeccanum (boolean active){
-        topleftwheel.enable(active);
-        toprightwheel.enable(active);
-        bottomleftwheel.enable(active);
-        bottomrightwheel.enable(active);
+    public void enableTank (boolean active){
+        topleftwheel.enableTank(active);
+        toprightwheel.enableTank(active);
+        bottomleftwheel.enableTank(active);
+        bottomrightwheel.enableTank(active);
     }
     
 }
