@@ -17,7 +17,7 @@ import org.team3309.frc2014.RobotMap;
  *
  * @author Ben
  */
-public class Drive {
+public class DriveTrain {
     
     private OctonumModule topleftwheel; 
     private OctonumModule toprightwheel;
@@ -25,7 +25,7 @@ public class Drive {
     private OctonumModule bottomrightwheel;
     
     
-    public Drive() {
+    public DriveTrain() {
         Solenoid topleftsolenoid = new Solenoid (RobotMap.topleftsolenoid);
         Solenoid toprightsolenoid = new Solenoid (RobotMap.toprightsolenoid);
         Solenoid bottomleftsolenoid = new Solenoid (RobotMap.bottomleftsolenoid);
