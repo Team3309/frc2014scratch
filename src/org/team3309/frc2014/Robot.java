@@ -29,6 +29,7 @@ public class Robot extends IterativeRobot {
     private XboxController operatorXbox = new XboxController(2);
     private Compressor compressor = null;
     private Pickup pickup;
+    private DriveTrain driveMode;
     /**
      * This function is run when the robot is first started up and should be
      * used for any initialization code.
@@ -60,6 +61,17 @@ public class Robot extends IterativeRobot {
      */
     public void teleopPeriodic() {
         Scheduler.getInstance().run();
+        
+        //Changes drives, only when held
+        //cause Michael wants it that way
+        if (Math.abs(driveXbox.getRightTrigger()) >= .5){
+            driveMode.enableTank(true);
+        }
+        else {
+            driveMode.enableTank(false);
+        }
+         
+        //Code for driving around
         double rightX = driveXbox.getRightX();
         double leftX = driveXbox.getLeftX();
         double leftY = driveXbox.getLeftY();
