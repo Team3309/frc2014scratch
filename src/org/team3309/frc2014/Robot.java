@@ -66,9 +66,9 @@ public class Robot extends IterativeRobot {
         double leftX = driveXbox.getLeftX();
         double leftY = driveXbox.getLeftY();
         drive.drive(leftY, rightX, leftX);
-        double rightTrigger = operatorXbox.getRightTrigger();
-        pickup.pickup(rightTrigger);
-        
+        boolean rightBumper = operatorXbox.getRightBumper();
+        pickup.pickup(rightBumper);
+
     }
     
     /**
