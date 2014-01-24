@@ -7,11 +7,13 @@
 package org.team3309.frc2014.drive;
 
 
+import edu.wpi.first.wpilibj.CounterBase;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.SpeedController;
 import org.team3309.friarlib.constants.ConstantsManager;
 import edu.wpi.first.wpilibj.PIDController;
+import edu.wpi.first.wpilibj.Victor;
 
 /**
  *
@@ -37,7 +39,7 @@ public class OctonumModule {
     private PIDController pidControl;
     
     public OctonumModule( Solenoid modePiston,SpeedController speedMotor, Encoder encoder, double[] multipliers ) {
-        
+     
         this.modePiston = modePiston;
         this.speedMotor = speedMotor;
         this.encoder = encoder;
@@ -45,7 +47,13 @@ public class OctonumModule {
         this.pidControl = new PIDController(configPMecc, configIMecc, configDMecc, encoder, speedMotor);
                 
     }
-         
+    public OctonumModule( int SolenoidPortNumber, int speedMotorPortNumber, int encoderPortNumberA, 
+            int encoderPortNumberB, boolean isEncoderFlipped,double[] multipliers){
+        this.modePiston = new Solenoid(SolenoidPortNumber);
+        this.speedMotor = new Victor (speedMotorPortNumber);
+        this.encoder = new Encoder (encoderPortNumberA, encoderPortNumberB, isEncoderFlipped, CounterBase.EncodingType.k1X);
+        this.multipliers = multipliers;
+    }
     /**
      * calculate how the motor should move based on the joystick input
      * @param drive - forward/backward

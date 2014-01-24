@@ -19,29 +19,22 @@ import org.team3309.frc2014.RobotMap;
  */
 public class DriveTrain {
     
-    private OctonumModule topleftwheel; 
-    private OctonumModule toprightwheel;
-    private OctonumModule bottomleftwheel;
-    private OctonumModule bottomrightwheel;
+    
+    private OctonumModule[] driveTrainWheels;
     
     
     public DriveTrain() {
-        Solenoid topleftsolenoid = new Solenoid (RobotMap.topleftsolenoid);
-        Solenoid toprightsolenoid = new Solenoid (RobotMap.toprightsolenoid);
-        Solenoid bottomleftsolenoid = new Solenoid (RobotMap.bottomleftsolenoid);
-        Solenoid bottomrightsolenoid = new Solenoid (RobotMap.bottomrightsolenoid);
-        SpeedController topleftmotor = new Victor (RobotMap.topleftmotor);
-        SpeedController toprightmotor = new Victor (RobotMap.toprightmotor);
-        SpeedController bottomleftmotor = new Victor (RobotMap.bottomleftmotor);
-        SpeedController bottomrightmotor = new Victor (RobotMap.bottomrightmotor);
-        Encoder topleftencoder = new Encoder (RobotMap.topleftencoderA,RobotMap.topleftencoderB,true, CounterBase.EncodingType.k1X);
-        Encoder toprightencoder = new Encoder (RobotMap.toprightencoderA,RobotMap.toprightencoderB,false, CounterBase.EncodingType.k1X);
-        Encoder bottomleftencoder = new Encoder (RobotMap.bottomleftencoderA,RobotMap.bottomleftencoderB,true, CounterBase.EncodingType.k1X);
-        Encoder bottomrightencoder = new Encoder (RobotMap.bottomrightencoderA,RobotMap.bottomrightencoderB,false, CounterBase.EncodingType.k1X);
-        this.topleftwheel = new OctonumModule(topleftsolenoid, topleftmotor, topleftencoder, topleftmultiplier);
-        this.toprightwheel = new OctonumModule(toprightsolenoid, toprightmotor, toprightencoder, toprightmultiplier);
-        this.bottomleftwheel = new OctonumModule(bottomleftsolenoid, bottomleftmotor, bottomleftencoder, bottomleftmultiplier);
-        this.bottomrightwheel = new OctonumModule(bottomrightsolenoid, bottomrightmotor, bottomrightencoder, bottomrightmultiplier);
+
+        this.driveTrainWheels = new OctonumModule[4];
+        driveTrainWheels[0] = new OctonumModule(RobotMap.topleftsolenoid,RobotMap.topleftmotor,
+                RobotMap.topleftencoderA,RobotMap.topleftencoderB,true,topleftmultiplier );
+        driveTrainWheels[1] = new OctonumModule(RobotMap.toprightsolenoid,RobotMap.toprightmotor,
+                RobotMap.toprightencoderA,RobotMap.toprightencoderB,false,toprightmultiplier);
+        driveTrainWheels[2] = new OctonumModule(RobotMap.bottomleftsolenoid,RobotMap.bottomleftmotor,
+                RobotMap.bottomleftencoderA,RobotMap.bottomleftencoderB,true,bottomleftmultiplier);
+        driveTrainWheels[3] = new OctonumModule(RobotMap.bottomrightsolenoid,RobotMap.bottomrightmotor,
+                RobotMap.bottomrightencoderA,RobotMap.bottomrightencoderB,false,bottomrightmultiplier);
+        
     }
   
     
@@ -51,10 +44,12 @@ public class DriveTrain {
     static final double[] bottomrightmultiplier = {1, -1, 1};
     
     public void drive(double drive, double rot, double strafe) {
-        topleftwheel.drive(drive, rot, strafe);
-        toprightwheel.drive(drive, rot, strafe);
-        bottomleftwheel.drive(drive, rot, strafe);
-        bottomrightwheel.drive(drive, rot, strafe);
+        for (int i = 0; i < 4; i++) {
+            driveTrainWheels[i].drive(drive, rot, strafe);
+            
+            
+        }
+            
         
         
     
@@ -62,17 +57,15 @@ public class DriveTrain {
     
     public void enable (boolean active){
         
-        topleftwheel.enable(active);
-        toprightwheel.enable(active);
-        bottomleftwheel.enable(active);
-        bottomrightwheel.enable(active);
+        for (int i = 0; i < 4; i++){
+            driveTrainWheels[i].enable(active);
+        }
     }
     
     public void enableTank (boolean active){
-        topleftwheel.enableTank(active);
-        toprightwheel.enableTank(active);
-        bottomleftwheel.enableTank(active);
-        bottomrightwheel.enableTank(active);
+        for (int i = 0; i < 4; i++){
+            driveTrainWheels[i].enableTank(active);
+        }
     }
     
 }
