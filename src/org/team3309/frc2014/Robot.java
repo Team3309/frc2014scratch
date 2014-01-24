@@ -8,14 +8,12 @@
 package org.team3309.frc2014;
 
 import edu.wpi.first.wpilibj.Compressor;
-import org.team3309.frc2014.drive.Drive;
+import org.team3309.frc2014.drive.DriveTrain;
 import org.team3309.friarlib.XboxController;
 import edu.wpi.first.wpilibj.IterativeRobot;
-import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.Scheduler;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import org.team3309.frc2014.commands.CommandBase;
-import org.team3309.frc2014.commands.ExampleCommand;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -26,7 +24,7 @@ import org.team3309.frc2014.commands.ExampleCommand;
  */
 public class Robot extends IterativeRobot {
 
-    private Drive drive;
+    private DriveTrain drive;
     private XboxController driveXbox = new XboxController(1);
     private XboxController operatorXbox = new XboxController(2);
     private Compressor compressor = null;
@@ -36,7 +34,7 @@ public class Robot extends IterativeRobot {
      * used for any initialization code.
      */
     public void robotInit() {
-        drive = new Drive();
+        drive = new DriveTrain();
         // Initialize all subsystems
         CommandBase.init();
     }
