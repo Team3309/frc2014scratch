@@ -1,0 +1,6 @@
+Octonum.configPTank=1
+Octonum.configITank=0
+Octonum.configDTank=0
+Octonum.configPMecc=1
+Octonum.configIMecc=0
+Octonum.configDMecc=0
