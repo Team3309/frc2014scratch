@@ -9,11 +9,10 @@ package org.team3309.frc2014;
 public class RobotMap {
     // For example to map the left and right motors, you could define the
     // following variables to use with your drivetrain subsystem.
-    // public static final int leftMotor = 1;
-    // public static final int rightMotor = 2;
+  
     
     //Drive stuff
-    public static final int topleftmotor = 0;
+    /*public static final int topleftmotor = 0;
     public static final int toprightmotor = 0;
     public static final int bottomleftmotor = 0;
     public static final int bottomrightmotor = 0;
@@ -45,4 +44,5 @@ public class RobotMap {
     // number and the module. For example you with a rangefinder:
     // public static final int rangefinderPort = 1;
     // public static final int rangefinderModule = 1;
+    */
 }

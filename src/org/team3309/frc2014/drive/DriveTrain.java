@@ -12,6 +12,7 @@ import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.SpeedController;
 import edu.wpi.first.wpilibj.Victor;
 import org.team3309.frc2014.RobotMap;
+import org.team3309.friarlib.constants.ConstantsManager;
 
 /**
  *
@@ -26,14 +27,32 @@ public class DriveTrain {
     public DriveTrain() {
 
         this.driveTrainWheels = new OctonumModule[4];
-        driveTrainWheels[0] = new OctonumModule(RobotMap.topleftsolenoid,RobotMap.topleftmotor,
-                RobotMap.topleftencoderA,RobotMap.topleftencoderB,true,topleftmultiplier );
-        driveTrainWheels[1] = new OctonumModule(RobotMap.toprightsolenoid,RobotMap.toprightmotor,
-                RobotMap.toprightencoderA,RobotMap.toprightencoderB,false,toprightmultiplier);
-        driveTrainWheels[2] = new OctonumModule(RobotMap.bottomleftsolenoid,RobotMap.bottomleftmotor,
-                RobotMap.bottomleftencoderA,RobotMap.bottomleftencoderB,true,bottomleftmultiplier);
-        driveTrainWheels[3] = new OctonumModule(RobotMap.bottomrightsolenoid,RobotMap.bottomrightmotor,
-                RobotMap.bottomrightencoderA,RobotMap.bottomrightencoderB,false,bottomrightmultiplier);
+        driveTrainWheels[0] = new OctonumModule(    
+                    ConstantsManager.getConstant("Octonum.topleft.solenoid").getInt(), 
+                    ConstantsManager.getConstant("Octonum.topleft.motor").getInt(), 
+                    ConstantsManager.getConstant("Octonum.topleft.encoderA").getInt(),
+                    ConstantsManager.getConstant("Octonum.topleft.encoderB").getInt(),
+                    ConstantsManager.getConstant("Octonum.topleft.flipped").getBoolean() ,topleftmultiplier );
+        
+        driveTrainWheels[1] = new OctonumModule(
+                    ConstantsManager.getConstant("Octonum.topright.solenoid").getInt(), 
+                    ConstantsManager.getConstant("Octonum.topright.motor").getInt(), 
+                    ConstantsManager.getConstant("Octonum.topright.encoderA").getInt(),
+                    ConstantsManager.getConstant("Octonum.topright.encoderB").getInt(),
+                    ConstantsManager.getConstant("Octonum.topright.flipped").getBoolean() ,toprightmultiplier);
+        
+        driveTrainWheels[2] = new OctonumModule(
+                    ConstantsManager.getConstant("Octonum.bottomleft.solenoid").getInt(), 
+                    ConstantsManager.getConstant("Octonum.bottomleft.motor").getInt(), 
+                    ConstantsManager.getConstant("Octonum.bottomleft.encoderA").getInt(),
+                    ConstantsManager.getConstant("Octonum.bottomleft.encoderB").getInt(),
+                    ConstantsManager.getConstant("Octonum.bottomleft.flipped").getBoolean() ,bottomleftmultiplier);
+        
+        driveTrainWheels[3] = new OctonumModule(ConstantsManager.getConstant("Octonum.bottomright.solenoid").getInt(), 
+                    ConstantsManager.getConstant("Octonum.bottomright.motor").getInt(), 
+                    ConstantsManager.getConstant("Octonum.bottomright.encoderA").getInt(),
+                    ConstantsManager.getConstant("Octonum.bottomright.encoderB").getInt(),
+                    ConstantsManager.getConstant("Octonum.bottomright.flipped").getBoolean(),bottomrightmultiplier);
         
     }
   
