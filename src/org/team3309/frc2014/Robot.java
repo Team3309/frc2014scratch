@@ -14,6 +14,7 @@ import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.command.Scheduler;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import org.team3309.frc2014.commands.CommandBase;
+import org.team3309.frc2014.gmhandler.Pickup;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -42,7 +43,7 @@ public class Robot extends IterativeRobot {
 
     public void autonomousInit() {
         // schedule the autonomous command (example)
-        autonomousCommand.start();
+       
     }
 
     /**
@@ -77,7 +78,7 @@ public class Robot extends IterativeRobot {
         double leftY = driveXbox.getLeftY();
         drive.drive(leftY, rightX, leftX);
         boolean rightBumper = operatorXbox.getRightBumper();
-        pickup.pickup(rightBumper);
+        //pickup.pickup(rightBumper);
 
     }
     

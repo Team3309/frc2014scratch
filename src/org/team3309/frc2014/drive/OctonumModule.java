@@ -37,6 +37,7 @@ public class OctonumModule {
     //private double lastRate;
     private long lastTime;
     private PIDController pidControl;
+    private boolean mode2012;
     
     public OctonumModule( Solenoid modePiston,SpeedController speedMotor, Encoder encoder, double[] multipliers ) {
      
@@ -49,9 +50,16 @@ public class OctonumModule {
     }
     public OctonumModule( int SolenoidPortNumber, int speedMotorPortNumber, int encoderPortNumberA, 
             int encoderPortNumberB, boolean isEncoderFlipped,double[] multipliers){
-        this.modePiston = new Solenoid(SolenoidPortNumber);
+        if (SolenoidPortNumber == 0){
+            mode2012 = true;
+        } else{
+            this.modePiston = new Solenoid(SolenoidPortNumber);
+            this.encoder = new Encoder (encoderPortNumberA, encoderPortNumberB, isEncoderFlipped, CounterBase.EncodingType.k1X);
+        }
+        
+        
         this.speedMotor = new Victor (speedMotorPortNumber);
-        this.encoder = new Encoder (encoderPortNumberA, encoderPortNumberB, isEncoderFlipped, CounterBase.EncodingType.k1X);
+        
         this.multipliers = multipliers;
     }
     /**
@@ -79,7 +87,16 @@ public class OctonumModule {
                 if (isTank){
                     setpoint = (drive + rot);
                 }
-                pidControl.setSetpoint(setpoint);
+                
+                if (mode2012){
+                    speedMotor.set(setpoint);
+                
+                }else{
+                    pidControl.setSetpoint(setpoint); 
+                }
+                
+                
+               
                 
                 /*long currentTime = System.currentTimeMillis();
                 double err = current - setpoint;
@@ -114,7 +131,9 @@ public class OctonumModule {
      */
     
     void enableTank (boolean pistonStatus){
-        if (enabled){
+        
+        if (!mode2012){
+            if (enabled){
             modePiston.set(pistonStatus);
             //extend = tank
             if (pistonStatus)
@@ -127,7 +146,8 @@ public class OctonumModule {
             }
             
         }
-        
+            
+        }
         
     }
     
