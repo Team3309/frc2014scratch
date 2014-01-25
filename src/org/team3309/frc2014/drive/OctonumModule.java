@@ -61,6 +61,8 @@ public class OctonumModule {
         this.speedMotor = new Victor (speedMotorPortNumber);
         
         this.multipliers = multipliers;
+        
+        enable(true);
     }
     /**
      * calculate how the motor should move based on the joystick input
