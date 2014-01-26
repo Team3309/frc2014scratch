@@ -75,11 +75,11 @@ public class DriveTrain {
         
     }
   
-    
+    //right multipliers flipped for 2012, may need to flip back for 2014 bot!!!
     static final double[] topleftmultiplier = {1, 1, 1};
-    static final double[] toprightmultiplier = {1, -1, -1};
+    static final double[] toprightmultiplier = {-1, 1, 1};
     static final double[] bottomleftmultiplier = {1, 1, -1};
-    static final double[] bottomrightmultiplier = {1, -1, 1};
+    static final double[] bottomrightmultiplier = {-1, 1, -1};
     
     public void drive(double drive, double rot, double strafe) {
         for (int i = 0; i < 4; i++) {
