@@ -6,12 +6,7 @@
 
 package org.team3309.frc2014.drive;
 
-import edu.wpi.first.wpilibj.CounterBase;
-import edu.wpi.first.wpilibj.Encoder;
-import edu.wpi.first.wpilibj.Solenoid;
-import edu.wpi.first.wpilibj.SpeedController;
-import edu.wpi.first.wpilibj.Victor;
-import org.team3309.frc2014.RobotMap;
+import org.team3309.friarlib.constants.Constant;
 import org.team3309.friarlib.constants.ConstantsManager;
 
 /**
@@ -23,36 +18,60 @@ public class DriveTrain {
     
     private OctonumModule[] driveTrainWheels;
     
+    private static final Constant topLeftSolenoidPort = new Constant("Octonum.topleft.solenoid", 0);
+    private static final Constant topLeftMotorPort = new Constant("Octonum.topleft.motor", 3);
+    private static final Constant topLeftEncoderAPort = new Constant("Octonum.topleft.encoderA", 0);
+    private static final Constant topLeftEncoderBPort = new Constant("Octonum.topleft.encoderB", 0);
+    private static final Constant topLeftFlipped = new Constant("Octonum.topleft.flipped", true);
+    
+    private static final Constant topRightSolenoidPort = new Constant("Octonum.topright.solenoid", 0);
+    private static final Constant topRightMotorPort = new Constant("Octonum.topright.motor", 4);
+    private static final Constant topRightEncoderAPort = new Constant("Octonum.topright.encoderA", 0);
+    private static final Constant topRightEncoderBPort = new Constant("Octonum.topright.encoderB", 0);
+    private static final Constant topRightFlipped = new Constant("Octonum.topright.flipped", false);
+    
+    private static final Constant bottomLeftSolenoidPort = new Constant("Octonum.bottomleft.solenoid", 0);
+    private static final Constant bottomLeftMotorPort = new Constant("Octonum.bottomleft.motor", 1);
+    private static final Constant bottomLeftEncoderAPort = new Constant("Octonum.bottomleft.encoderA", 0);
+    private static final Constant bottomLeftEncoderBPort = new Constant("Octonum.bottomleft.encoderB", 0);
+    private static final Constant bottomLeftFlipped = new Constant("Octonum.bottomleft.flipped", true);
+    
+    private static final Constant bottomRightSolenoidPort = new Constant("Octonum.bottomright.solenoid", 0);
+    private static final Constant bottomRightMotorPort = new Constant("Octonum.bottomright.motor", 2);
+    private static final Constant bottomRightEncoderAPort = new Constant("Octonum.bottomright.encoderA", 0);
+    private static final Constant bottomRightEncoderBPort = new Constant("Octonum.bottomright.encoderB", 0);
+    private static final Constant bottomRightFlipped = new Constant("Octonum.bottomright.flipped", false);
     
     public DriveTrain() {
 
         this.driveTrainWheels = new OctonumModule[4];
         driveTrainWheels[0] = new OctonumModule(    
-                    ConstantsManager.getConstant("Octonum.topleft.solenoid").getInt(), 
-                    ConstantsManager.getConstant("Octonum.topleft.motor").getInt(), 
-                    ConstantsManager.getConstant("Octonum.topleft.encoderA").getInt(),
-                    ConstantsManager.getConstant("Octonum.topleft.encoderB").getInt(),
-                    ConstantsManager.getConstant("Octonum.topleft.flipped").getBoolean() ,topleftmultiplier );
+                    topLeftSolenoidPort.getInt(), 
+                    topLeftMotorPort.getInt(), 
+                    topLeftEncoderAPort.getInt(),
+                    topLeftEncoderBPort.getInt(),
+                    topLeftFlipped.getBoolean() ,topleftmultiplier );
         
         driveTrainWheels[1] = new OctonumModule(
-                    ConstantsManager.getConstant("Octonum.topright.solenoid").getInt(), 
-                    ConstantsManager.getConstant("Octonum.topright.motor").getInt(), 
-                    ConstantsManager.getConstant("Octonum.topright.encoderA").getInt(),
-                    ConstantsManager.getConstant("Octonum.topright.encoderB").getInt(),
-                    ConstantsManager.getConstant("Octonum.topright.flipped").getBoolean() ,toprightmultiplier);
+                    topRightSolenoidPort.getInt(), 
+                    topRightMotorPort.getInt(), 
+                    topRightEncoderAPort.getInt(),
+                    topRightEncoderBPort.getInt(),
+                    topRightFlipped.getBoolean() ,toprightmultiplier);
         
         driveTrainWheels[2] = new OctonumModule(
-                    ConstantsManager.getConstant("Octonum.bottomleft.solenoid").getInt(), 
-                    ConstantsManager.getConstant("Octonum.bottomleft.motor").getInt(), 
-                    ConstantsManager.getConstant("Octonum.bottomleft.encoderA").getInt(),
-                    ConstantsManager.getConstant("Octonum.bottomleft.encoderB").getInt(),
-                    ConstantsManager.getConstant("Octonum.bottomleft.flipped").getBoolean() ,bottomleftmultiplier);
+                    bottomLeftSolenoidPort.getInt(), 
+                    bottomLeftMotorPort.getInt(), 
+                    bottomLeftEncoderAPort.getInt(),
+                    bottomLeftEncoderBPort.getInt(),
+                    bottomLeftFlipped.getBoolean() ,bottomleftmultiplier);
         
-        driveTrainWheels[3] = new OctonumModule(ConstantsManager.getConstant("Octonum.bottomright.solenoid").getInt(), 
-                    ConstantsManager.getConstant("Octonum.bottomright.motor").getInt(), 
-                    ConstantsManager.getConstant("Octonum.bottomright.encoderA").getInt(),
-                    ConstantsManager.getConstant("Octonum.bottomright.encoderB").getInt(),
-                    ConstantsManager.getConstant("Octonum.bottomright.flipped").getBoolean(),bottomrightmultiplier);
+        driveTrainWheels[3] = new OctonumModule(
+                   bottomRightSolenoidPort.getInt(), 
+                    bottomRightMotorPort.getInt(), 
+                    bottomRightEncoderAPort.getInt(),
+                    bottomRightEncoderBPort.getInt(),
+                    bottomRightFlipped.getBoolean(), bottomrightmultiplier);
         
     }
   

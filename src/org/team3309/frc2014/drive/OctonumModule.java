@@ -27,12 +27,12 @@ public class OctonumModule {
     private double[] multipliers;
     private boolean isTank;
     private boolean enabled;
-    private static final double configPTank = ConstantsManager.getConstant("Octonum.configPTank").getDouble(); 
-    private static final double configPMecc = ConstantsManager.getConstant("Octonum.configPMecc").getDouble(); 
-    private static final double configITank = ConstantsManager.getConstant("Octonum.configITank").getDouble(); 
-    private static final double configIMecc = ConstantsManager.getConstant("Octonum.configIMecc").getDouble(); 
-    private static final double configDTank = ConstantsManager.getConstant("Octonum.configDTank").getDouble(); 
-    private static final double configDMecc = ConstantsManager.getConstant("Octonum.configDMecc").getDouble(); 
+    private static final double configPTank = 1;
+    private static final double configPMecc = 1; 
+    private static final double configITank = 0; 
+    private static final double configIMecc = 0; 
+    private static final double configDTank = 0; 
+    private static final double configDMecc = 0; 
     //private double integral;
     //private double lastRate;
     private long lastTime;

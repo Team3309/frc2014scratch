@@ -35,11 +35,12 @@ import java.util.Vector;
 public class ConstantsManager {
 
     static {
+        constants = new Hashtable();/*
         try {
-            loadConstantsFromFile("/Constants.txt");
+            loadConstantsFromFile("Constants.txt");
         } catch (IOException e) {
             e.printStackTrace();
-        }
+        }*/
     }
 
     private static Hashtable constants = new Hashtable();
@@ -63,9 +64,12 @@ public class ConstantsManager {
      * @throws java.io.IOException
      */
     public static void loadConstantsFromFile(String path) throws IOException {
+         
         FileConnection fileConnection = (FileConnection) Connector.open("file:///" + path, Connector.READ);
         loadConstants(fileConnection.openInputStream());
+     
     }
+    
 
     public static void loadConstants(InputStream inputStream) throws IOException {
         byte[] buffer = new byte[255];
@@ -126,7 +130,8 @@ public class ConstantsManager {
                         else
                             ((Constant) constants.get(key)).set(Double.parseDouble(value));
                     } else {
-                        System.err.println("Constant <" + key + "> will not be used");
+                        System.err.println("Constant <" + key + "> will not be used. Size of constants " + constants.size());
+                        
                     }
                 }
             }

@@ -25,8 +25,7 @@ import org.team3309.frc2014.gmhandler.Pickup;
  */
 public class Robot extends IterativeRobot {
 
-    private DriveTrain drive;
-    private XboxController driveXbox = new XboxController(1);
+    private XboxController driveXbox;
     private XboxController operatorXbox = new XboxController(2);
     private Compressor compressor = null;
     private Pickup pickup;
@@ -36,7 +35,8 @@ public class Robot extends IterativeRobot {
      * used for any initialization code.
      */
     public void robotInit() {
-        drive = new DriveTrain();
+        driveMode = new DriveTrain();
+        driveXbox = new XboxController(1);
         // Initialize all subsystems
         CommandBase.init();
     }
@@ -55,14 +55,19 @@ public class Robot extends IterativeRobot {
     }
 
     public void teleopInit() {
+        driveMode.enable(true);
     }
 
+    public void disabledTeleop(){
+    driveMode.enable(false);
+        
+    }
     /**
      * This function is called periodically during operator control
      */
     public void teleopPeriodic() {
         Scheduler.getInstance().run();
-        
+        System.out.println(driveXbox.getRightX());
         //Changes drives, only when held
         //cause Michael wants it that way
         if (Math.abs(driveXbox.getRightTrigger()) >= .5){
@@ -76,7 +81,7 @@ public class Robot extends IterativeRobot {
         double rightX = driveXbox.getRightX();
         double leftX = driveXbox.getLeftX();
         double leftY = driveXbox.getLeftY();
-        drive.drive(leftY, rightX, leftX);
+        driveMode.drive(leftY, rightX, leftX);
         boolean rightBumper = operatorXbox.getRightBumper();
         //pickup.pickup(rightBumper);
 
