@@ -38,7 +38,7 @@ public class Constant {
             throw new NullPointerException("Constant name cannot be null");
         }
         this.name = name;
-        ConstantsManager.addConstant(this);
+       
     }
 
     public Constant(String name, double defaultVal) {

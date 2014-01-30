@@ -12,4 +12,10 @@ package org.team3309.frc2014.gmhandler;
  */
 public class Pickup {
     
+    private Solenoid pickupPiston;
+    private SpeedController pickupMotor;
+    private boolean enable;
+    
+    
+    
 }

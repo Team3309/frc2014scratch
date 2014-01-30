@@ -34,14 +34,7 @@ import java.util.Vector;
 
 public class ConstantsManager {
 
-    static {
-        constants = new Hashtable();/*
-        try {
-            loadConstantsFromFile("Constants.txt");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }*/
-    }
+    
 
     private static Hashtable constants = new Hashtable();
 
@@ -111,9 +104,10 @@ public class ConstantsManager {
                         val[i] = Double.parseDouble(valStrings[i]);
                     }
                     if (successful) {
-                        if (constants.containsKey(key)) {
-                            ((Constant) constants.get(key)).set(val);
+                        if (!constants.containsKey(key)) {
+                            addConstant(new Constant(key, val));
                         } else {
+                            
                             System.err.println("Constant <" + key + "> will not be used");
                         }
                     }
