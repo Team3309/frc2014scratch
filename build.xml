@@ -1,7 +1,8 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?><project basedir="." default="help" name="frc2014scratch">
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<project basedir="." default="deploy" name="frc2014scratch">
 
-<!-- You may freely edit this file. See commented blocks below for -->
-<!-- some examples of how to customize the build. -->
+    <!-- You may freely edit this file. See commented blocks below for -->
+    <!-- some examples of how to customize the build. -->
 
     <!--
     
@@ -22,6 +23,8 @@
     explanations, see the file ${sunspot.home}/default.properties.
 
     -->
+
+    <property name="remoteaddress" value="10.33.9.2"/>
 
     <property name="user.properties.file" value="build.properties"/>
     <property file="${user.home}/.sunspotfrc.properties"/>
