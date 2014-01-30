@@ -17,7 +17,7 @@ import edu.wpi.first.wpilibj.Victor;
 
 /**
  *
- * @author Ben
+ * @author Ben/Jon
  */
 public class OctonumModule {
     

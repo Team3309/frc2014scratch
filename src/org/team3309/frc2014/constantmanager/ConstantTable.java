@@ -23,10 +23,14 @@ public class ConstantTable {
     private Hashtable box = new Hashtable();
     
     private static ConstantTable instance;
-    
+
     private ConstantTable () {
-        
-    instance = this;
+        try {
+            loadTable();
+            instance = this;
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
     
     }
     private void loadTable() throws IOException{ 
@@ -63,6 +67,26 @@ public class ConstantTable {
                 }
                 String key = line.substring(0, line.indexOf("=")).trim();
                 String value = line.substring(line.indexOf("=") + 1);
+                if (Util.contains(value, ",")){
+                    String[] arrayValues = split(value, ",");
+                    double[] arrayParsed = new double[arrayValues.length];
+                    for (int j = 0 ; j < arrayParsed.length ; j++){
+                        arrayParsed[j] = Double.parseDouble(arrayValues[j]);
+                    }
+                    box.put(key, arrayParsed);
+                }
+                else if (Util.contains(value, ".")){
+                    box.put(key, Double.valueOf(value));
+                }
+                else if ("true".equals(value)){
+                    box.put(key, Boolean.valueOf(true));
+                }
+                else if ("false".equals(value)){
+                    box.put(key, Boolean.valueOf(false));
+                }
+                else {
+                    box.put(key, Integer.valueOf(value));
+                }
                 
             }      
             
@@ -73,8 +97,11 @@ public class ConstantTable {
         
     }
     
+    public Object getValue(String key){
+        return box.get(key);
+    }
     
-    public ConstantTable getConstantTable() {
+    public static ConstantTable getConstantTable() {
     if (instance == null){
         return new ConstantTable();
     }

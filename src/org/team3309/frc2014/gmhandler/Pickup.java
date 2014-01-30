@@ -5,10 +5,12 @@
  */
 
 package org.team3309.frc2014.gmhandler;
+import edu.wpi.first.wpilibj.Solenoid;
+import edu.wpi.first.wpilibj.SpeedController;
 
 /**
  *
- * @author Ben
+ * @author Ben/Jon
  */
 public class Pickup {
     
