@@ -42,7 +42,7 @@ public class ConstantTable {
     }
     
     private void loadFromFile (InputStream inputStream){
-        byte[] buffer = new byte[255];
+        byte[] buffer = new byte[2048];
         String content = "";
 
         try {
@@ -98,7 +98,11 @@ public class ConstantTable {
     }
     
     public Object getValue(String key){
-        return box.get(key);
+        Object value = box.get(key);
+        if (value == null){
+            System.out.println("Key not found: " + key);
+        }
+        return value;
     }
     
     public static ConstantTable getConstantTable() {

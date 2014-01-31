@@ -11,9 +11,9 @@ import edu.wpi.first.wpilibj.CounterBase;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.SpeedController;
-import org.team3309.friarlib.constants.ConstantsManager;
 import edu.wpi.first.wpilibj.PIDController;
 import edu.wpi.first.wpilibj.Victor;
+import org.team3309.frc2014.constantmanager.ConstantTable;
 
 /**
  *
@@ -39,28 +39,24 @@ public class OctonumModule {
     private PIDController pidControl;
     private boolean mode2012;
     
-    public OctonumModule( Solenoid modePiston,SpeedController speedMotor, Encoder encoder, double[] multipliers ) {
-     
-        this.modePiston = modePiston;
-        this.speedMotor = speedMotor;
-        this.encoder = encoder;
-        this.multipliers = multipliers;
-        this.pidControl = new PIDController(configPMecc, configIMecc, configDMecc, encoder, speedMotor);
+    public OctonumModule(String wheelName){
+        
+        int SolenoidPortNumber = ((Integer) ConstantTable.getConstantTable().getValue(wheelName + ".solenoid")).intValue();
+        int speedMotorPortNumber = ((Integer) ConstantTable.getConstantTable().getValue(wheelName + ".motor")).intValue();
+        int encoderPortNumberA = ((Integer) ConstantTable.getConstantTable().getValue(wheelName + ".encoderA")).intValue();
+        int encoderPortNumberB = ((Integer) ConstantTable.getConstantTable().getValue(wheelName + ".encoderB")).intValue();
+        boolean isEncoderFlipped = ((Boolean) ConstantTable.getConstantTable().getValue(wheelName + ".flipped")).booleanValue();
+        multipliers = ((double[]) ConstantTable.getConstantTable().getValue(wheelName + ".multipliers"));     
+        
+        this.speedMotor = new Victor (speedMotorPortNumber);
                 
-    }
-    public OctonumModule( int SolenoidPortNumber, int speedMotorPortNumber, int encoderPortNumberA, 
-            int encoderPortNumberB, boolean isEncoderFlipped,double[] multipliers){
         if (SolenoidPortNumber == 0){
             mode2012 = true;
         } else{
             this.modePiston = new Solenoid(SolenoidPortNumber);
             this.encoder = new Encoder (encoderPortNumberA, encoderPortNumberB, isEncoderFlipped, CounterBase.EncodingType.k1X);
+            this.pidControl = new PIDController(configPMecc, configIMecc, configDMecc, encoder, speedMotor);
         }
-        
-        
-        this.speedMotor = new Victor (speedMotorPortNumber);
-        
-        this.multipliers = multipliers;
         
         enable(true);
     }

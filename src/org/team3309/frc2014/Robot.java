@@ -68,7 +68,6 @@ public class Robot extends IterativeRobot {
      */
     public void teleopPeriodic() {
         Scheduler.getInstance().run();
-        System.out.println(driveXbox.getRightX());
         //Changes drives, only when held
         //cause Michael wants it that way
         if (Math.abs(driveXbox.getRightTrigger()) >= .5){
