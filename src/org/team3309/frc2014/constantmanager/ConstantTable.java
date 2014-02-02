@@ -16,7 +16,7 @@ import org.team3309.friarlib.util.Util;
 
 /**
  *
- * @author Ben
+ * @author Ben(90%)/Jon(5%)/luck(5%)
  */
 public class ConstantTable {
     

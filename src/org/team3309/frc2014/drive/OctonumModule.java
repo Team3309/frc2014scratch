@@ -17,7 +17,7 @@ import org.team3309.frc2014.constantmanager.ConstantTable;
 
 /**
  *
- * @author Ben/Jon
+ * @author Ben(90%)/Jon(5%)/luck(5%)
  */
 public class OctonumModule {
     
@@ -67,7 +67,7 @@ public class OctonumModule {
      * @param strafe - left/right (only for Meccanum)
      */
     
-    void drive(double drive, double rot, double strafe){
+    public void drive(double drive, double rot, double strafe){
         
       
      
@@ -119,7 +119,7 @@ public class OctonumModule {
      */
     
     
-    void enable( boolean active ){
+   public void enable( boolean active ){
         enabled = active;
     }
     
@@ -128,7 +128,7 @@ public class OctonumModule {
      * @param pistonStatus 
      */
     
-    void enableTank (boolean pistonStatus){
+    public void enableTank (boolean pistonStatus){
         
         if (!mode2012){
             if (enabled){

@@ -8,7 +8,7 @@ package org.team3309.frc2014.gmhandler;
 
 /**
  *
- * @author Ben/Jon
+ * @author Ben(90%)/Jon(5%)/luck(5%)
  */
 public class Launcher {
     

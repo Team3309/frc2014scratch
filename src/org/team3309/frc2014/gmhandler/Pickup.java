@@ -10,7 +10,7 @@ import edu.wpi.first.wpilibj.SpeedController;
 
 /**
  *
- * @author Ben/Jon
+ * @author Ben(90%)/Jon(5%)/luck(5%)
  */
 public class Pickup {
     

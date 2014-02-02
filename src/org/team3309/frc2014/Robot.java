@@ -8,7 +8,7 @@
 package org.team3309.frc2014;
 
 import edu.wpi.first.wpilibj.Compressor;
-import org.team3309.frc2014.drive.DriveTrain;
+import org.team3309.frc2014.subsystems.DriveTrain;
 import org.team3309.friarlib.XboxController;
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.command.Scheduler;

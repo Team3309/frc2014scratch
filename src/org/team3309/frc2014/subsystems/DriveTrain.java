@@ -4,13 +4,16 @@
  * and open the template in the editor.
  */
 
-package org.team3309.frc2014.drive;
+package org.team3309.frc2014.subsystems;
+import edu.wpi.first.wpilibj.command.Subsystem;
+import org.team3309.frc2014.drive.OctonumModule;
+
 
 /**
  *
- * @author Jon/Ben
+ * @author Ben(90%)/Jon(5%)/luck(5%)
  */
-public class DriveTrain {
+public class DriveTrain extends Subsystem{
     
     
     private OctonumModule[] driveTrainWheels;    
@@ -47,4 +50,8 @@ public class DriveTrain {
         }
     }
     
+    public void initDefaultCommand() {
+        // Set the default command for a subsystem here.
+        //setDefaultCommand(new MySpecialCommand());
+    }
 }
