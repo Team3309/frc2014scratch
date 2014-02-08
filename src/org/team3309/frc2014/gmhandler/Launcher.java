@@ -6,10 +6,30 @@
 
 package org.team3309.frc2014.gmhandler;
 
+import edu.wpi.first.wpilibj.SpeedController;
+
 /**
  *
- * @author Ben(90%)/Jon(5%)/luck(5%)
+ * @author Jon
  */
 public class Launcher {
     
+      private static SpeedController launcherMotor;
+      private static boolean enable;
+      
+      public static void pullback(boolean pull){
+          if (pull == true){
+              launcherMotor.set(1);
+          }
+          else {
+              launcherMotor.set(0);
+          }
+      }
+      
+      public static void release(boolean release){
+          
+      }
 }
+
+      
+      

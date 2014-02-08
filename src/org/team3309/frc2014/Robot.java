@@ -15,6 +15,7 @@ import edu.wpi.first.wpilibj.command.Scheduler;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import org.team3309.frc2014.commands.CommandBase;
 import org.team3309.frc2014.gmhandler.Pickup;
+import org.team3309.frc2014.gmhandler.Launcher;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -84,6 +85,11 @@ public class Robot extends IterativeRobot {
         driveMode.drive(leftY, rightX, leftX);
         boolean rightBumper = operatorXbox.getRightBumper();
         //pickup.pickup(rightBumper);
+        
+        boolean Xbutton = operatorXbox.getXButton();       
+        boolean leftBumper = operatorXbox.getLeftBumper();
+        Launcher.pullback(Xbutton);
+        Launcher.release(leftBumper);
 
     }
     
