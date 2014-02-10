@@ -30,16 +30,16 @@ public class Robot extends IterativeRobot {
     private XboxController operatorXbox = new XboxController(2);
     private Compressor compressor = null;
     private Pickup pickup;
-    private DriveTrain driveMode;
+    private DriveTrain driveTrain;
     /**
      * This function is run when the robot is first started up and should be
      * used for any initialization code.
      */
     public void robotInit() {
-        driveMode = new DriveTrain();
+        driveTrain = new DriveTrain();
         driveXbox = new XboxController(1);
         // Initialize all subsystems
-        CommandBase.init();
+        //CommandBase.init();
     }
 
     public void autonomousInit() {
@@ -56,12 +56,10 @@ public class Robot extends IterativeRobot {
     }
 
     public void teleopInit() {
-        driveMode.enable(true);
         
     }
 
     public void disabledTeleop(){
-    driveMode.enable(false);
         
     }
     /**
@@ -72,17 +70,17 @@ public class Robot extends IterativeRobot {
         //Changes drives, only when held
         //cause Michael wants it that way
         if (Math.abs(driveXbox.getRightTrigger()) >= .5){
-            driveMode.enableTank(true);
+            driveTrain.enableTank();
         }
         else {
-            driveMode.enableTank(false);
+            driveTrain.enableMecanum();
         }
          
         //Code for driving around
         double rightX = driveXbox.getRightX();
         double leftX = driveXbox.getLeftX();
         double leftY = driveXbox.getLeftY();
-        driveMode.drive(leftY, rightX, leftX);
+        driveTrain.drive(leftY, rightX, leftX);
         boolean rightBumper = operatorXbox.getRightBumper();
         //pickup.pickup(rightBumper);
         

@@ -5,27 +5,38 @@
  */
 
 package org.team3309.frc2014.subsystems;
-import edu.wpi.first.wpilibj.command.Subsystem;
 import org.team3309.frc2014.drive.OctonumModule;
-
+import edu.wpi.first.wpilibj.Solenoid;
+import org.team3309.frc2014.constantmanager.ConstantTable;
 
 /**
  *
- * @author Ben(90%)/Jon(5%)/luck(5%)
+ * @author Jon/Ben
  */
-public class DriveTrain extends Subsystem{
+public class DriveTrain{
     
-    
-    private OctonumModule[] driveTrainWheels;    
+    private Solenoid modePiston;   
+    private OctonumModule[] driveTrainWheels;
+    private boolean noSolenoids;
     
     public DriveTrain() {
-
-        this.driveTrainWheels = new OctonumModule[4];
+        
+        double[] solenoidArray = ((double[]) ConstantTable.getConstantTable().getValue("Octonum.solenoid"));
+        if (solenoidArray[1] == 0){
+            noSolenoids = true;
+        }
+        
+        if (!noSolenoids){
+            modePiston = new Solenoid((int) solenoidArray[0], (int) solenoidArray[1]);
+        }
+        
+        driveTrainWheels = new OctonumModule[4];
         driveTrainWheels[0] = new OctonumModule("Octonum.topleft");    
         driveTrainWheels[1] = new OctonumModule("Octonum.topright"); 
         driveTrainWheels[2] = new OctonumModule("Octonum.bottomleft");            
         driveTrainWheels[3] = new OctonumModule("Octonum.bottomright");
   
+        enableMecanum();
     }
 
     public void drive(double drive, double rot, double strafe) {
@@ -37,20 +48,25 @@ public class DriveTrain extends Subsystem{
                      
     }
     
-    public void enable (boolean active){
-        
-        for (int i = 0; i < 4; i++){
-            driveTrainWheels[i].enable(active);
+        /**
+     * enable TankMode by enabling Piston
+     */
+    
+    public void enableTank(){
+        if (!noSolenoids){
+            modePiston.set(true);
+            for (int i = 0; i < 4; i++) {
+                driveTrainWheels[i].enableTank();
+            }
         }
     }
     
-    public void enableTank (boolean active){
-        for (int i = 0; i < 4; i++){
-            driveTrainWheels[i].enableTank(active);
+    public void enableMecanum(){
+        if (!noSolenoids){
+            modePiston.set(false);
+        }
+        for (int i = 0; i < 4; i++) {
+            driveTrainWheels[i].enableMecanum();
         }
     }
-
-    protected void initDefaultCommand() {
-    }
-    
 }

@@ -9,7 +9,6 @@ package org.team3309.frc2014.drive;
 
 import edu.wpi.first.wpilibj.CounterBase;
 import edu.wpi.first.wpilibj.Encoder;
-import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.SpeedController;
 import edu.wpi.first.wpilibj.PIDController;
 import edu.wpi.first.wpilibj.Victor;
@@ -17,16 +16,14 @@ import org.team3309.frc2014.constantmanager.ConstantTable;
 
 /**
  *
- * @author Ben(90%)/Jon(5%)/luck(5%)
+ * @author Jon
  */
 public class OctonumModule {
     
-    private Solenoid modePiston;
-    private SpeedController speedMotor;
+    private SpeedController driveMotor;
     private Encoder encoder;
     private double[] multipliers;
     private boolean isTank;
-    private boolean enabled;
     private static final double configPTank = 1;
     private static final double configPMecc = 1; 
     private static final double configITank = 0; 
@@ -37,28 +34,32 @@ public class OctonumModule {
     //private double lastRate;
     private long lastTime;
     private PIDController pidControl;
-    private boolean mode2012;
+    private boolean noEncoders;
     
     public OctonumModule(String wheelName){
-        
-        int SolenoidPortNumber = ((Integer) ConstantTable.getConstantTable().getValue(wheelName + ".solenoid")).intValue();
-        int speedMotorPortNumber = ((Integer) ConstantTable.getConstantTable().getValue(wheelName + ".motor")).intValue();
-        int encoderPortNumberA = ((Integer) ConstantTable.getConstantTable().getValue(wheelName + ".encoderA")).intValue();
-        int encoderPortNumberB = ((Integer) ConstantTable.getConstantTable().getValue(wheelName + ".encoderB")).intValue();
+       
+        double[] driveMotorArray = ((double[]) ConstantTable.getConstantTable().getValue(wheelName + ".motor"));
+        double[] encoderArrayA = ((double[]) ConstantTable.getConstantTable().getValue(wheelName + ".encoderA"));
+        double[] encoderArrayB = ((double[]) ConstantTable.getConstantTable().getValue(wheelName + ".encoderB"));
         boolean isEncoderFlipped = ((Boolean) ConstantTable.getConstantTable().getValue(wheelName + ".flipped")).booleanValue();
         multipliers = ((double[]) ConstantTable.getConstantTable().getValue(wheelName + ".multipliers"));     
         
-        this.speedMotor = new Victor (speedMotorPortNumber);
+        driveMotor = new Victor ((int) driveMotorArray[0],(int) driveMotorArray[1]);
                 
-        if (SolenoidPortNumber == 0){
-            mode2012 = true;
+        if (encoderArrayA[1] == 0){
+            noEncoders = true;
         } else{
-            this.modePiston = new Solenoid(SolenoidPortNumber);
-            this.encoder = new Encoder (encoderPortNumberA, encoderPortNumberB, isEncoderFlipped, CounterBase.EncodingType.k1X);
-            this.pidControl = new PIDController(configPMecc, configIMecc, configDMecc, encoder, speedMotor);
+
+            encoder = new Encoder (
+                    (int) encoderArrayA[0], 
+                    (int) encoderArrayA[1], 
+                    (int) encoderArrayB[0], 
+                    (int) encoderArrayB[1],
+                    isEncoderFlipped, 
+                    CounterBase.EncodingType.k1X);
+            pidControl = new PIDController(configPMecc, configIMecc, configDMecc, encoder, driveMotor);
         }
         
-        enable(true);
     }
     /**
      * calculate how the motor should move based on the joystick input
@@ -67,89 +68,51 @@ public class OctonumModule {
      * @param strafe - left/right (only for Meccanum)
      */
     
-    public void drive(double drive, double rot, double strafe){
-        
-      
-     
-       if(enabled){
-               
-                
-               if(lastTime != 0){
-                   
-                double driveModified = drive * multipliers[0];
-                double rotModified = rot * multipliers[1];
-                double strafeModified = strafe * multipliers[2];
-                   
-                double setpoint = driveModified + rotModified + strafeModified;
-                //double current = encoder.getRate();
-                if (isTank){
-                    setpoint = (drive + rot);
-                }
-                
-                if (mode2012){
-                    speedMotor.set(setpoint);
-                
-                }else{
-                    pidControl.setSetpoint(setpoint); 
-                }
-                
-                
-               
-                
-                /*long currentTime = System.currentTimeMillis();
-                double err = current - setpoint;
-                integral = integral + err;
-                
+    public void drive(double drive, double rot, double strafe){               
 
-                double output = err * configP + integral * configI + ((current - lastRate) / (currentTime - lastTime)) * configD;
-                speedMotor.set(output);
-                lastRate = current; 
-                lastTime = currentTime;*/
-                
-               } else {
-                   lastTime = System.currentTimeMillis();
-               } 
-               
+        if (lastTime != 0){
+
+            double driveModified = drive * multipliers[0];
+            double rotModified = rot * multipliers[1];
+            double strafeModified = strafe * multipliers[2];
+
+            double setpoint = driveModified + rotModified + strafeModified;
+            //double current = encoder.getRate();
+            if (isTank){
+                setpoint = (drive + rot);
             }
-        
-    }
-    /** 
-     * enable OctonumModule
-     * @param active 
-     */
-    
-    
-   public void enable( boolean active ){
-        enabled = active;
-    }
-    
-    /**
-     * enable TankMode by enabling Piston
-     * @param pistonStatus 
-     */
-    
-    public void enableTank (boolean pistonStatus){
-        
-        if (!mode2012){
-            if (enabled){
-            modePiston.set(pistonStatus);
-            //extend = tank
-            if (pistonStatus)
-            {
-                pidControl.setPID(configPTank, configITank, configDTank);
-        
+
+            if (noEncoders){
+                driveMotor.set(setpoint);
+
             }
-            else {
-                pidControl.setPID(configPMecc, configIMecc, configDMecc);
+            else{
+                pidControl.setSetpoint(setpoint); 
             }
-            
+
+
+            /*long currentTime = System.currentTimeMillis();
+            double err = current - setpoint;
+            integral = integral + err;
+
+
+            double output = err * configP + integral * configI + ((current - lastRate) / (currentTime - lastTime)) * configD;
+            speedMotor.set(output);
+            lastRate = current; 
+            lastTime = currentTime;*/
+
         }
-            
-        }
-        
+        else {
+           lastTime = System.currentTimeMillis();
+        } 
+
+    }
+
+    public void enableTank(){
+        pidControl.setPID(configPTank, configITank, configDTank);
     }
     
-    
-    
-        
+    public void enableMecanum(){
+        pidControl.setPID(configPMecc, configIMecc, configDMecc);
+    }    
 }
