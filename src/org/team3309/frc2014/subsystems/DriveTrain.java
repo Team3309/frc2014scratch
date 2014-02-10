@@ -8,6 +8,7 @@ package org.team3309.frc2014.subsystems;
 import org.team3309.frc2014.drive.OctonumModule;
 import edu.wpi.first.wpilibj.Solenoid;
 import org.team3309.frc2014.constantmanager.ConstantTable;
+import java.lang.String;
 
 /**
  *
@@ -40,6 +41,9 @@ public class DriveTrain{
     }
 
     public void drive(double drive, double rot, double strafe) {
+        System.out.println("drive: " + String.valueOf(drive) + " rot: " + String.valueOf(rot) + " strafe: " + String.valueOf(strafe));
+        
+        
         for (int i = 0; i < 4; i++) {
             driveTrainWheels[i].drive(drive, rot, strafe);
             

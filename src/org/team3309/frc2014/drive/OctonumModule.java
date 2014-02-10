@@ -9,7 +9,6 @@ package org.team3309.frc2014.drive;
 
 import edu.wpi.first.wpilibj.CounterBase;
 import edu.wpi.first.wpilibj.Encoder;
-import edu.wpi.first.wpilibj.SpeedController;
 import edu.wpi.first.wpilibj.PIDController;
 import edu.wpi.first.wpilibj.Victor;
 import org.team3309.frc2014.constantmanager.ConstantTable;
@@ -20,7 +19,7 @@ import org.team3309.frc2014.constantmanager.ConstantTable;
  */
 public class OctonumModule {
     
-    private SpeedController driveMotor;
+    private Victor driveMotor;
     private Encoder encoder;
     private double[] multipliers;
     private boolean isTank;
@@ -30,9 +29,6 @@ public class OctonumModule {
     private static final double configIMecc = 0; 
     private static final double configDTank = 0; 
     private static final double configDMecc = 0; 
-    //private double integral;
-    //private double lastRate;
-    private long lastTime;
     private PIDController pidControl;
     private boolean noEncoders;
     
@@ -57,6 +53,7 @@ public class OctonumModule {
                     (int) encoderArrayB[1],
                     isEncoderFlipped, 
                     CounterBase.EncodingType.k1X);
+            
             pidControl = new PIDController(configPMecc, configIMecc, configDMecc, encoder, driveMotor);
         }
         
@@ -70,49 +67,41 @@ public class OctonumModule {
     
     public void drive(double drive, double rot, double strafe){               
 
-        if (lastTime != 0){
+        double driveModified = drive * multipliers[0];
+        double rotModified = rot * multipliers[1];
+        double strafeModified = strafe * multipliers[2];
 
-            double driveModified = drive * multipliers[0];
-            double rotModified = rot * multipliers[1];
-            double strafeModified = strafe * multipliers[2];
+        double setpoint = driveModified + rotModified;
 
-            double setpoint = driveModified + rotModified + strafeModified;
-            //double current = encoder.getRate();
-            if (isTank){
-                setpoint = (drive + rot);
-            }
-
-            if (noEncoders){
-                driveMotor.set(setpoint);
-
-            }
-            else{
-                pidControl.setSetpoint(setpoint); 
-            }
-
-
-            /*long currentTime = System.currentTimeMillis();
-            double err = current - setpoint;
-            integral = integral + err;
-
-
-            double output = err * configP + integral * configI + ((current - lastRate) / (currentTime - lastTime)) * configD;
-            speedMotor.set(output);
-            lastRate = current; 
-            lastTime = currentTime;*/
+        if (!isTank){
+            setpoint += strafeModified;
+        }
+        
+        if (setpoint >= 1){
+            setpoint = 1;
+        }
+        
+        if (setpoint <= -1){
+            setpoint = -1;
+        }
+        
+        if (noEncoders){
+            driveMotor.set(setpoint);
 
         }
-        else {
-           lastTime = System.currentTimeMillis();
-        } 
+        else{
+            pidControl.setSetpoint(setpoint); 
+        }
 
     }
 
     public void enableTank(){
         pidControl.setPID(configPTank, configITank, configDTank);
+        isTank = true;
     }
     
     public void enableMecanum(){
         pidControl.setPID(configPMecc, configIMecc, configDMecc);
+        isTank = false;
     }    
 }

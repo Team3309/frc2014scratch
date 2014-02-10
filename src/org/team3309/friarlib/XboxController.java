@@ -56,7 +56,7 @@ public class XboxController extends GenericHID {
     // Axis
     private static final int A_LEFT_X = 1;
     private static final int A_LEFT_Y = 2;
-    private static final int A_TRIGGER = 3;
+    private static final int R_TRIGGER = 3;
     private static final int A_RIGHT_X = 4;
     private static final int A_RIGHT_Y = 5;
 
@@ -147,7 +147,7 @@ public class XboxController extends GenericHID {
     }
 
     public double getRightTrigger() {
-        return -Math.abs(mController.getRawAxis(A_TRIGGER));
+        return -Math.abs(mController.getRawAxis(R_TRIGGER));
     }
 
     public double getX(Hand hand) {

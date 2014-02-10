@@ -16,6 +16,7 @@ import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import org.team3309.frc2014.commands.CommandBase;
 import org.team3309.frc2014.gmhandler.Pickup;
 import org.team3309.frc2014.gmhandler.Launcher;
+import org.team3309.frc2014.constantmanager.ConstantTable;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -28,9 +29,10 @@ public class Robot extends IterativeRobot {
 
     private XboxController driveXbox;
     private XboxController operatorXbox = new XboxController(2);
-    private Compressor compressor = null;
+    private Compressor compressor;
     private Pickup pickup;
     private DriveTrain driveTrain;
+
     /**
      * This function is run when the robot is first started up and should be
      * used for any initialization code.
@@ -40,6 +42,11 @@ public class Robot extends IterativeRobot {
         driveXbox = new XboxController(1);
         // Initialize all subsystems
         //CommandBase.init();
+        double[] pressureSwitch = ((double[]) ConstantTable.getConstantTable().getValue("Compressor.pressureswitch"));
+        double[] compressorRelay = ((double[]) ConstantTable.getConstantTable().getValue("Compressor.relay"));
+        
+        compressor = new Compressor((int) pressureSwitch[0], (int) pressureSwitch[1], (int) compressorRelay[0], (int) compressorRelay[1]);
+        compressor.start();
     }
 
     public void autonomousInit() {
@@ -69,7 +76,7 @@ public class Robot extends IterativeRobot {
         Scheduler.getInstance().run();
         //Changes drives, only when held
         //cause Michael wants it that way
-        if (Math.abs(driveXbox.getRightTrigger()) >= .5){
+        if (driveXbox.getRightBumper()){
             driveTrain.enableTank();
         }
         else {
@@ -86,9 +93,8 @@ public class Robot extends IterativeRobot {
         
         boolean Xbutton = operatorXbox.getXButton();       
         boolean leftBumper = operatorXbox.getLeftBumper();
-        Launcher.pullback(Xbutton);
-        Launcher.release(leftBumper);
-
+        //Launcher.pullback(Xbutton);
+        //Launcher.release(leftBumper);
     }
     
     /**

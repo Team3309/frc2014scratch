@@ -2,12 +2,11 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="5862877d-e901-4aa0-add5-2efa1bab39d8" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/org/team3309/frc2014/commands/CommandBase.java" afterPath="$PROJECT_DIR$/src/org/team3309/frc2014/commands/CommandBase.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/org/team3309/frc2014/constantmanager/ConstantTable.java" afterPath="$PROJECT_DIR$/src/org/team3309/frc2014/constantmanager/ConstantTable.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/res/Constants.txt" afterPath="$PROJECT_DIR$/res/Constants.txt" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/org/team3309/frc2014/subsystems/DriveTrain.java" afterPath="$PROJECT_DIR$/src/org/team3309/frc2014/subsystems/DriveTrain.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/org/team3309/frc2014/drive/OctonumModule.java" afterPath="$PROJECT_DIR$/src/org/team3309/frc2014/drive/OctonumModule.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/org/team3309/frc2014/Robot.java" afterPath="$PROJECT_DIR$/src/org/team3309/frc2014/Robot.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/org/team3309/friarlib/XboxController.java" afterPath="$PROJECT_DIR$/src/org/team3309/friarlib/XboxController.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="frc2014scratch.iws" />
@@ -393,7 +392,11 @@
       <created>1391980394449</created>
       <updated>1391980394450</updated>
     </task>
-    <option name="localTasksCounter" value="2" />
+    <task id="LOCAL-00002" summary="Added arrays for module and port numbers. Separated mode2012 flag into separate Solenoid and encoder flags">
+      <created>1391991083557</created>
+      <updated>1391991083557</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
     <servers />
   </component>
   <component name="ToolWindowManager">
@@ -438,7 +441,8 @@
       <TodoPanelSettings />
     </option>
     <MESSAGE value="Added 2012 constants" />
-    <option name="LAST_COMMIT_MESSAGE" value="Added 2012 constants" />
+    <MESSAGE value="Added arrays for module and port numbers. Separated mode2012 flag into separate Solenoid and encoder flags" />
+    <option name="LAST_COMMIT_MESSAGE" value="Added arrays for module and port numbers. Separated mode2012 flag into separate Solenoid and encoder flags" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager />
