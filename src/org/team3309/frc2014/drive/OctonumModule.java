@@ -10,6 +10,7 @@ package org.team3309.frc2014.drive;
 import edu.wpi.first.wpilibj.CounterBase;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.PIDController;
+import edu.wpi.first.wpilibj.PIDSource.PIDSourceParameter;
 import edu.wpi.first.wpilibj.Victor;
 import org.team3309.frc2014.constantmanager.ConstantTable;
 
@@ -53,6 +54,11 @@ public class OctonumModule {
                     (int) encoderArrayB[1],
                     isEncoderFlipped, 
                     CounterBase.EncodingType.k1X);
+            //TODO find gear ratio at encoder(Mr. Mason)
+            // 360/250
+            //double gearRatio;
+            //encoder.setDistancePerPulse(360/250 * gearRatio);
+            //encoder.setPIDSourceParameter(PIDSourceParameter.kRate);
             
             pidControl = new PIDController(configPMecc, configIMecc, configDMecc, encoder, driveMotor);
         }

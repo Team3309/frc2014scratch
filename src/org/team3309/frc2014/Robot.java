@@ -95,6 +95,8 @@ public class Robot extends IterativeRobot {
         boolean leftBumper = operatorXbox.getLeftBumper();
         //Launcher.pullback(Xbutton);
         //Launcher.release(leftBumper);
+        
+        
     }
     
     /**
