@@ -41,7 +41,7 @@ public class DriveTrain{
     }
 
     public void drive(double drive, double rot, double strafe) {
-        System.out.println("drive: " + String.valueOf(drive) + " rot: " + String.valueOf(rot) + " strafe: " + String.valueOf(strafe));
+        //System.out.println("drive: " + String.valueOf(drive) + " rot: " + String.valueOf(rot) + " strafe: " + String.valueOf(strafe));
         
         
         for (int i = 0; i < 4; i++) {

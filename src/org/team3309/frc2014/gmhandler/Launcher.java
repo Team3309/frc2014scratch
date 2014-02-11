@@ -18,7 +18,7 @@ public class Launcher {
       private static boolean enable;
       
       public static void pullback(boolean pull){
-          if (pull == true){
+          if (pull){
               launcherMotor.set(1);
           }
           else {

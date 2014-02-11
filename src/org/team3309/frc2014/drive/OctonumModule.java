@@ -10,6 +10,7 @@ package org.team3309.frc2014.drive;
 import edu.wpi.first.wpilibj.CounterBase;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.PIDController;
+import edu.wpi.first.wpilibj.PIDOutput;
 import edu.wpi.first.wpilibj.PIDSource.PIDSourceParameter;
 import edu.wpi.first.wpilibj.Victor;
 import org.team3309.frc2014.constantmanager.ConstantTable;
@@ -18,7 +19,7 @@ import org.team3309.frc2014.constantmanager.ConstantTable;
  *
  * @author Jon
  */
-public class OctonumModule {
+public class OctonumModule implements PIDOutput{
     
     private Victor driveMotor;
     private Encoder encoder;
@@ -32,9 +33,13 @@ public class OctonumModule {
     private static final double configDMecc = 0; 
     private PIDController pidControl;
     private boolean noEncoders;
+    private int pulsesPerRevolution;
+    private double gearRatioTank;
+    private double gearRatioMecanum;
+    private String wheelName;
     
     public OctonumModule(String wheelName){
-       
+        this.wheelName = wheelName;
         double[] driveMotorArray = ((double[]) ConstantTable.getConstantTable().getValue(wheelName + ".motor"));
         double[] encoderArrayA = ((double[]) ConstantTable.getConstantTable().getValue(wheelName + ".encoderA"));
         double[] encoderArrayB = ((double[]) ConstantTable.getConstantTable().getValue(wheelName + ".encoderB"));
@@ -53,14 +58,18 @@ public class OctonumModule {
                     (int) encoderArrayB[0], 
                     (int) encoderArrayB[1],
                     isEncoderFlipped, 
-                    CounterBase.EncodingType.k1X);
-            //TODO find gear ratio at encoder(Mr. Mason)
-            // 360/250
-            //double gearRatio;
-            //encoder.setDistancePerPulse(360/250 * gearRatio);
-            //encoder.setPIDSourceParameter(PIDSourceParameter.kRate);
+                    CounterBase.EncodingType.k4X);
+
+            pulsesPerRevolution = ((Integer) ConstantTable.getConstantTable().getValue("Encoder.pulsesPerRevolution")).intValue();
+            gearRatioTank = ((Double) ConstantTable.getConstantTable().getValue("Encoder.gearRatioTank")).doubleValue();        
+            gearRatioMecanum = ((Double) ConstantTable.getConstantTable().getValue("Encoder.gearRatioMecanum")).doubleValue();
+
+            encoder.setPIDSourceParameter(PIDSourceParameter.kRate);
+            encoder.setReverseDirection(isEncoderFlipped);
+            encoder.start();
             
-            pidControl = new PIDController(configPMecc, configIMecc, configDMecc, encoder, driveMotor);
+            pidControl = new PIDController(configPMecc, configIMecc, configDMecc, encoder, this);
+            pidControl.enable();
         }
         
     }
@@ -96,7 +105,7 @@ public class OctonumModule {
 
         }
         else{
-            pidControl.setSetpoint(setpoint); 
+            pidControl.setSetpoint(setpoint*1000); 
         }
 
     }
@@ -104,10 +113,27 @@ public class OctonumModule {
     public void enableTank(){
         pidControl.setPID(configPTank, configITank, configDTank);
         isTank = true;
+        encoder.setDistancePerPulse(pulsesPerRevolution * gearRatioTank);  
     }
     
     public void enableMecanum(){
         pidControl.setPID(configPMecc, configIMecc, configDMecc);
         isTank = false;
-    }    
+        encoder.setDistancePerPulse(pulsesPerRevolution * gearRatioMecanum);
+    }
+
+    public void pidWrite(double pidOutput) {
+        double motorSpeed = driveMotor.getSpeed();
+        System.out.println("Wheel: " + wheelName + " MotorSpeed: " + String.valueOf(motorSpeed) + 
+                " PIDOutput: " + String.valueOf(pidOutput) +
+                " Encoder: " + String.valueOf(encoder.getRate()));
+        motorSpeed += pidOutput;
+        if (motorSpeed > 1){
+            motorSpeed = 1;
+        }
+        if (motorSpeed < -1){
+            motorSpeed = -1;
+        }
+        driveMotor.set(motorSpeed);
+    }
 }
