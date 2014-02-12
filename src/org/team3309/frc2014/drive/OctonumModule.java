@@ -25,18 +25,19 @@ public class OctonumModule implements PIDOutput{
     private Encoder encoder;
     private double[] multipliers;
     private boolean isTank;
-    private static final double configPTank = 1;
-    private static final double configPMecc = 1; 
-    private static final double configITank = 0; 
-    private static final double configIMecc = 0; 
-    private static final double configDTank = 0; 
-    private static final double configDMecc = 0; 
+    private double pTank;
+    private double pMecanum;
+    private double iTank;
+    private double iMecanum;
+    private double dTank;
+    private double dMecanum;
     private PIDController pidControl;
     private boolean noEncoders;
-    private int pulsesPerRevolution;
-    private double gearRatioTank;
-    private double gearRatioMecanum;
+    private double pulsesPerInchTank;
+    private double pulsesPerInchMecanum;
     private String wheelName;
+    private double inchesPerSecondMaxTank;
+    private double inchesPerSecondMaxMecanum;
     
     public OctonumModule(String wheelName){
         this.wheelName = wheelName;
@@ -47,8 +48,8 @@ public class OctonumModule implements PIDOutput{
         multipliers = ((double[]) ConstantTable.getConstantTable().getValue(wheelName + ".multipliers"));     
         
         driveMotor = new Victor ((int) driveMotorArray[0],(int) driveMotorArray[1]);
-                
-        if (encoderArrayA[1] == 0){
+
+        if (encoderArrayA[0] == 0){
             noEncoders = true;
         } else{
 
@@ -58,17 +59,26 @@ public class OctonumModule implements PIDOutput{
                     (int) encoderArrayB[0], 
                     (int) encoderArrayB[1],
                     isEncoderFlipped, 
-                    CounterBase.EncodingType.k4X);
+                    CounterBase.EncodingType.k1X);
 
-            pulsesPerRevolution = ((Integer) ConstantTable.getConstantTable().getValue("Encoder.pulsesPerRevolution")).intValue();
-            gearRatioTank = ((Double) ConstantTable.getConstantTable().getValue("Encoder.gearRatioTank")).doubleValue();        
-            gearRatioMecanum = ((Double) ConstantTable.getConstantTable().getValue("Encoder.gearRatioMecanum")).doubleValue();
-
+            pulsesPerInchTank = ((Double) ConstantTable.getConstantTable().getValue("Encoder.pulsesPerInch.Tank")).doubleValue();
+            pulsesPerInchMecanum = ((Double) ConstantTable.getConstantTable().getValue("Encoder.pulsesPerInch.Mecanum")).doubleValue();
+         
+            inchesPerSecondMaxTank = ((Double) ConstantTable.getConstantTable().getValue("Encoder.inchesPerSecondMax.Tank")).doubleValue();
+            inchesPerSecondMaxMecanum = ((Double) ConstantTable.getConstantTable().getValue("Encoder.inchesPerSecondMax.Mecanum")).doubleValue();
+        
             encoder.setPIDSourceParameter(PIDSourceParameter.kRate);
             encoder.setReverseDirection(isEncoderFlipped);
             encoder.start();
             
-            pidControl = new PIDController(configPMecc, configIMecc, configDMecc, encoder, this);
+            pMecanum = ((Double) ConstantTable.getConstantTable().getValue("Octonum.pMecanum")).doubleValue();
+            iMecanum = ((Double) ConstantTable.getConstantTable().getValue("Octonum.iMecanum")).doubleValue();
+            dMecanum = ((Double) ConstantTable.getConstantTable().getValue("Octonum.dMecanum")).doubleValue();
+            pTank = ((Double) ConstantTable.getConstantTable().getValue("Octonum.pTank")).doubleValue();
+            iTank = ((Double) ConstantTable.getConstantTable().getValue("Octonum.iTank")).doubleValue();
+            dTank = ((Double) ConstantTable.getConstantTable().getValue("Octonum.dTank")).doubleValue();
+            
+            pidControl = new PIDController(pMecanum, iMecanum, dMecanum, encoder, this);
             pidControl.enable();
         }
         
@@ -105,29 +115,37 @@ public class OctonumModule implements PIDOutput{
 
         }
         else{
-            pidControl.setSetpoint(setpoint*1000); 
+            if (isTank){
+                setpoint *= inchesPerSecondMaxTank;
+            }
+            else {
+                setpoint *= inchesPerSecondMaxMecanum;
+            }
+            pidControl.setSetpoint(setpoint);
         }
-
     }
 
     public void enableTank(){
-        pidControl.setPID(configPTank, configITank, configDTank);
+        pidControl.setPID(pTank, iTank, dTank);
         isTank = true;
-        encoder.setDistancePerPulse(pulsesPerRevolution * gearRatioTank);  
+        encoder.setDistancePerPulse(pulsesPerInchTank);  
     }
     
     public void enableMecanum(){
-        pidControl.setPID(configPMecc, configIMecc, configDMecc);
+        pidControl.setPID(pMecanum, iMecanum, dMecanum);
         isTank = false;
-        encoder.setDistancePerPulse(pulsesPerRevolution * gearRatioMecanum);
+        encoder.setDistancePerPulse(pulsesPerInchMecanum);
     }
 
     public void pidWrite(double pidOutput) {
         double motorSpeed = driveMotor.getSpeed();
+        if (wheelName == "Octonum.topleft" && encoder.getRate() != 0){
         System.out.println("Wheel: " + wheelName + " MotorSpeed: " + String.valueOf(motorSpeed) + 
                 " PIDOutput: " + String.valueOf(pidOutput) +
-                " Encoder: " + String.valueOf(encoder.getRate()));
-        motorSpeed += pidOutput;
+                " Encoder: " + String.valueOf(encoder.getRate()) +
+                " Setpoint: " + String.valueOf(pidControl.getSetpoint()));
+        }
+        motorSpeed = pidOutput;
         if (motorSpeed > 1){
             motorSpeed = 1;
         }
