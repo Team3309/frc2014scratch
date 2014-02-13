@@ -14,9 +14,10 @@ import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.command.Scheduler;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import org.team3309.frc2014.commands.CommandBase;
-import org.team3309.frc2014.gmhandler.Pickup;
+import org.team3309.frc2014.gmhandler.Intake;
 import org.team3309.frc2014.gmhandler.Launcher;
 import org.team3309.frc2014.constantmanager.ConstantTable;
+import org.team3309.frc2014.gmhandler.Intake;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -30,7 +31,7 @@ public class Robot extends IterativeRobot {
     private XboxController driveXbox;
     private XboxController operatorXbox = new XboxController(2);
     private Compressor compressor;
-    private Pickup pickup;
+    private Intake intake;
     private DriveTrain driveTrain;
 
     /**
@@ -89,8 +90,9 @@ public class Robot extends IterativeRobot {
         double leftY = driveXbox.getLeftY();
         driveTrain.drive(leftY, rightX, leftX);
         boolean rightBumper = operatorXbox.getRightBumper();
-        //pickup.pickup(rightBumper);
-        
+        //intake.lowerIntake(rightBumper);
+        boolean getAButton = operatorXbox.getAButton();
+        //intake.pullIn(AButton);
         boolean Xbutton = operatorXbox.getXButton();       
         boolean leftBumper = operatorXbox.getLeftBumper();
         //Launcher.pullback(Xbutton);
