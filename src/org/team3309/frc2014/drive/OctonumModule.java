@@ -38,6 +38,7 @@ public class OctonumModule implements PIDOutput{
     private String wheelName;
     private double inchesPerSecondMaxTank;
     private double inchesPerSecondMaxMecanum;
+    private double wheelSpeed;
     
     public OctonumModule(String wheelName){
         this.wheelName = wheelName;
@@ -83,6 +84,15 @@ public class OctonumModule implements PIDOutput{
         }
         
     }
+    
+    public void free(){
+        driveMotor.free();
+        if (encoder != null){
+                encoder.free();
+        }        
+        pidControl.free();               
+    }
+    
     /**
      * calculate how the motor should move based on the joystick input
      * @param drive - forward/backward
@@ -90,29 +100,27 @@ public class OctonumModule implements PIDOutput{
      * @param strafe - left/right (only for Meccanum)
      */
     
-    public void drive(double drive, double rot, double strafe){               
+    
+    public double setRawSpeed(double drive, double rot, double strafe){               
 
         double driveModified = drive * multipliers[0];
         double rotModified = rot * multipliers[1];
         double strafeModified = strafe * multipliers[2];
 
-        double setpoint = driveModified + rotModified;
+        wheelSpeed = driveModified + rotModified;
 
         if (!isTank){
-            setpoint += strafeModified;
-        }
-        
-        if (setpoint >= 1){
-            setpoint = 1;
-        }
-        
-        if (setpoint <= -1){
-            setpoint = -1;
-        }
+            wheelSpeed += strafeModified;
+        }                         
+
+        return wheelSpeed;
+    }
+    
+    public void setNormalizationFactor(double factor){
+        double setpoint = wheelSpeed * factor;
         
         if (noEncoders){
             driveMotor.set(setpoint);
-
         }
         else{
             if (isTank){
@@ -123,6 +131,7 @@ public class OctonumModule implements PIDOutput{
             }
             pidControl.setSetpoint(setpoint);
         }
+        
     }
 
     public void enableTank(){

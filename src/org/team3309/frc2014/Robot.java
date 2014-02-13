@@ -33,13 +33,13 @@ public class Robot extends IterativeRobot {
     private Compressor compressor;
     private Intake intake;
     private DriveTrain driveTrain;
+    private boolean robotInitialized;
 
     /**
      * This function is run when the robot is first started up and should be
      * used for any initialization code.
      */
     public void robotInit() {
-        driveTrain = new DriveTrain();
         driveXbox = new XboxController(1);
         // Initialize all subsystems
         //CommandBase.init();
@@ -49,10 +49,25 @@ public class Robot extends IterativeRobot {
         compressor = new Compressor((int) pressureSwitch[0], (int) pressureSwitch[1], (int) compressorRelay[0], (int) compressorRelay[1]);
         compressor.start();
     }
+    
+    public void robotEnable(){
+        if (!robotInitialized){
+            driveTrain = new DriveTrain();
+            robotInitialized = true;
+        }
+    }
 
+    public void disableInit(){
+        if (robotInitialized){
+            robotInitialized = false;
+            driveTrain.free();
+        }
+        
+    }
+    
     public void autonomousInit() {
         // schedule the autonomous command (example)
-       
+       robotEnable();
     }
 
     /**
@@ -60,11 +75,12 @@ public class Robot extends IterativeRobot {
      */
     public void autonomousPeriodic() {
         Scheduler.getInstance().run();
+    
         
     }
 
     public void teleopInit() {
-        
+        robotEnable();
     }
 
     public void disabledTeleop(){
@@ -105,6 +121,8 @@ public class Robot extends IterativeRobot {
      * This function is called periodically during test mode
      */
     public void testPeriodic() {
+        robotEnable();
         LiveWindow.run();
+        
     }
 }

@@ -19,13 +19,15 @@ public class DriveTrain{
     private Solenoid modePiston;   
     private OctonumModule[] driveTrainWheels;
     private boolean noSolenoids;
+    private double maxWheelSpeed;
     
     public DriveTrain() {
         
-        double[] solenoidArray = ((double[]) ConstantTable.getConstantTable().getValue("Octonum.solenoid"));
+        double[] solenoidArray = ((double[]) ConstantTable.getConstantTable().getValue("DriveTrain.solenoid"));
         if (solenoidArray[1] == 0){
             noSolenoids = true;
         }
+        double[] maxWheelSpeed = ((double[]) ConstantTable.getConstantTable().getValue("DriveTrain.maxWheelSpeed"));
         
         if (!noSolenoids){
             modePiston = new Solenoid((int) solenoidArray[0], (int) solenoidArray[1]);
@@ -40,16 +42,29 @@ public class DriveTrain{
         enableMecanum();
     }
 
+    public void free(){
+        modePiston.free();
+        for (int i = 0; i < 4; i++){
+            driveTrainWheels[i].free();                       
+        }
+        
+    }
+    
     public void drive(double drive, double rot, double strafe) {
         //System.out.println("drive: " + String.valueOf(drive) + " rot: " + String.valueOf(rot) + " strafe: " + String.valueOf(strafe));
-        
-        
+        double highestWheelSpeed = 1.0;
+        double wheelSpeed;
+      
+                
         for (int i = 0; i < 4; i++) {
-            driveTrainWheels[i].drive(drive, rot, strafe);
-            
-            
+            wheelSpeed = driveTrainWheels[i].setRawSpeed(drive, rot, strafe);
+            if (wheelSpeed > highestWheelSpeed){
+                highestWheelSpeed = wheelSpeed;
+            }           
         }
-                     
+        for (int i = 0; i < 4; i++) {
+            driveTrainWheels[i].setNormalizationFactor(1 / highestWheelSpeed * maxWheelSpeed) ;                                
+        }
     }
     
         /**
