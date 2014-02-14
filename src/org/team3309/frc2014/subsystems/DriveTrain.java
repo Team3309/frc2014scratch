@@ -27,7 +27,7 @@ public class DriveTrain{
         if (solenoidArray[1] == 0){
             noSolenoids = true;
         }
-        double[] maxWheelSpeed = ((double[]) ConstantTable.getConstantTable().getValue("DriveTrain.maxWheelSpeed"));
+        maxWheelSpeed = ((Double) ConstantTable.getConstantTable().getValue("DriveTrain.maxWheelSpeed")).doubleValue();
         
         if (!noSolenoids){
             modePiston = new Solenoid((int) solenoidArray[0], (int) solenoidArray[1]);
@@ -54,8 +54,7 @@ public class DriveTrain{
         //System.out.println("drive: " + String.valueOf(drive) + " rot: " + String.valueOf(rot) + " strafe: " + String.valueOf(strafe));
         double highestWheelSpeed = 1.0;
         double wheelSpeed;
-      
-                
+       
         for (int i = 0; i < 4; i++) {
             wheelSpeed = driveTrainWheels[i].setRawSpeed(drive, rot, strafe);
             if (wheelSpeed > highestWheelSpeed){
@@ -86,6 +85,12 @@ public class DriveTrain{
         }
         for (int i = 0; i < 4; i++) {
             driveTrainWheels[i].enableMecanum();
+        }
+    }
+
+    public void setCoastMode(boolean coast){
+        for (int i = 0; i < 4; i++) {
+            driveTrainWheels[i].setCoastMode(coast);
         }
     }
 }

@@ -39,6 +39,7 @@ public class OctonumModule implements PIDOutput{
     private double inchesPerSecondMaxTank;
     private double inchesPerSecondMaxMecanum;
     private double wheelSpeed;
+    private boolean coastMode;
     
     public OctonumModule(String wheelName){
         this.wheelName = wheelName;
@@ -101,7 +102,9 @@ public class OctonumModule implements PIDOutput{
      */
     
     
-    public double setRawSpeed(double drive, double rot, double strafe){               
+    public double setRawSpeed(double drive, double rot, double strafe){  
+        
+        
 
         double driveModified = drive * multipliers[0];
         double rotModified = rot * multipliers[1];
@@ -145,22 +148,29 @@ public class OctonumModule implements PIDOutput{
         isTank = false;
         encoder.setDistancePerPulse(pulsesPerInchMecanum);
     }
+    
+    public void setCoastMode(boolean coast){
+        //detect release of coast button
+        if (coastMode && !coast){
+            pidControl.reset();
+            pidControl.enable();
+        }
+        coastMode = coast;
+    }
 
     public void pidWrite(double pidOutput) {
         double motorSpeed = driveMotor.getSpeed();
-        if (wheelName == "Octonum.topleft" && encoder.getRate() != 0){
-        System.out.println("Wheel: " + wheelName + " MotorSpeed: " + String.valueOf(motorSpeed) + 
+        if ("Octonum.topleft".equals(wheelName) && encoder.getRate() != 0){
+            System.out.println("Wheel: " + wheelName + " MotorSpeed: " + String.valueOf(motorSpeed) + 
                 " PIDOutput: " + String.valueOf(pidOutput) +
                 " Encoder: " + String.valueOf(encoder.getRate()) +
                 " Setpoint: " + String.valueOf(pidControl.getSetpoint()));
         }
         motorSpeed = pidOutput;
-        if (motorSpeed > 1){
-            motorSpeed = 1;
-        }
-        if (motorSpeed < -1){
-            motorSpeed = -1;
+        if (coastMode){
+            motorSpeed = 0;
         }
         driveMotor.set(motorSpeed);
     }
+    
 }

@@ -135,4 +135,8 @@ public class ConstantTable {
         return retString;
     }
     
+    public static void free(){
+        instance = null;
+    }
+    
 }

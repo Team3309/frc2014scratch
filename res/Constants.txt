@@ -1,11 +1,12 @@
-Octonum.pTank=0.0
-Octonum.iTank=0.01
+Octonum.pTank=0.04
+Octonum.iTank=0.0045
 Octonum.dTank=0.0
-Octonum.pMecanum=0.0
-Octonum.iMecanum=0.0025
+Octonum.pMecanum=0.01
+Octonum.iMecanum=0.00125
 Octonum.dMecanum=0.0
 DriveTrain.solenoid=1,3
 DriveTrain.maxWheelSpeed=0.95
+DriveController.deadband=.05
 Octonum.topleft.motor=1,1
 Octonum.topleft.encoderA=1,8
 Octonum.topleft.encoderB=1,9

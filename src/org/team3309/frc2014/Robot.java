@@ -34,6 +34,7 @@ public class Robot extends IterativeRobot {
     private Intake intake;
     private DriveTrain driveTrain;
     private boolean robotInitialized;
+    private double deadband;
 
     /**
      * This function is run when the robot is first started up and should be
@@ -48,21 +49,28 @@ public class Robot extends IterativeRobot {
         
         compressor = new Compressor((int) pressureSwitch[0], (int) pressureSwitch[1], (int) compressorRelay[0], (int) compressorRelay[1]);
         compressor.start();
+        System.out.println("Robot ready");
     }
     
     public void robotEnable(){
         if (!robotInitialized){
             driveTrain = new DriveTrain();
             robotInitialized = true;
+            deadband = ((Double) ConstantTable.getConstantTable().getValue("DriveController.deadband")).doubleValue();
         }
     }
 
-    public void disableInit(){
+    public void disabledInit(){
+        //System.out.println("DisabledInit() called");
         if (robotInitialized){
             robotInitialized = false;
             driveTrain.free();
+            ConstantTable.free();
         }
-        
+    }
+    
+    public void disabledPeriodic(){
+        //System.out.println("DisabledPeriodic() called");        
     }
     
     public void autonomousInit() {
@@ -99,12 +107,19 @@ public class Robot extends IterativeRobot {
         else {
             driveTrain.enableMecanum();
         }
-         
+        
+        driveTrain.setCoastMode(driveXbox.getLeftBumper());
         //Code for driving around
         double rightX = driveXbox.getRightX();
         double leftX = driveXbox.getLeftX();
         double leftY = driveXbox.getLeftY();
+        
+        rightX = applyDeadband(rightX);
+        leftX = applyDeadband(leftX);
+        leftY = applyDeadband(leftY);
+        
         driveTrain.drive(leftY, rightX, leftX);
+        
         boolean rightBumper = operatorXbox.getRightBumper();
         //intake.lowerIntake(rightBumper);
         boolean getAButton = operatorXbox.getAButton();
@@ -122,7 +137,19 @@ public class Robot extends IterativeRobot {
      */
     public void testPeriodic() {
         robotEnable();
-        LiveWindow.run();
+        // LiveWindow.run();
         
+    }
+    private double applyDeadband(double joystickValue){
+        if (joystickValue >= -deadband && joystickValue <= deadband){
+            joystickValue = 0;
+        }
+        else if (joystickValue > deadband){
+            joystickValue = (joystickValue - deadband) / (1 - deadband);
+        }
+        else {
+            joystickValue = (joystickValue + deadband) / (1 - deadband);
+        }
+        return joystickValue;
     }
 }
