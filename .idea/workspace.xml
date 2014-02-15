@@ -2,6 +2,9 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="5862877d-e901-4aa0-add5-2efa1bab39d8" name="Default" comment="">
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/org/team3309/frc2014/drive/DriveHeading.java" afterPath="$PROJECT_DIR$/src/org/team3309/frc2014/drive/DriveHeading.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/org/team3309/frc2014/subsystems/DriveTrain.java" afterPath="$PROJECT_DIR$/src/org/team3309/frc2014/subsystems/DriveTrain.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/org/team3309/friarlib/RobotAngleGyro.java" afterPath="$PROJECT_DIR$/src/org/team3309/friarlib/RobotAngleGyro.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="frc2014scratch.iws" />
@@ -478,7 +481,11 @@
       <created>1392503897156</created>
       <updated>1392503897156</updated>
     </task>
-    <option name="localTasksCounter" value="9" />
+    <task id="LOCAL-00009" summary="Added some code for RobotAngleGyro and new constants&#10;">
+      <created>1392503917025</created>
+      <updated>1392503917025</updated>
+    </task>
+    <option name="localTasksCounter" value="10" />
     <servers />
   </component>
   <component name="ToolWindowManager">
@@ -530,7 +537,8 @@
     <MESSAGE value="Fixed encoders and victor port numbers. Got Speed control working!" />
     <MESSAGE value="Added deadband. Need to modify PID constants more" />
     <MESSAGE value="Added some code for RobotAngleGyro and new constants" />
-    <option name="LAST_COMMIT_MESSAGE" value="Added some code for RobotAngleGyro and new constants" />
+    <MESSAGE value="Added some code for RobotAngleGyro and new constants&#10;" />
+    <option name="LAST_COMMIT_MESSAGE" value="Added some code for RobotAngleGyro and new constants&#10;" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager />
