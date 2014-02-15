@@ -32,6 +32,8 @@ public class OctonumModule implements PIDOutput{
     private double iMecanum;
     private double dTank;
     private double dMecanum;
+    private double fTank;
+    private double fMecanum;
     private PIDController pidControl;
     private boolean noEncoders;
     private double pulsesPerInchTank;
@@ -80,11 +82,13 @@ public class OctonumModule implements PIDOutput{
             pMecanum = ((Double) ConstantTable.getConstantTable().getValue("Octonum.pMecanum")).doubleValue();
             iMecanum = ((Double) ConstantTable.getConstantTable().getValue("Octonum.iMecanum")).doubleValue();
             dMecanum = ((Double) ConstantTable.getConstantTable().getValue("Octonum.dMecanum")).doubleValue();
+            fMecanum = ((Double) ConstantTable.getConstantTable().getValue("Octonum.fMecanum")).doubleValue();
             pTank = ((Double) ConstantTable.getConstantTable().getValue("Octonum.pTank")).doubleValue();
             iTank = ((Double) ConstantTable.getConstantTable().getValue("Octonum.iTank")).doubleValue();
             dTank = ((Double) ConstantTable.getConstantTable().getValue("Octonum.dTank")).doubleValue();
+            fTank = ((Double) ConstantTable.getConstantTable().getValue("Octonum.fTank")).doubleValue();
             
-            pidControl = new PIDController(pMecanum, iMecanum, dMecanum, encoder, this);
+            pidControl = new PIDController(pMecanum, iMecanum, dMecanum, fMecanum, encoder, this);
             pidControl.enable();
         }
         
@@ -142,13 +146,13 @@ public class OctonumModule implements PIDOutput{
     }
 
     public void enableTank(){
-        pidControl.setPID(pTank, iTank, dTank);
+        pidControl.setPID(pTank, iTank, dTank, fTank);
         isTank = true;
         encoder.setDistancePerPulse(pulsesPerInchTank);  
     }
     
     public void enableMecanum(){
-        pidControl.setPID(pMecanum, iMecanum, dMecanum);
+        pidControl.setPID(pMecanum, iMecanum, dMecanum, fMecanum);
         isTank = false;
         encoder.setDistancePerPulse(pulsesPerInchMecanum);
     }
