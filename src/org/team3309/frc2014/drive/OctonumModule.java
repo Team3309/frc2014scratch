@@ -15,6 +15,7 @@ import edu.wpi.first.wpilibj.PIDSource.PIDSourceParameter;
 import edu.wpi.first.wpilibj.Victor;
 import org.team3309.frc2014.constantmanager.ConstantTable;
 
+
 /**
  *
  * @author Jon
@@ -40,6 +41,8 @@ public class OctonumModule implements PIDOutput{
     private double inchesPerSecondMaxMecanum;
     private double wheelSpeed;
     private boolean coastMode;
+    private double totalError;
+    private boolean debug;
     
     public OctonumModule(String wheelName){
         this.wheelName = wheelName;
@@ -47,6 +50,7 @@ public class OctonumModule implements PIDOutput{
         double[] encoderArrayA = ((double[]) ConstantTable.getConstantTable().getValue(wheelName + ".encoderA"));
         double[] encoderArrayB = ((double[]) ConstantTable.getConstantTable().getValue(wheelName + ".encoderB"));
         boolean isEncoderFlipped = ((Boolean) ConstantTable.getConstantTable().getValue(wheelName + ".flipped")).booleanValue();
+        debug = ((Boolean) ConstantTable.getConstantTable().getValue(wheelName + ".debug")).booleanValue();
         multipliers = ((double[]) ConstantTable.getConstantTable().getValue(wheelName + ".multipliers"));     
         
         driveMotor = new Victor ((int) driveMotorArray[0],(int) driveMotorArray[1]);
@@ -158,15 +162,22 @@ public class OctonumModule implements PIDOutput{
         coastMode = coast;
     }
 
-    public void pidWrite(double pidOutput) {
-        double motorSpeed = driveMotor.getSpeed();
-        if ("Octonum.topleft".equals(wheelName) && encoder.getRate() != 0){
-            System.out.println("Wheel: " + wheelName + " MotorSpeed: " + String.valueOf(motorSpeed) + 
-                " PIDOutput: " + String.valueOf(pidOutput) +
-                " Encoder: " + String.valueOf(encoder.getRate()) +
-                " Setpoint: " + String.valueOf(pidControl.getSetpoint()));
+    public void pidWrite(double pidOutput) {        
+        totalError += pidControl.getError() * pidControl.getI();
+        if (totalError > 1){
+            totalError = 1;
         }
-        motorSpeed = pidOutput;
+        else if (totalError < -1){
+            totalError = -1;
+        }
+        if (debug && encoder.getRate() != 0){
+            System.out.println(wheelName + " totalError: " + String.valueOf((float) totalError) + 
+                " PIDOutput: " + String.valueOf((float) pidOutput) +
+                " Encoder: " + String.valueOf((float) encoder.getRate()) +
+                " Setpoint: " + String.valueOf((float) pidControl.getSetpoint()));
+          
+        }
+        double motorSpeed = pidOutput;
         if (coastMode){
             motorSpeed = 0;
         }
