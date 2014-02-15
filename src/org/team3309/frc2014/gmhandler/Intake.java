@@ -7,8 +7,6 @@
 package org.team3309.frc2014.gmhandler;
 
 import edu.wpi.first.wpilibj.Solenoid;
-import edu.wpi.first.wpilibj.SpeedController;
-
 import edu.wpi.first.wpilibj.Victor;
 import org.team3309.frc2014.constantmanager.ConstantTable;
 
@@ -19,60 +17,95 @@ import org.team3309.frc2014.constantmanager.ConstantTable;
 public class Intake {
     
     private static Solenoid intakePiston;
-    private static Victor MotorFrontRight;
-    private static Victor MotorFrontLeft;
-    private static Victor MotorSideRight;
-    private static Victor MotorSideLeft;
-    private double[] intakeMotorFrontLeft;
-    private double[] intakeMotorFrontRight;
-    private double[] intakeMotorSideLeft;
-    private double[] intakeMotorSideRight;
+    private static Victor topRightMotor;
+    private static Victor topLeftMotor;
+    private static Victor sideLeftMotor;
+    private static Victor sideRightMotor;
+    private double[] intakeTopLeftMotor;
+    private double[] intakeTopRightMotor;
+    private double[] intakeSideLeftMotor;
+    private double[] intakeSideRightMotor;
     private double[] loweringPiston;
+    private double topMotorSpeed;
+    private double sideMotorSpeed;
     
-    public void intakeModule(){
-        intakeMotorFrontLeft = ((double[]) ConstantTable.getConstantTable().getValue("Intake.MotorFrontLeft"));
-        intakeMotorFrontRight = ((double[]) ConstantTable.getConstantTable().getValue("Intake.MotorFrontRight"));
-        intakeMotorSideRight = ((double[]) ConstantTable.getConstantTable().getValue("Intake.MotorSideLeft"));
-        intakeMotorSideLeft = ((double[]) ConstantTable.getConstantTable().getValue("Intake.MotorSideRight"));
+    public void intake(){
+        intakeTopLeftMotor = ((double[]) ConstantTable.getConstantTable().getValue("Intake.topleft.motor"));
+        intakeTopRightMotor = ((double[]) ConstantTable.getConstantTable().getValue("Intake.topright.motor"));
+        intakeSideLeftMotor = ((double[]) ConstantTable.getConstantTable().getValue("Intake.sideleft.motor"));
+        intakeSideRightMotor = ((double[]) ConstantTable.getConstantTable().getValue("Intake.sideright.motor"));
         loweringPiston = ((double[]) ConstantTable.getConstantTable().getValue("Intake.Solenoid"));
+        topMotorSpeed = ((Double) ConstantTable.getConstantTable().getValue("Intake.topMotorSpeed")).doubleValue();
+        sideMotorSpeed = ((Double) ConstantTable.getConstantTable().getValue("Intake.sideMotorSpeed")).doubleValue();
+ 
         
-        MotorFrontRight = new Victor ((int) intakeMotorFrontRight[0], (int) intakeMotorFrontRight[1]);
-        MotorFrontLeft = new Victor ((int) intakeMotorFrontLeft[0], (int) intakeMotorFrontLeft[1]);
-        MotorSideRight = new Victor ((int) intakeMotorSideRight[0], (int) intakeMotorSideRight[1]);
-        MotorSideLeft = new Victor ((int) intakeMotorSideLeft [0], (int) intakeMotorSideLeft[1]);
+        sideRightMotor = new Victor ((int) intakeSideRightMotor[0], (int) intakeSideRightMotor[1]);
+        sideLeftMotor = new Victor ((int) intakeSideLeftMotor [0], (int) intakeSideLeftMotor[1]);
         intakePiston = new Solenoid((int) loweringPiston[0], (int) loweringPiston [1]);
       
-        
-    }
-    public void lowerIntake(boolean push){
-        if(push){
-            intakePiston.set(true);
-        }
-        else{
-            intakePiston.set(false);
-        }
-        
+      if (intakeTopRightMotor[1] != 0){
+                topRightMotor = new Victor((int) intakeTopRightMotor[0], (int) intakeTopRightMotor[1]);
+      }  
+      
+      
+      
+      if (intakeTopLeftMotor[1] != 0){
+                topLeftMotor = new Victor((int) intakeTopLeftMotor[0], (int) intakeTopLeftMotor[1]);
+      }
+      
+      
+      
+      
     }
     
-    public void pullIn (boolean pull){
-        if (pull){
-                MotorFrontRight.set(1);
-                MotorFrontLeft.set(1);
-                MotorSideRight.set(1);
-                MotorSideLeft.set(1);
+    
+    
+    public static void intakeEnable (boolean pull){
+        if (pull = true){
+            if (topRightMotor == null){
+                topRightMotor.set(1);
+        }    
+            
+            if (topLeftMotor == null){
+                topLeftMotor.set(1);
+        }
+                          
+                sideRightMotor.set(1);
+                sideLeftMotor.set(1);
+                intakePiston.set(true);
         }
         else {
-                MotorFrontRight.set(0);
-                MotorFrontLeft.set(0);
-                MotorSideRight.set(0);
-                MotorSideLeft.set(0);
+            if (topRightMotor == null){
+                topRightMotor.set(0);
+        }
+            if (topLeftMotor == null){
+                topRightMotor.set(0);
+        }
+                
+                sideRightMotor.set(0);
+                sideLeftMotor.set(0);
+                intakePiston.set(false);
         }
         
-        
+  
         
         
     }
     
     
+    public void free(){
+        intakePiston.free();
+        if (topRightMotor == null){
+            topRightMotor.free();
+        }
+        
+       if (topLeftMotor == null){
+           topLeftMotor.free();
+       }
+       
+        sideRightMotor.free();
+        sideLeftMotor.free();
+        
+    }
     
 }
