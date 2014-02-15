@@ -8,6 +8,7 @@ import com.sun.squawk.util.MathUtils;
 import edu.wpi.first.wpilibj.PIDController;
 import edu.wpi.first.wpilibj.Gyro;
 import org.team3309.frc2014.constantmanager.ConstantTable;
+import org.team3309.frc2014.drive.DriveHeading;
 import java.lang.Math;
 
 /**
@@ -20,6 +21,16 @@ public class RobotAngleGyro {
     private long lastUpdate;
     private double integratedRotation;
     private double maxRotation;
+    private DriveHeading driveHeading;
+    private double pGyro;
+    private double iGyro;
+    private double dGyro;
+    private double[] ports;
+
+    public RobotAngleGyro() {
+        ports = ((double[]) ConstantTable.getConstantTable().getValue("Gyro.port"));
+        gyro = new Gyro((int) ports[0], (int) ports[1]);
+    }
     
     public void update(double rotationToAdd){
         if (lastUpdate == 0){
@@ -32,6 +43,20 @@ public class RobotAngleGyro {
     double timeElapsed = (currentUpdate - lastUpdate) / 1000d;
     integratedRotation += rotationToAdd * timeElapsed * maxRotation;
     
+    }
+    
+    public void getDesiredRotation(double joystickRotation){
+        pGyro = ((Double) ConstantTable.getConstantTable().getValue("Gyro.pGyro")).doubleValue();
+        iGyro = ((Double) ConstantTable.getConstantTable().getValue("Gyro.iGyro")).doubleValue();
+        dGyro = ((Double) ConstantTable.getConstantTable().getValue("Gyro.dGyro")).doubleValue();
+        
+        //desiredRotation += velRotation;
+        gyroPIDcontroller = new PIDController(pGyro, iGyro, dGyro, gyro, driveHeading);
+    }
+    
+    public void free(){
+        gyroPIDcontroller.free();
+        gyro.free();
     }
     //TODO remove commentors
     //public double[] calculateFieldCentricDriveStrafe(double drive, double strafe){

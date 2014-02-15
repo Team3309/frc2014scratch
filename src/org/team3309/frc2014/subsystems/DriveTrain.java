@@ -20,6 +20,7 @@ public class DriveTrain{
     private OctonumModule[] driveTrainWheels;
     private boolean noSolenoids;
     private double maxWheelSpeed;
+    private double maxStrafe;
     
     public DriveTrain() {
         
@@ -54,6 +55,14 @@ public class DriveTrain{
         //System.out.println("drive: " + String.valueOf(drive) + " rot: " + String.valueOf(rot) + " strafe: " + String.valueOf(strafe));
         double highestWheelSpeed = 1.0;
         double wheelSpeed;
+        
+        maxStrafe = ((Double) ConstantTable.getConstantTable().getValue("DriveTrain.maxStrafe")).doubleValue();
+        if (strafe <= -maxStrafe){
+            strafe = -maxStrafe;
+        }
+        if (strafe >= maxStrafe){
+            strafe = maxStrafe;
+        }
        
         for (int i = 0; i < 4; i++) {
             wheelSpeed = driveTrainWheels[i].setRawSpeed(drive, rot, strafe);
