@@ -45,7 +45,13 @@ public class Robot extends IterativeRobot {
         
         compressor = new Compressor((int) pressureSwitch[0], (int) pressureSwitch[1], (int) compressorRelay[0], (int) compressorRelay[1]);
         compressor.start();
-        System.out.println("Robot ready");
+        System.out.println("5");
+        System.out.println("4");
+        System.out.println("3");
+        System.out.println("2");
+        System.out.println("1");
+        System.out.println("0");
+        System.out.println("Game Begins NOW!!!!");
     }
     
     public void robotEnable(){
@@ -62,6 +68,7 @@ public class Robot extends IterativeRobot {
             robotInitialized = false;
             driveTrain.free();
             ConstantTable.free();
+            intake.free();
         }
     }
     
@@ -117,9 +124,8 @@ public class Robot extends IterativeRobot {
         driveTrain.drive(leftY, rightX, leftX);
         
         boolean rightBumper = operatorXbox.getRightBumper();
-        //intake.lowerIntake(rightBumper);
-        boolean getAButton = operatorXbox.getAButton();
-        //intake.pullIn(AButton);
+        boolean getAButton = driveXbox.getAButton();
+        Intake.intakeEnable(driveXbox.getAButton());        
         boolean Xbutton = operatorXbox.getXButton();       
         boolean leftBumper = operatorXbox.getLeftBumper();
         //Launcher.pullback(Xbutton);
