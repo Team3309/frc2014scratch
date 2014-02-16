@@ -27,6 +27,7 @@ public class Launcher {
       private double[] launcherBigPiston;
       private double[] launcherSmallPiston;
       private static double motorSpeed;
+      private int CatapultStatus;
       
       
       public void Launcher(){
@@ -54,17 +55,13 @@ public class Launcher {
       }
       
       private static void shoot(boolean start){
-          if (start == true){
-              bigPiston.set(true);
-          }
-          else{
+          if (start == false){
               bigPiston.set(false);
           }
+          else{
+              bigPiston.set(true);
+          }
       }
-      
-      
-      
-      
       
 }
 
