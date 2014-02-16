@@ -14,7 +14,6 @@ import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.command.Scheduler;
 import org.team3309.frc2014.constantmanager.ConstantTable;
 import org.team3309.frc2014.gmhandler.Intake;
-import org.team3309.friarlib.RobotAngleGyro;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -30,7 +29,6 @@ public class Robot extends IterativeRobot {
     private Compressor compressor;
     private Intake intake;
     private DriveTrain driveTrain;
-    private RobotAngleGyro gyro;
     private boolean robotInitialized;
     private double deadband;
 
@@ -62,7 +60,6 @@ public class Robot extends IterativeRobot {
         //System.out.println("DisabledInit() called");
         if (robotInitialized){
             robotInitialized = false;
-            gyro.free();
             driveTrain.free();
             ConstantTable.free();
         }

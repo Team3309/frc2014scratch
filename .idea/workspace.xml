@@ -2,8 +2,10 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="5862877d-e901-4aa0-add5-2efa1bab39d8" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/org/team3309/frc2014/drive/DriveHeading.java" afterPath="$PROJECT_DIR$/src/org/team3309/frc2014/drive/DriveHeading.java" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/org/team3309/frc2014/drive/DriveHeading.java" afterPath="" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/res/Constants.txt" afterPath="$PROJECT_DIR$/res/Constants.txt" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/org/team3309/frc2014/subsystems/DriveTrain.java" afterPath="$PROJECT_DIR$/src/org/team3309/frc2014/subsystems/DriveTrain.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/org/team3309/frc2014/Robot.java" afterPath="$PROJECT_DIR$/src/org/team3309/frc2014/Robot.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/org/team3309/friarlib/RobotAngleGyro.java" afterPath="$PROJECT_DIR$/src/org/team3309/friarlib/RobotAngleGyro.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
@@ -72,7 +74,7 @@
       <file leaf-file-name="Constants.txt" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/res/Constants.txt">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="15" column="25" selection-start="343" selection-end="343" vertical-scroll-proportion="0.28169015" vertical-offset="105" max-vertical-offset="795">
+            <state line="19" column="25" selection-start="420" selection-end="420" vertical-scroll-proportion="0.28169015" vertical-offset="165" max-vertical-offset="825">
               <folding />
             </state>
           </provider>
@@ -485,7 +487,11 @@
       <created>1392503917025</created>
       <updated>1392503917025</updated>
     </task>
-    <option name="localTasksCounter" value="10" />
+    <task id="LOCAL-00010" summary="Gyro complete and implemented, may need revision">
+      <created>1392506622965</created>
+      <updated>1392506622965</updated>
+    </task>
+    <option name="localTasksCounter" value="11" />
     <servers />
   </component>
   <component name="ToolWindowManager">
@@ -538,7 +544,8 @@
     <MESSAGE value="Added deadband. Need to modify PID constants more" />
     <MESSAGE value="Added some code for RobotAngleGyro and new constants" />
     <MESSAGE value="Added some code for RobotAngleGyro and new constants&#10;" />
-    <option name="LAST_COMMIT_MESSAGE" value="Added some code for RobotAngleGyro and new constants&#10;" />
+    <MESSAGE value="Gyro complete and implemented, may need revision" />
+    <option name="LAST_COMMIT_MESSAGE" value="Gyro complete and implemented, may need revision" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager />
@@ -567,7 +574,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/res/Constants.txt">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="15" column="25" selection-start="343" selection-end="343" vertical-scroll-proportion="0.28169015" vertical-offset="105" max-vertical-offset="795">
+        <state line="19" column="25" selection-start="420" selection-end="420" vertical-scroll-proportion="0.28169015" vertical-offset="165" max-vertical-offset="825">
           <folding />
         </state>
       </provider>

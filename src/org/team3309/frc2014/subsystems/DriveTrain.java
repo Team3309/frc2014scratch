@@ -19,11 +19,12 @@ public class DriveTrain{
     
     private Solenoid modePiston;   
     private OctonumModule[] driveTrainWheels;
-    private RobotAngleGyro gyro;
+    private RobotAngleGyro robotAngleGyro;
     private boolean noSolenoids;
     private double maxWheelSpeed;
     private double maxStrafe;
-    private double integratedRot;
+    private double adjustedRotation;
+    private boolean gyroEnabled;
     
     public DriveTrain() {
         
@@ -42,12 +43,19 @@ public class DriveTrain{
         driveTrainWheels[1] = new OctonumModule("Octonum.topright"); 
         driveTrainWheels[2] = new OctonumModule("Octonum.bottomleft");            
         driveTrainWheels[3] = new OctonumModule("Octonum.bottomright");
+        
+        robotAngleGyro = new RobotAngleGyro();
   
+        maxStrafe = ((Double) ConstantTable.getConstantTable().getValue("DriveTrain.maxStrafe")).doubleValue();
+        
+        gyroEnabled = ((Boolean) ConstantTable.getConstantTable().getValue("Gyro.enabled")).booleanValue();
+        
         enableMecanum();
     }
 
     public void free(){
         modePiston.free();
+        robotAngleGyro.free();
         for (int i = 0; i < 4; i++){
             driveTrainWheels[i].free();                       
         }
@@ -59,24 +67,28 @@ public class DriveTrain{
         double highestWheelSpeed = 1.0;
         double wheelSpeed;
         
-        maxStrafe = ((Double) ConstantTable.getConstantTable().getValue("DriveTrain.maxStrafe")).doubleValue();
         if (strafe <= -maxStrafe){
             strafe = -maxStrafe;
         }
         if (strafe >= maxStrafe){
             strafe = maxStrafe;
         }
-       
-        integratedRot = gyro.getDesiredRotation(rot);
+        if (gyroEnabled){
+            adjustedRotation = robotAngleGyro.getDesiredRotation(rot);            
+        }
+        else {
+            adjustedRotation = rot;
+        }
+
         
         for (int i = 0; i < 4; i++) {
-            wheelSpeed = driveTrainWheels[i].setRawSpeed(drive, integratedRot, strafe);
+            wheelSpeed = driveTrainWheels[i].setRawSpeed(drive, adjustedRotation, strafe);
             if (wheelSpeed > highestWheelSpeed){
                 highestWheelSpeed = wheelSpeed;
             }           
         }
         for (int i = 0; i < 4; i++) {
-            driveTrainWheels[i].setNormalizationFactor(1 / highestWheelSpeed * maxWheelSpeed) ;                                
+            driveTrainWheels[i].setNormalizationFactor(1 / highestWheelSpeed * maxWheelSpeed);                                
         }
     }
     
