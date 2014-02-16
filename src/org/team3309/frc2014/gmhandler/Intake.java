@@ -26,17 +26,18 @@ public class Intake {
     private double[] intakeSideLeftMotor;
     private double[] intakeSideRightMotor;
     private double[] loweringPiston;
-    private double topMotorSpeed;
-    private double sideMotorSpeed;
+    private static double topMotorSpeed;
+    private static double sideMotorSpeed;
     
     public void intake(){
         intakeTopLeftMotor = ((double[]) ConstantTable.getConstantTable().getValue("Intake.topleft.motor"));
         intakeTopRightMotor = ((double[]) ConstantTable.getConstantTable().getValue("Intake.topright.motor"));
         intakeSideLeftMotor = ((double[]) ConstantTable.getConstantTable().getValue("Intake.sideleft.motor"));
         intakeSideRightMotor = ((double[]) ConstantTable.getConstantTable().getValue("Intake.sideright.motor"));
-        loweringPiston = ((double[]) ConstantTable.getConstantTable().getValue("Intake.Solenoid"));
+        loweringPiston = ((double[]) ConstantTable.getConstantTable().getValue("Intake.Solenoid")); 
         topMotorSpeed = ((Double) ConstantTable.getConstantTable().getValue("Intake.topMotorSpeed")).doubleValue();
         sideMotorSpeed = ((Double) ConstantTable.getConstantTable().getValue("Intake.sideMotorSpeed")).doubleValue();
+        
  
         
         sideRightMotor = new Victor ((int) intakeSideRightMotor[0], (int) intakeSideRightMotor[1]);
@@ -63,15 +64,15 @@ public class Intake {
     public static void intakeEnable (boolean pull){
         if (pull = true){
             if (topRightMotor == null){
-                topRightMotor.set(1);
+                topRightMotor.set(topMotorSpeed);
         }    
             
             if (topLeftMotor == null){
-                topLeftMotor.set(1);
+                topLeftMotor.set(topMotorSpeed);
         }
                           
-                sideRightMotor.set(1);
-                sideLeftMotor.set(1);
+                sideRightMotor.set(sideMotorSpeed);
+                sideLeftMotor.set(sideMotorSpeed);
                 intakePiston.set(true);
         }
         else {
