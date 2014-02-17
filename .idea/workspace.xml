@@ -440,7 +440,11 @@
       <created>1392595338794</created>
       <updated>1392595338794</updated>
     </task>
-    <option name="localTasksCounter" value="17" />
+    <task id="LOCAL-00017" summary="Fixed constant names for winch">
+      <created>1392595780701</created>
+      <updated>1392595780701</updated>
+    </task>
+    <option name="localTasksCounter" value="18" />
     <servers />
   </component>
   <component name="ToolWindowManager">
@@ -499,7 +503,8 @@
     <MESSAGE value="Pushing for ben" />
     <MESSAGE value="Timer for ben" />
     <MESSAGE value="better Timer" />
-    <option name="LAST_COMMIT_MESSAGE" value="better Timer" />
+    <MESSAGE value="Fixed constant names for winch" />
+    <option name="LAST_COMMIT_MESSAGE" value="Fixed constant names for winch" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager />
