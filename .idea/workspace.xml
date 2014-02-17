@@ -2,7 +2,6 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="5862877d-e901-4aa0-add5-2efa1bab39d8" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/res/Constants.txt" afterPath="$PROJECT_DIR$/res/Constants.txt" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/org/team3309/frc2014/gmhandler/Launcher.java" afterPath="$PROJECT_DIR$/src/org/team3309/frc2014/gmhandler/Launcher.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
@@ -444,7 +443,11 @@
       <created>1392595780701</created>
       <updated>1392595780701</updated>
     </task>
-    <option name="localTasksCounter" value="18" />
+    <task id="LOCAL-00018" summary="Launcher code added, idk if it works">
+      <created>1392601415101</created>
+      <updated>1392601415101</updated>
+    </task>
+    <option name="localTasksCounter" value="19" />
     <servers />
   </component>
   <component name="ToolWindowManager">
@@ -504,7 +507,8 @@
     <MESSAGE value="Timer for ben" />
     <MESSAGE value="better Timer" />
     <MESSAGE value="Fixed constant names for winch" />
-    <option name="LAST_COMMIT_MESSAGE" value="Fixed constant names for winch" />
+    <MESSAGE value="Launcher code added, idk if it works" />
+    <option name="LAST_COMMIT_MESSAGE" value="Launcher code added, idk if it works" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager />

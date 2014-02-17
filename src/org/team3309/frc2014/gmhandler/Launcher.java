@@ -36,14 +36,13 @@ public class Launcher {
       private static final int errorResetting = 5;           
       private static final int disabled = 6;
       private static final int manualOverride = 7;
-      private boolean catapultPos;
-      private boolean latched;
       private Timer catapultTimer;
       private Timer stopMotorTimer;
       private int launchErrorCount;
       private int winchErrorCount;
-      
-      
+      private _____ catapultSensor;
+      private _____ latchSensor;
+            
       public void Launcher(){
           launcherWinchMotorBot = ((double[]) ConstantTable.getConstantTable().getValue("Launcher.winchMotorBot"));
           launcherWinchMotorTop = ((double[]) ConstantTable.getConstantTable().getValue("Launcher.winchMotorTop"));
@@ -57,6 +56,24 @@ public class Launcher {
           dogPiston = new Solenoid((int) launcherDogPiston[0], (int) launcherDogPiston [1]);
           
           catapultStatus = readyToLaunch;
+      }
+      
+      public boolean isCatapultInPos(){
+          if (catapultSensor = true){
+              return true;
+          }
+          else {
+              return false;
+          }
+      }
+      
+      public boolean isCatapultLatched(){
+          if (latchSensor = true){
+              return true;
+          }
+          else {
+              return false;
+          }
       }
       
       public void launch(boolean buttonPressed){
@@ -74,8 +91,8 @@ public class Launcher {
           //Status launching
           if (catapultStatus == launching){
                   if (catapultTimer.isExpired()){
-                      if ((catapultPos == true && latched == false) ||
-                         (catapultPos == false && latched == true)){
+                      if ((this.isCatapultInPos() == true && this.isCatapultLatched() == false) ||
+                         (this.isCatapultInPos() == false && this.isCatapultLatched() == true)){
                            catapultStatus = errorLaunch;
                            launchErrorCount ++;
                            if (launchErrorCount > 2){
@@ -93,7 +110,7 @@ public class Launcher {
           if (catapultStatus == resettingWinch){
               if (catapultTimer.isExpired() == false){
                   if (bottomMotor.get() == motorSpeed || topMotor.get() == motorSpeed){
-                      if (catapultPos && latched){
+                      if (this.isCatapultInPos() && this.isCatapultLatched()){
                           bottomMotor.set(0);
                           topMotor.set(0);
                           stopMotorTimer.setTimer(.2);
