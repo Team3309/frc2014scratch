@@ -8,6 +8,7 @@
 package org.team3309.frc2014;
 
 import edu.wpi.first.wpilibj.Compressor;
+import org.team3309.frc2014.gmhandler.Launcher;
 import org.team3309.frc2014.subsystems.DriveTrain;
 import org.team3309.friarlib.XboxController;
 import edu.wpi.first.wpilibj.IterativeRobot;
@@ -15,6 +16,7 @@ import edu.wpi.first.wpilibj.command.Scheduler;
 import org.team3309.frc2014.constantmanager.ConstantTable;
 import org.team3309.frc2014.gmhandler.Intake;
 import org.team3309.frc2014.gmhandler.TestLauncher;
+import sun.launcher.resources.launcher;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -30,9 +32,9 @@ public class Robot extends IterativeRobot {
     private Compressor compressor;
     private Intake intake;
     private DriveTrain driveTrain;
+    private Launcher launcher;
     private boolean robotInitialized;
     private double deadband;
-    private TestLauncher testLauncher;
 
     /**
      * This function is run when the robot is first started up and should be
@@ -47,18 +49,12 @@ public class Robot extends IterativeRobot {
         
         compressor = new Compressor((int) pressureSwitch[0], (int) pressureSwitch[1], (int) compressorRelay[0], (int) compressorRelay[1]);
         compressor.start();
-        System.out.println("5");
-        System.out.println("4");
-        System.out.println("3");
-        System.out.println("2");
-        System.out.println("1");
-        System.out.println("0");
-        System.out.println("Game Begins NOW!!!!");
     }
     
     public void robotEnable(){
         if (!robotInitialized){
             driveTrain = new DriveTrain();
+            launcher = new Launcher();
             robotInitialized = true;
             deadband = ((Double) ConstantTable.getConstantTable().getValue("DriveController.deadband")).doubleValue();
         }
@@ -71,7 +67,7 @@ public class Robot extends IterativeRobot {
             driveTrain.free();
             ConstantTable.free();
             intake.free();
-            testLauncher.free();
+            launcher.free();
         }
     }
     
@@ -115,29 +111,26 @@ public class Robot extends IterativeRobot {
         }
         
         driveTrain.setCoastMode(driveXbox.getLeftBumper());
+        //driver buttons
         //Code for driving around
-        double rightX = driveXbox.getRightX();
-        double leftX = driveXbox.getLeftX();
-        double leftY = driveXbox.getLeftY();
+        double driverRightX = driveXbox.getRightX();
+        double driverLeftX = driveXbox.getLeftX();
+        double driverLeftY = driveXbox.getLeftY();
         
-        rightX = applyDeadband(rightX);
-        leftX = applyDeadband(leftX);
-        leftY = applyDeadband(leftY);
+        driverRightX = applyDeadband(driverRightX);
+        driverLeftX = applyDeadband(driverLeftX);
+        driverLeftY = applyDeadband(driverLeftY);
         
-        driveTrain.drive(leftY, rightX, leftX);
+        driveTrain.drive(driverLeftY, driverRightX, driverLeftX);
+
+        //operator buttons
         
-        boolean rightBumper = operatorXbox.getRightBumper();
-        boolean XButton = driveXbox.getXButton();
-        testLauncher.charging(XButton);
-        boolean YButton = driveXbox.getYButton();
-        testLauncher.shoot(YButton);
-        boolean BButton = driveXbox.getBButton();
-        testLauncher.resetWinch(BButton);
+        boolean OperatorRightBumper = operatorXbox.getRightBumper();
+        launcher.launch(OperatorRightBumper);
                 
-        boolean Xbutton = operatorXbox.getXButton();       
-        boolean leftBumper = operatorXbox.getLeftBumper();
-        //Launcher.pullback(Xbutton);
-        //Launcher.release(leftBumper);
+        boolean OperatorXButton = operatorXbox.getXButton();
+        boolean OperatorLeftBumper = operatorXbox.getLeftBumper();
+        
         
         
     }
