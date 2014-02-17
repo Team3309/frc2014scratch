@@ -63,18 +63,21 @@ public class Intake {
     
     public static void intakeEnable (boolean pull){
         if (pull = true){
-            if (topRightMotor == null){
+            intakePiston.set(true);
+            
+            if (topRightMotor != null){
                 topRightMotor.set(topMotorSpeed);
         }    
             
-            if (topLeftMotor == null){
+            if (topLeftMotor != null){
                 topLeftMotor.set(topMotorSpeed);
         }
                           
                 sideRightMotor.set(sideMotorSpeed);
                 sideLeftMotor.set(sideMotorSpeed);
-                intakePiston.set(true);
+               
         }
+        
         else {
             if (topRightMotor == null){
                 topRightMotor.set(0);

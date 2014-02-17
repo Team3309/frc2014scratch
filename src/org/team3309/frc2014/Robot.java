@@ -14,6 +14,7 @@ import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.command.Scheduler;
 import org.team3309.frc2014.constantmanager.ConstantTable;
 import org.team3309.frc2014.gmhandler.Intake;
+import org.team3309.frc2014.gmhandler.TestLauncher;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -31,6 +32,7 @@ public class Robot extends IterativeRobot {
     private DriveTrain driveTrain;
     private boolean robotInitialized;
     private double deadband;
+    private TestLauncher testLauncher;
 
     /**
      * This function is run when the robot is first started up and should be
@@ -69,6 +71,7 @@ public class Robot extends IterativeRobot {
             driveTrain.free();
             ConstantTable.free();
             intake.free();
+            testLauncher.free();
         }
     }
     
@@ -124,8 +127,13 @@ public class Robot extends IterativeRobot {
         driveTrain.drive(leftY, rightX, leftX);
         
         boolean rightBumper = operatorXbox.getRightBumper();
-        boolean getAButton = driveXbox.getAButton();
-        Intake.intakeEnable(driveXbox.getAButton());        
+        boolean XButton = driveXbox.getXButton();
+        testLauncher.charging(XButton);
+        boolean YButton = driveXbox.getYButton();
+        testLauncher.shoot(YButton);
+        boolean BButton = driveXbox.getBButton();
+        testLauncher.resetWinch(BButton);
+                
         boolean Xbutton = operatorXbox.getXButton();       
         boolean leftBumper = operatorXbox.getLeftBumper();
         //Launcher.pullback(Xbutton);
