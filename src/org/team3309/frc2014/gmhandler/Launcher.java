@@ -22,8 +22,8 @@ public class Launcher {
       private static Victor bottomMotor;
       private static Solenoid latchPiston;
       private static Solenoid dogPiston;
-      private double[] launcherTopMotor;
-      private double[] launcherBottomMotor;
+      private double[] launcherWinchMotorBot;
+      private double[] launcherWinchMotorTop;
       private double[] launcherLatchPiston;
       private double[] launcherDogPiston;
       private static double motorSpeed;
@@ -42,14 +42,14 @@ public class Launcher {
       
       
       public void Launcher(){
-          launcherTopMotor = ((double[]) ConstantTable.getConstantTable().getValue("Launcher.top.motor"));
-          launcherBottomMotor = ((double[]) ConstantTable.getConstantTable().getValue("Launcher.bottom.motor"));
+          launcherWinchMotorBot = ((double[]) ConstantTable.getConstantTable().getValue("Launcher.winchMotorBot"));
+          launcherWinchMotorTop = ((double[]) ConstantTable.getConstantTable().getValue("Launcher.winchMotorTop"));
           launcherLatchPiston = ((double[]) ConstantTable.getConstantTable().getValue("Launcher.big.solenoid"));
           launcherDogPiston = ((double[]) ConstantTable.getConstantTable().getValue("Launcher.small.solenoid"));
           motorSpeed = ((Double) ConstantTable.getConstantTable().getValue("Launcher.motorSpeed")).doubleValue();
           
-          topMotor = new Victor ((int) launcherTopMotor[0], (int) launcherTopMotor[1]);
-          bottomMotor = new Victor ((int) launcherBottomMotor[0], (int) launcherBottomMotor[1]);
+          bottomMotor = new Victor ((int) launcherWinchMotorBot[0], (int) launcherWinchMotorBot[1]);
+          topMotor = new Victor ((int) launcherWinchMotorTop[0], (int) launcherWinchMotorTop[1]);
           latchPiston = new Solenoid((int) launcherLatchPiston[0], (int) launcherLatchPiston [1]);
           dogPiston = new Solenoid((int) launcherDogPiston[0], (int) launcherDogPiston [1]);
           
