@@ -20,50 +20,86 @@ public class Launcher {
     
       private static Victor topMotor;
       private static Victor bottomMotor;
-      private static Solenoid bigPiston;
-      private static Solenoid smallPiston;
+      private static Solenoid latchPiston;
+      private static Solenoid dogPiston;
       private double[] launcherTopMotor;
       private double[] launcherBottomMotor;
-      private double[] launcherBigPiston;
-      private double[] launcherSmallPiston;
+      private double[] launcherLatchPiston;
+      private double[] launcherDogPiston;
       private static double motorSpeed;
-      private int CatapultStatus;
+      private static int catapultStatus;
+      private static final int readyToLaunch = 1;
+      private static final int launching = 2;      
+      private static final int resettingWinch = 3;             
+      private static final int errorLaunch = 4;            
+      private static final int errorResetting = 5;           
+      private static final int disabled = 6;
+      private static final int manualOverride = 7;
+      private double startingTime;
+      private boolean catapultPos;
+      private boolean latched;
+      private int launchErrorCount;
       
       
       public void Launcher(){
           launcherTopMotor = ((double[]) ConstantTable.getConstantTable().getValue("Launcher.top.motor"));
           launcherBottomMotor = ((double[]) ConstantTable.getConstantTable().getValue("Launcher.bottom.motor"));
-          launcherBigPiston = ((double[]) ConstantTable.getConstantTable().getValue("Launcher.big.solenoid"));
-          launcherSmallPiston = ((double[]) ConstantTable.getConstantTable().getValue("Launcher.small.solenoid"));
+          launcherLatchPiston = ((double[]) ConstantTable.getConstantTable().getValue("Launcher.big.solenoid"));
+          launcherDogPiston = ((double[]) ConstantTable.getConstantTable().getValue("Launcher.small.solenoid"));
           motorSpeed = ((Double) ConstantTable.getConstantTable().getValue("Launcher.motorSpeed")).doubleValue();
           
           topMotor = new Victor ((int) launcherTopMotor[0], (int) launcherTopMotor[1]);
           bottomMotor = new Victor ((int) launcherBottomMotor[0], (int) launcherBottomMotor[1]);
-          bigPiston = new Solenoid((int) launcherBigPiston[0], (int) launcherBigPiston [1]);
-          smallPiston = new Solenoid((int) launcherSmallPiston[0], (int) launcherSmallPiston [1]);
+          latchPiston = new Solenoid((int) launcherLatchPiston[0], (int) launcherLatchPiston [1]);
+          dogPiston = new Solenoid((int) launcherDogPiston[0], (int) launcherDogPiston [1]);
+          
+          catapultStatus = readyToLaunch;
       }
       
-      private static void charging(boolean down){
-          if (down == true){
-              topMotor.set(motorSpeed);
-              bottomMotor.set(motorSpeed);
+      public void launch(boolean buttonPressed){
+          
+          //Status ready to launch
+          if (catapultStatus == readyToLaunch){
+              if (buttonPressed){
+                  catapultStatus = launching;
+                  launcherTimerStart();
+                  latchPiston.set(false);
+                  launchErrorCount = 0;
+              }
           }
-          else{
-              topMotor.set(0);
-              bottomMotor.set(0);
+
+          //Status launching
+          if (catapultStatus == launching){
+                  if (checkIfLauncherTimerDone()){
+                      if (catapultPos || latched){
+                            
+                      }
+                  }
+                  else {
+                      catapultStatus = resettingWinch;
+                      latchPiston.set(true);
+
+                  }
           }          
-      }
-      
-      private static void shoot(boolean start){
-          if (start == false){
-              bigPiston.set(false);
-          }
-          else{
-              bigPiston.set(true);
-          }
-      }
-      
+          
+          
+        }
+    
+        public void launcherTimerStart(){
+            startingTime = System.currentTimeMillis();
+        }
+    
+        public boolean checkIfLauncherTimerDone(){
+            if (System.currentTimeMillis() - startingTime >= 3000){
+                return true;
+            }
+            else{
+                return false;
+            }
+        }
 }
+
+      
 
       
       
