@@ -12,18 +12,24 @@ public class Timer {
     
     private double startTimer;
     private double millis;
+    private boolean enabled;
     
     public void setTimer(double secs){
         millis = secs * 1000;
         startTimer = System.currentTimeMillis();
+        enabled = true;
     }
     
     public boolean isExpired(){
-        if (System.currentTimeMillis() - startTimer >= millis){
+        if (enabled && System.currentTimeMillis() - startTimer >= millis){
             return true;
         }
         else {
             return false;
         }
+    }
+
+    public void disableTimer(){
+        enabled = false;
     }
 }

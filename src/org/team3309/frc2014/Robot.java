@@ -15,8 +15,6 @@ import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.command.Scheduler;
 import org.team3309.frc2014.constantmanager.ConstantTable;
 import org.team3309.frc2014.gmhandler.Intake;
-import org.team3309.frc2014.gmhandler.TestLauncher;
-import sun.launcher.resources.launcher;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -28,8 +26,7 @@ import sun.launcher.resources.launcher;
 public class Robot extends IterativeRobot {
 
     private XboxController driveXbox;
-    private XboxController operatorXbox = new XboxController(2);
-    private Compressor compressor;
+    private XboxController operatorXbox;
     private Intake intake;
     private DriveTrain driveTrain;
     private Launcher launcher;
@@ -42,19 +39,22 @@ public class Robot extends IterativeRobot {
      */
     public void robotInit() {
         driveXbox = new XboxController(1);
+        operatorXbox = new XboxController(2);
         // Initialize all subsystems
         //CommandBase.init();
         double[] pressureSwitch = ((double[]) ConstantTable.getConstantTable().getValue("Compressor.pressureswitch"));
         double[] compressorRelay = ((double[]) ConstantTable.getConstantTable().getValue("Compressor.relay"));
         
-        compressor = new Compressor((int) pressureSwitch[0], (int) pressureSwitch[1], (int) compressorRelay[0], (int) compressorRelay[1]);
+        Compressor compressor = new Compressor((int) pressureSwitch[0], (int) pressureSwitch[1], (int) compressorRelay[0], (int) compressorRelay[1]);
         compressor.start();
+        System.out.println("Robot ready");
     }
     
     public void robotEnable(){
         if (!robotInitialized){
             driveTrain = new DriveTrain();
             launcher = new Launcher();
+            intake = new Intake();
             robotInitialized = true;
             deadband = ((Double) ConstantTable.getConstantTable().getValue("DriveController.deadband")).doubleValue();
         }
@@ -65,9 +65,9 @@ public class Robot extends IterativeRobot {
         if (robotInitialized){
             robotInitialized = false;
             driveTrain.free();
-            ConstantTable.free();
             intake.free();
             launcher.free();
+            ConstantTable.free();
         }
     }
     
@@ -76,8 +76,8 @@ public class Robot extends IterativeRobot {
     }
     
     public void autonomousInit() {
-        // schedule the autonomous command (example)
-       robotEnable();
+        robotEnable();
+
     }
 
     /**
@@ -101,6 +101,9 @@ public class Robot extends IterativeRobot {
      */
     public void teleopPeriodic() {
         Scheduler.getInstance().run();
+
+        /*DRIVER BUTTONS*/
+
         //Changes drives, only when held
         //cause Michael wants it that way
         if (driveXbox.getRightBumper()){
@@ -111,8 +114,7 @@ public class Robot extends IterativeRobot {
         }
         
         driveTrain.setCoastMode(driveXbox.getLeftBumper());
-        //driver buttons
-        //Code for driving around
+
         double driverRightX = driveXbox.getRightX();
         double driverLeftX = driveXbox.getLeftX();
         double driverLeftY = driveXbox.getLeftY();
@@ -123,16 +125,32 @@ public class Robot extends IterativeRobot {
         
         driveTrain.drive(driverLeftY, driverRightX, driverLeftX);
 
-        //operator buttons
+        /*Operator Buttons*/
         
         boolean OperatorRightBumper = operatorXbox.getRightBumper();
-        launcher.launch(OperatorRightBumper);
-                
-        boolean OperatorXButton = operatorXbox.getXButton();
         boolean OperatorLeftBumper = operatorXbox.getLeftBumper();
-        
-        
-        
+        boolean OperatorBButton = operatorXbox.getBButton();
+        double OperatorLeftY = operatorXbox.getLeftY();
+
+        OperatorLeftY = applyDeadband(OperatorLeftY);
+
+        if (OperatorLeftY > 0){
+            intake.pullIn();
+        }
+        else if (OperatorLeftY < 0){
+            intake.pushOut();
+        }
+        else {
+            intake.stopMotors();
+        }
+
+        intake.shiftIntakePos(OperatorBButton);
+
+        //prevents launcher from resetting or launching when the intake is NOT extended
+        if (intake.isExtended()){
+            launcher.launch(OperatorLeftBumper);
+        }
+
     }
     
     /**
@@ -143,6 +161,8 @@ public class Robot extends IterativeRobot {
         // LiveWindow.run();
         
     }
+
+
     private double applyDeadband(double joystickValue){
         if (joystickValue >= -deadband && joystickValue <= deadband){
             joystickValue = 0;

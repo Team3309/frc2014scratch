@@ -5,80 +5,71 @@
  */
 package org.team3309.frc2014.gmhandler;
 
-import org.team3309.frc2014.*;
-
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.Victor;
 import org.team3309.frc2014.constantmanager.ConstantTable;
 import org.team3309.frc2014.timer.Timer;
+import edu.wpi.first.wpilibj.DigitalInput;
 
 /**
  *
- * @author Jon
+ * @author JKav
  */
 public class Launcher {
 
-    private static Victor topMotor;
-    private static Victor bottomMotor;
-    private static Solenoid latchPiston;
-    private static Solenoid dogPiston;
-    private double[] launcherWinchMotorBot;
-    private double[] launcherWinchMotorTop;
-    private double[] launcherLatchPiston;
-    private double[] launcherDogPiston;
-    private static double motorSpeed;
-    private static int catapultStatus;
+    private Victor winchTopMotor;
+    private Victor winchBottomMotor;
+    private Solenoid latchPiston;
+    private Solenoid dogPiston;
+    private double motorSpeed;
+    private int catapultStatus;
     private static final int readyToLaunch = 1;
     private static final int launching = 2;
     private static final int resettingWinch = 3;
     private static final int errorLaunch = 4;
     private static final int errorResetting = 5;
     private static final int disabled = 6;
-    private static final int manualOverride = 7;
     private Timer catapultTimer;
-    private Timer stopMotorTimer;
+    private Timer winchTimer;
+    private Timer dogTimer;
     private int launchErrorCount;
     private int winchErrorCount;
     private double launchTime;
     private double winchTime;
-    private _____ catapultSensor;
-    private _____ latchSensor;
+    private double dogTime;
+    private DigitalInput catapultSensor;
+    private DigitalInput latchSensor;
 
-    public void Launcher() {
-        launcherWinchMotorBot = ((double[]) ConstantTable.getConstantTable().getValue("Launcher.winchMotorBot"));
-        launcherWinchMotorTop = ((double[]) ConstantTable.getConstantTable().getValue("Launcher.winchMotorTop"));
-        launcherLatchPiston = ((double[]) ConstantTable.getConstantTable().getValue("Launcher.big.solenoid"));
-        launcherDogPiston = ((double[]) ConstantTable.getConstantTable().getValue("Launcher.small.solenoid"));
+    public Launcher() {
+        double [] launcherWinchMotorBot = ((double[]) ConstantTable.getConstantTable().getValue("Launcher.winchMotorBot"));
+        double [] launcherWinchMotorTop = ((double[]) ConstantTable.getConstantTable().getValue("Launcher.winchMotorTop"));
+        double [] launcherLatchPiston = ((double[]) ConstantTable.getConstantTable().getValue("Launcher.latchSolenoid"));
+        double [] launcherDogPiston = ((double[]) ConstantTable.getConstantTable().getValue("Launcher.dogSolenoid"));
+        double [] launcherCatapultSensor = ((double[]) ConstantTable.getConstantTable().getValue("Launcher.catapultSensor"));
+        double [] launcherLatchSensor = ((double[]) ConstantTable.getConstantTable().getValue("Launcher.latchSensor"));
         motorSpeed = ((Double) ConstantTable.getConstantTable().getValue("Launcher.motorSpeed")).doubleValue();
 
         //Times are in seconds
         launchTime = ((Double) ConstantTable.getConstantTable().getValue("Launcher.launchTime")).doubleValue();
         winchTime = ((Double) ConstantTable.getConstantTable().getValue("Launcher.winchTime")).doubleValue();
+        dogTime = ((Double) ConstantTable.getConstantTable().getValue("Launcher.dogTime")).doubleValue();
 
-        bottomMotor = new Victor((int) launcherWinchMotorBot[0], (int) launcherWinchMotorBot[1]);
-        topMotor = new Victor((int) launcherWinchMotorTop[0], (int) launcherWinchMotorTop[1]);
+        winchBottomMotor = new Victor((int) launcherWinchMotorBot[0], (int) launcherWinchMotorBot[1]);
+        winchTopMotor = new Victor((int) launcherWinchMotorTop[0], (int) launcherWinchMotorTop[1]);
         latchPiston = new Solenoid((int) launcherLatchPiston[0], (int) launcherLatchPiston[1]);
         dogPiston = new Solenoid((int) launcherDogPiston[0], (int) launcherDogPiston[1]);
+        catapultSensor = new DigitalInput((int) launcherCatapultSensor[0], (int) launcherCatapultSensor[1]);
+        latchSensor = new DigitalInput((int) launcherLatchSensor[0], (int) launcherLatchSensor[1]);
 
         catapultStatus = readyToLaunch;
     }
 
     public boolean isCatapultInPos() {
-        if (catapultSensor = true) {
-            return true;
-    }
-        else {
-            return false;
-        }
+        return catapultSensor.get();
     }
     
     public boolean isCatapultLatched() {
-        if (latchSensor = true) {
-            return true;
-        }
-        else {
-            return false;
-        }
+        return latchSensor.get();
     }
     public void launch(boolean buttonPressed) {
 
@@ -95,45 +86,45 @@ public class Launcher {
         //Status launching
         if (catapultStatus == launching) {
             if (catapultTimer.isExpired()) {
-                if ((isCatapultInPos() == true && this.isCatapultLatched() == false)
-                        || (this.isCatapultInPos() == false && this.isCatapultLatched() == true)) {
-                    catapultStatus = errorLaunch;
+                //check for good launch
+                if (!isCatapultLatched() && !isCatapultInPos()) {
+                    catapultStatus = resettingWinch;
+                    latchPiston.set(false);
+                }
+                else {
                     launchErrorCount++;
-                    if (launchErrorCount > 2) {
-                        catapultStatus = manualOverride;
+                    catapultStatus = errorLaunch;
+                    if (launchErrorCount >= 2) {
+                        catapultStatus = disabled;
                     }
                 }
-            }
-            else {
-                catapultStatus = resettingWinch;
-                latchPiston.set(false);
             }
         }
 
         //Status resetting Winch
         if (catapultStatus == resettingWinch) {
-            if (catapultTimer.isExpired() == false) {
-                if (bottomMotor.get() == motorSpeed || topMotor.get() == motorSpeed) {
-                    if (this.isCatapultInPos() && this.isCatapultLatched()) {
-                        bottomMotor.set(0);
-                        topMotor.set(0);
-                        stopMotorTimer.setTimer(winchTime);
-                        if (stopMotorTimer.isExpired()) {
+            if (!winchTimer.isExpired()) {
+                dogPiston.set(true);
+                dogTimer.setTimer(dogTime);
+                if (dogTimer.isExpired()){
+                    winchBottomMotor.set(motorSpeed);
+                    winchTopMotor.set(motorSpeed);
+                }
+                    if (isCatapultInPos() && isCatapultLatched()) {
+                        winchBottomMotor.set(0);
+                        winchTopMotor.set(0);
+                        winchTimer.setTimer(winchTime);
+                        if (winchTimer.isExpired()) {
                             dogPiston.set(false);
                             catapultStatus = readyToLaunch;
                         }
                     }
                 }
-                else {
-                    dogPiston.set(true);
-                    bottomMotor.set(motorSpeed);
-                    topMotor.set(motorSpeed);
-                }
             }
             else {
                 winchErrorCount++;
                 if (winchErrorCount > 2) {
-                    catapultStatus = manualOverride;
+                    catapultStatus = errorResetting;
                 }
             }
         }
@@ -141,7 +132,8 @@ public class Launcher {
         //Status errorLaunch
         if (catapultStatus == errorLaunch) {
             System.out.println("Error Launch");
-            catapultStatus = disabled;
+            latchPiston.set(true);
+            catapultStatus = launching;
         }
 
         //Status errorResetting
@@ -152,16 +144,18 @@ public class Launcher {
 
         //Status Disabled
         if (catapultStatus == disabled) {
-            topMotor.disable();
-            bottomMotor.disable();
+            winchTopMotor.disable();
+            winchBottomMotor.disable();
         }
 
     }
 
     public void free(){
-        bottomMotor.free();
-        topMotor.free();
+        winchBottomMotor.free();
+        winchTopMotor.free();
         dogPiston.free();
         latchPiston.free();
+        latchSensor.free();
+        catapultSensor.free();
     }
 }
