@@ -26,7 +26,8 @@ public class Intake {
     private double sideMotorSpeed;
     private Timer intakeTimer;
     private double extendTime;
-    private boolean firstTime;
+    private boolean lastPosition;
+    private boolean intakePosition;
 
     //creates intake
     public Intake(){
@@ -45,6 +46,7 @@ public class Intake {
         sideRightMotor = new Victor ((int) intakeSideRightMotor[0], (int) intakeSideRightMotor[1]);
         sideLeftMotor = new Victor ((int) intakeSideLeftMotor [0], (int) intakeSideLeftMotor[1]);
         intakePiston = new Solenoid((int) loweringPiston[0], (int) loweringPiston [1]);
+        intakeTimer = new Timer();
       
       if (intakeTopRightMotor[1] != 0){
             topRightMotor = new Victor((int) intakeTopRightMotor[0], (int) intakeTopRightMotor[1]);
@@ -53,6 +55,22 @@ public class Intake {
       if (intakeTopLeftMotor[1] != 0){
             topLeftMotor = new Victor((int) intakeTopLeftMotor[0], (int) intakeTopLeftMotor[1]);
       }
+    }
+
+    public void moveBall(double joystickValue){
+
+        if (topLeftMotor != null){
+            topLeftMotor.set(joystickValue);
+        }
+        if (topRightMotor != null){
+            topRightMotor.set(-joystickValue);
+        }
+        if (sideLeftMotor != null){
+            sideLeftMotor.set(joystickValue);
+        }
+        if (sideRightMotor != null){
+            sideRightMotor.set(-joystickValue);
+        }
     }
 
     private void setMotorSpeed(int scaleFactor){
@@ -72,6 +90,7 @@ public class Intake {
             sideRightMotor.set(-correctSideMotorSpeed);
         }
     }
+
     public void pullIn(){
         //pulls in ball
         setMotorSpeed(1);
@@ -88,20 +107,18 @@ public class Intake {
     }
 
     public void shiftIntakePos(boolean position){
-        if (position){
-            //extends Intake
-            intakePiston.set(true);
+        //detect release of intake toggle button
+        if (lastPosition && !position){
+            intakePosition = !intakePosition;
+            intakePiston.set(intakePosition);
+            if (intakePosition){
+                intakeTimer.setTimer(extendTime);
+            }
+            else {
+                intakeTimer.disableTimer();
+            }
         }
-        else {
-            //retracts Intake
-            intakePiston.set(false);
-            intakeTimer.disableTimer();
-            firstTime = false;
-        }
-        if (position && !firstTime){
-            intakeTimer.setTimer(extendTime);
-            firstTime = true;
-        }
+        lastPosition = position;
     }
     
     public boolean isExtended(){

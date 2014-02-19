@@ -9,7 +9,6 @@ import org.team3309.frc2014.drive.OctonumModule;
 import edu.wpi.first.wpilibj.Solenoid;
 import org.team3309.frc2014.constantmanager.ConstantTable;
 import org.team3309.friarlib.RobotAngleGyro;
-import java.lang.String;
 
 /**
  *
@@ -23,7 +22,6 @@ public class DriveTrain{
     private boolean noSolenoids;
     private double maxWheelSpeed;
     private double maxStrafe;
-    private double adjustedRotation;
     private boolean gyroEnabled;
     
     public DriveTrain() {
@@ -66,6 +64,7 @@ public class DriveTrain{
         //System.out.println("drive: " + String.valueOf(drive) + " rot: " + String.valueOf(rot) + " strafe: " + String.valueOf(strafe));
         double highestWheelSpeed = 1.0;
         double wheelSpeed;
+        double adjustedRotation;
         
         if (strafe <= -maxStrafe){
             strafe = -maxStrafe;

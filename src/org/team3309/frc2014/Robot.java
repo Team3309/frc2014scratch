@@ -32,6 +32,7 @@ public class Robot extends IterativeRobot {
     private Launcher launcher;
     private boolean robotInitialized;
     private double deadband;
+    private boolean constantIntakeSpeed;
 
     /**
      * This function is run when the robot is first started up and should be
@@ -57,6 +58,7 @@ public class Robot extends IterativeRobot {
             intake = new Intake();
             robotInitialized = true;
             deadband = ((Double) ConstantTable.getConstantTable().getValue("DriveController.deadband")).doubleValue();
+            constantIntakeSpeed = ((Boolean) ConstantTable.getConstantTable().getValue("Controller.constantIntakeSpeed")).booleanValue();
         }
     }
 
@@ -85,17 +87,12 @@ public class Robot extends IterativeRobot {
      */
     public void autonomousPeriodic() {
         Scheduler.getInstance().run();
-    
-        
     }
 
     public void teleopInit() {
         robotEnable();
     }
 
-    public void disabledTeleop(){
-        
-    }
     /**
      * This function is called periodically during operator control
      */
@@ -126,26 +123,33 @@ public class Robot extends IterativeRobot {
         driveTrain.drive(driverLeftY, driverRightX, driverLeftX);
 
         /*Operator Buttons*/
-        
-        boolean OperatorRightBumper = operatorXbox.getRightBumper();
+
         boolean OperatorLeftBumper = operatorXbox.getLeftBumper();
         boolean OperatorBButton = operatorXbox.getBButton();
         double OperatorLeftY = operatorXbox.getLeftY();
 
         OperatorLeftY = applyDeadband(OperatorLeftY);
 
-        if (OperatorLeftY > 0){
-            intake.pullIn();
-        }
-        else if (OperatorLeftY < 0){
-            intake.pushOut();
+        //swaps controls between constant speed or adjusted speed
+        if (!constantIntakeSpeed){
+            intake.moveBall(OperatorLeftY);
         }
         else {
-            intake.stopMotors();
+            if (OperatorLeftY < 0){
+                intake.pullIn();
+            }
+            else if (OperatorLeftY > 0){
+                intake.pushOut();
+            }
+            else {
+                intake.stopMotors();
+            }
         }
 
-        intake.shiftIntakePos(OperatorBButton);
-
+        //prevents intake from retracting when launcher is resetting
+        if (launcher.isSafeToRetractIntake()){
+            intake.shiftIntakePos(OperatorBButton);
+        }
         //prevents launcher from resetting or launching when the intake is NOT extended
         if (intake.isExtended()){
             launcher.launch(OperatorLeftBumper);

@@ -21,12 +21,7 @@ public class Timer {
     }
     
     public boolean isExpired(){
-        if (enabled && System.currentTimeMillis() - startTimer >= millis){
-            return true;
-        }
-        else {
-            return false;
-        }
+        return enabled && System.currentTimeMillis() - startTimer >= millis;
     }
 
     public void disableTimer(){
