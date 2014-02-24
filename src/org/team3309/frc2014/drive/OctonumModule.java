@@ -24,26 +24,26 @@ public class OctonumModule implements PIDOutput{
     
     private Victor driveMotor;
     private Encoder encoder;
-    private double[] multipliers;
-    private boolean isTank;
-    private double pTank;
-    private double pMecanum;
-    private double iTank;
-    private double iMecanum;
-    private double dTank;
-    private double dMecanum;
-    private double fTank;
-    private double fMecanum;
     private PIDController pidControl;
-    private boolean noEncoders;
+    private String wheelName;
+    private double[] multipliers;
+    private double totalError;
+    private double pTank;
+    private double iTank;
+    private double dTank;
+    private double fTank;
+    private double pMecanum;
+    private double iMecanum;
+    private double dMecanum;
+    private double fMecanum;
     private double pulsesPerInchTank;
     private double pulsesPerInchMecanum;
-    private String wheelName;
     private double inchesPerSecondMaxTank;
     private double inchesPerSecondMaxMecanum;
     private double wheelSpeed;
+    private boolean isTank;
+    private boolean noEncoders;
     private boolean coastMode;
-    private double totalError;
     private boolean debug;
     
     public OctonumModule(String wheelName){

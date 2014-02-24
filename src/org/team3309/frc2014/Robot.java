@@ -30,8 +30,8 @@ public class Robot extends IterativeRobot {
     private Intake intake;
     private DriveTrain driveTrain;
     private Launcher launcher;
-    private boolean robotInitialized;
     private double deadband;
+    private boolean robotInitialized;
     private boolean constantIntakeSpeed;
 
     /**
@@ -57,7 +57,7 @@ public class Robot extends IterativeRobot {
             launcher = new Launcher();
             intake = new Intake();
             robotInitialized = true;
-            deadband = ((Double) ConstantTable.getConstantTable().getValue("DriveController.deadband")).doubleValue();
+            deadband = ((Double) ConstantTable.getConstantTable().getValue("Controller.deadband")).doubleValue();
             constantIntakeSpeed = ((Boolean) ConstantTable.getConstantTable().getValue("Controller.constantIntakeSpeed")).booleanValue();
         }
     }

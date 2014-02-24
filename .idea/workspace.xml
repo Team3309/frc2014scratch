@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="5862877d-e901-4aa0-add5-2efa1bab39d8" name="Default" comment="">
+    <list default="true" id="5862877d-e901-4aa0-add5-2efa1bab39d8" name="Default" comment="&quot;In pretty good shape&quot;. Fixed launcher and pickup logic probs, code is untested due to port num errors&#10;">
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/res/Constants.txt" afterPath="$PROJECT_DIR$/res/Constants.txt" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/org/team3309/frc2014/subsystems/DriveTrain.java" afterPath="$PROJECT_DIR$/src/org/team3309/frc2014/subsystems/DriveTrain.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/org/team3309/frc2014/gmhandler/Intake.java" afterPath="$PROJECT_DIR$/src/org/team3309/frc2014/gmhandler/Intake.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/org/team3309/frc2014/gmhandler/Launcher.java" afterPath="$PROJECT_DIR$/src/org/team3309/frc2014/gmhandler/Launcher.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/org/team3309/frc2014/drive/OctonumModule.java" afterPath="$PROJECT_DIR$/src/org/team3309/frc2014/drive/OctonumModule.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/org/team3309/frc2014/Robot.java" afterPath="$PROJECT_DIR$/src/org/team3309/frc2014/Robot.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/org/team3309/frc2014/timer/Timer.java" afterPath="$PROJECT_DIR$/src/org/team3309/frc2014/timer/Timer.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/misc.xml" afterPath="$PROJECT_DIR$/.idea/misc.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/org/team3309/friarlib/RobotAngleGyro.java" afterPath="$PROJECT_DIR$/src/org/team3309/friarlib/RobotAngleGyro.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="frc2014scratch.iws" />
@@ -73,10 +73,42 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="OctonumModule.java" pinned="false" current="true" current-in-tab="true">
+      <file leaf-file-name="Launcher.java" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/org/team3309/frc2014/gmhandler/Launcher.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="80" column="25" selection-start="4284" selection-end="4284" vertical-scroll-proportion="0.0" vertical-offset="887" max-vertical-offset="4320">
+              <folding>
+                <element signature="e#0#11115#0" expanded="true" />
+                <element signature="imports" expanded="true" />
+                <element signature="e#10750#10751#0" expanded="true" />
+                <element signature="e#10792#10793#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="OctonumModule.java" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/org/team3309/frc2014/drive/OctonumModule.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="24" column="16" selection-start="641" selection-end="641" vertical-scroll-proportion="-0.23584905" vertical-offset="360" max-vertical-offset="2790">
+            <state line="22" column="16" selection-start="587" selection-end="587" vertical-scroll-proportion="0.0" vertical-offset="2141" max-vertical-offset="2790">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="RobotAngleGyro.java" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/org/team3309/friarlib/RobotAngleGyro.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="56" column="84" selection-start="2216" selection-end="2216" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="1275">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="ConstantTable.java" pinned="false" current="true" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/src/org/team3309/frc2014/constantmanager/ConstantTable.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="14" column="39" selection-start="475" selection-end="475" vertical-scroll-proportion="0.092449926" vertical-offset="0" max-vertical-offset="2070">
               <folding />
             </state>
           </provider>
@@ -85,8 +117,9 @@
       <file leaf-file-name="DriveTrain.java" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/org/team3309/frc2014/subsystems/DriveTrain.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="66" column="32" selection-start="2415" selection-end="2415" vertical-scroll-proportion="0.0" vertical-offset="787" max-vertical-offset="1830">
+            <state line="43" column="42" selection-start="1725" selection-end="1725" vertical-scroll-proportion="0.0" vertical-offset="274" max-vertical-offset="2160">
               <folding>
+                <element signature="e#0#4650#0" expanded="true" />
                 <element signature="imports" expanded="true" />
               </folding>
             </state>
@@ -96,7 +129,7 @@
       <file leaf-file-name="Robot.java" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/org/team3309/frc2014/Robot.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="79" column="34" selection-start="3284" selection-end="3284" vertical-scroll-proportion="0.0" vertical-offset="1018" max-vertical-offset="2640">
+            <state line="59" column="76" selection-start="2640" selection-end="2640" vertical-scroll-proportion="0.0" vertical-offset="262" max-vertical-offset="2640">
               <folding />
             </state>
           </provider>
@@ -105,17 +138,11 @@
       <file leaf-file-name="Intake.java" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/org/team3309/frc2014/gmhandler/Intake.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="48" column="34" selection-start="2190" selection-end="2190" vertical-scroll-proportion="0.0" vertical-offset="144" max-vertical-offset="2100">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="Timer.java" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/org/team3309/frc2014/timer/Timer.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="23" column="24" selection-start="490" selection-end="490" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="495">
-              <folding />
+            <state line="51" column="34" selection-start="2483" selection-end="2483" vertical-scroll-proportion="0.0" vertical-offset="1845" max-vertical-offset="2640">
+              <folding>
+                <element signature="e#0#5831#0" expanded="true" />
+                <element signature="imports" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -136,11 +163,13 @@
       <list>
         <option value="$PROJECT_DIR$/src/org/team3309/frc2014/drive/DriveTrain.java" />
         <option value="$PROJECT_DIR$/res/Constants.txt" />
-        <option value="$PROJECT_DIR$/src/org/team3309/frc2014/gmhandler/Intake.java" />
+        <option value="$PROJECT_DIR$/src/org/team3309/frc2014/timer/Timer.java" />
+        <option value="$PROJECT_DIR$/src/org/team3309/frc2014/drive/OctonumModule.java" />
+        <option value="$PROJECT_DIR$/src/org/team3309/frc2014/Robot.java" />
         <option value="$PROJECT_DIR$/src/org/team3309/frc2014/gmhandler/Launcher.java" />
         <option value="$PROJECT_DIR$/src/org/team3309/frc2014/subsystems/DriveTrain.java" />
-        <option value="$PROJECT_DIR$/src/org/team3309/frc2014/timer/Timer.java" />
-        <option value="$PROJECT_DIR$/src/org/team3309/frc2014/Robot.java" />
+        <option value="$PROJECT_DIR$/src/org/team3309/frc2014/gmhandler/Intake.java" />
+        <option value="$PROJECT_DIR$/src/org/team3309/friarlib/RobotAngleGyro.java" />
       </list>
     </option>
   </component>
@@ -161,7 +190,7 @@
     <ConfirmationsSetting value="0" id="Remove" />
   </component>
   <component name="ProjectReloadState">
-    <option name="STATE" value="2" />
+    <option name="STATE" value="0" />
   </component>
   <component name="ProjectView">
     <navigator currentView="ProjectPane" proportions="" version="1" splitterProportion="0.5">
@@ -213,6 +242,10 @@
             </PATH_ELEMENT>
             <PATH_ELEMENT>
               <option name="myItemId" value="team3309" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="friarlib" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
@@ -382,10 +415,10 @@
     <property name="MemberChooser.showClasses" value="true" />
     <property name="MemberChooser.copyJavadoc" value="false" />
     <property name="FullScreen" value="false" />
-    <property name="last_opened_file_path" value="$USER_HOME$/sunspotfrcsdk/lib/wpilibj.jar!/" />
+    <property name="last_opened_file_path" value="$USER_HOME$/sunspotfrcsdk/lib/squawk.jar!/" />
     <property name="Repository.Attach.JavaDocs" value="false" />
     <property name="Repository.Attach.Sources" value="false" />
-    <property name="project.structure.last.edited" value="Project" />
+    <property name="project.structure.last.edited" value="Libraries" />
     <property name="project.structure.proportion" value="0.15" />
     <property name="project.structure.side.proportion" value="0.2" />
     <property name="options.lastSelected" value="project.propVCSSupport.Mappings" />
@@ -446,19 +479,6 @@
       <option name="PORT" value="5005" />
       <method />
     </configuration>
-    <configuration default="true" type="Applet" factoryName="Applet">
-      <module name="" />
-      <option name="MAIN_CLASS_NAME" />
-      <option name="HTML_FILE_NAME" />
-      <option name="HTML_USED" value="false" />
-      <option name="WIDTH" value="400" />
-      <option name="HEIGHT" value="300" />
-      <option name="POLICY_FILE" value="$APPLICATION_HOME_DIR$/bin/appletviewer.policy" />
-      <option name="VM_PARAMETERS" />
-      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
-      <option name="ALTERNATIVE_JRE_PATH" />
-      <method />
-    </configuration>
     <configuration default="true" type="TestNG" factoryName="TestNG">
       <module name="" />
       <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
@@ -484,6 +504,19 @@
       <envs />
       <properties />
       <listeners />
+      <method />
+    </configuration>
+    <configuration default="true" type="Applet" factoryName="Applet">
+      <module name="" />
+      <option name="MAIN_CLASS_NAME" />
+      <option name="HTML_FILE_NAME" />
+      <option name="HTML_USED" value="false" />
+      <option name="WIDTH" value="400" />
+      <option name="HEIGHT" value="300" />
+      <option name="POLICY_FILE" value="$APPLICATION_HOME_DIR$/bin/appletviewer.policy" />
+      <option name="VM_PARAMETERS" />
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
+      <option name="ALTERNATIVE_JRE_PATH" />
       <method />
     </configuration>
     <configuration default="true" type="Application" factoryName="Application">
@@ -653,7 +686,11 @@
       <created>1392766618235</created>
       <updated>1392766618235</updated>
     </task>
-    <option name="localTasksCounter" value="22" />
+    <task id="LOCAL-00022" summary="&quot;In pretty good shape&quot;. Fixed launcher and pickup logic probs, code is untested due to port num errors">
+      <created>1392783396734</created>
+      <updated>1392783396734</updated>
+    </task>
+    <option name="localTasksCounter" value="23" />
     <servers />
   </component>
   <component name="ToolWindowManager">
@@ -669,20 +706,20 @@
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
-      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32988167" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Version Control" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.0" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="SLIDING" type="SLIDING" visible="false" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Application Servers" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.2490392" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.12759416" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32988167" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
-      <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
+      <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
     </layout>
   </component>
   <component name="Vcs.Log.UiProperties">
@@ -717,7 +754,8 @@
     <MESSAGE value="This code DOES NOT WORK, needs sensors, otherwise launcher code" />
     <MESSAGE value="This code DOES NOT WORK, will work tomorrow with sensors" />
     <MESSAGE value="Code from yesterday, launcher logic almost done. Should be soon." />
-    <option name="LAST_COMMIT_MESSAGE" value="Code from yesterday, launcher logic almost done. Should be soon." />
+    <MESSAGE value="&quot;In pretty good shape&quot;. Fixed launcher and pickup logic probs, code is untested due to port num errors" />
+    <option name="LAST_COMMIT_MESSAGE" value="&quot;In pretty good shape&quot;. Fixed launcher and pickup logic probs, code is untested due to port num errors" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager />
@@ -725,10 +763,96 @@
   <component name="editorHistoryManager">
     <entry file="file://$PROJECT_DIR$/src/org/team3309/frc2014/gmhandler/Launcher.java">
       <provider selected="true" editor-type-id="text-editor">
+        <state line="108" column="18" selection-start="4860" selection-end="4860" vertical-scroll-proportion="0.0" vertical-offset="1620" max-vertical-offset="3855">
+          <folding>
+            <element signature="e#0#11115#0" expanded="true" />
+            <element signature="imports" expanded="true" />
+            <element signature="e#10750#10751#0" expanded="true" />
+            <element signature="e#10792#10793#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/org/team3309/frc2014/drive/OctonumModule.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="22" column="16" selection-start="587" selection-end="587" vertical-scroll-proportion="0.0" vertical-offset="330" max-vertical-offset="2940">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/org/team3309/friarlib/RobotAngleGyro.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="15" column="13" selection-start="350" selection-end="350" vertical-scroll-proportion="0.0" vertical-offset="225" max-vertical-offset="1455">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/org/team3309/frc2014/constantmanager/ConstantTable.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="14" column="39" selection-start="475" selection-end="475" vertical-scroll-proportion="0.0" vertical-offset="210" max-vertical-offset="2220">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/org/team3309/frc2014/subsystems/DriveTrain.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="24" column="29" selection-start="734" selection-end="734" vertical-scroll-proportion="0.0" vertical-offset="360" max-vertical-offset="1890">
+          <folding>
+            <element signature="e#0#4650#0" expanded="true" />
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/org/team3309/frc2014/Robot.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="127" column="50" selection-start="4572" selection-end="4572" vertical-scroll-proportion="0.0" vertical-offset="1905" max-vertical-offset="2820">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/org/team3309/frc2014/gmhandler/Intake.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="108" column="50" selection-start="3899" selection-end="3899" vertical-scroll-proportion="0.0" vertical-offset="1620" max-vertical-offset="2100">
+          <folding>
+            <element signature="e#0#5831#0" expanded="true" />
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/org/team3309/frc2014/constantmanager/ConstantTable.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="12" column="24" selection-start="395" selection-end="395" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="2220">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/org/team3309/frc2014/gmhandler/Intake.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="26" column="34" selection-start="731" selection-end="731" vertical-scroll-proportion="0.0" vertical-offset="390" max-vertical-offset="2100">
+          <folding>
+            <element signature="e#0#5831#0" expanded="true" />
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/org/team3309/frc2014/constantmanager/ConstantTable.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="11" column="27" selection-start="370" selection-end="370" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="2160">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/org/team3309/frc2014/gmhandler/Launcher.java">
+      <provider selected="true" editor-type-id="text-editor">
         <state line="51" column="49" selection-start="2064" selection-end="2064" vertical-scroll-proportion="0.0" vertical-offset="120" max-vertical-offset="2955">
           <folding>
-            <element signature="e#0#7225#0" expanded="true" />
+            <element signature="e#0#11115#0" expanded="true" />
             <element signature="imports" expanded="true" />
+            <element signature="e#10750#10751#0" expanded="true" />
+            <element signature="e#10792#10793#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -744,6 +868,7 @@
       <provider selected="true" editor-type-id="text-editor">
         <state line="23" column="33" selection-start="696" selection-end="696" vertical-scroll-proportion="0.0" vertical-offset="345" max-vertical-offset="1905">
           <folding>
+            <element signature="e#0#4650#0" expanded="true" />
             <element signature="imports" expanded="true" />
           </folding>
         </state>
@@ -759,7 +884,10 @@
     <entry file="file://$PROJECT_DIR$/src/org/team3309/frc2014/gmhandler/Intake.java">
       <provider selected="true" editor-type-id="text-editor">
         <state line="48" column="34" selection-start="2190" selection-end="2190" vertical-scroll-proportion="0.0" vertical-offset="249" max-vertical-offset="2205">
-          <folding />
+          <folding>
+            <element signature="e#0#5831#0" expanded="true" />
+            <element signature="imports" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
@@ -774,8 +902,10 @@
       <provider selected="true" editor-type-id="text-editor">
         <state line="108" column="16" selection-start="4544" selection-end="4544" vertical-scroll-proportion="0.0" vertical-offset="1430" max-vertical-offset="2505">
           <folding>
-            <element signature="e#0#7225#0" expanded="true" />
+            <element signature="e#0#11115#0" expanded="true" />
             <element signature="imports" expanded="true" />
+            <element signature="e#10750#10751#0" expanded="true" />
+            <element signature="e#10792#10793#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -791,6 +921,7 @@
       <provider selected="true" editor-type-id="text-editor">
         <state line="117" column="37" selection-start="3821" selection-end="3821" vertical-scroll-proportion="0.0" vertical-offset="1755" max-vertical-offset="1905">
           <folding>
+            <element signature="e#0#4650#0" expanded="true" />
             <element signature="imports" expanded="true" />
           </folding>
         </state>
@@ -806,7 +937,10 @@
     <entry file="file://$PROJECT_DIR$/src/org/team3309/frc2014/gmhandler/Intake.java">
       <provider selected="true" editor-type-id="text-editor">
         <state line="101" column="45" selection-start="3693" selection-end="3693" vertical-scroll-proportion="0.0" vertical-offset="981" max-vertical-offset="1950">
-          <folding />
+          <folding>
+            <element signature="e#0#5831#0" expanded="true" />
+            <element signature="imports" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
@@ -821,8 +955,10 @@
       <provider selected="true" editor-type-id="text-editor">
         <state line="9" column="12" selection-start="270" selection-end="270" vertical-scroll-proportion="0.0" vertical-offset="135" max-vertical-offset="2265">
           <folding>
-            <element signature="e#0#7225#0" expanded="true" />
+            <element signature="e#0#11115#0" expanded="true" />
             <element signature="imports" expanded="true" />
+            <element signature="e#10750#10751#0" expanded="true" />
+            <element signature="e#10792#10793#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -831,8 +967,10 @@
       <provider selected="true" editor-type-id="text-editor">
         <state line="12" column="3" selection-start="406" selection-end="406" vertical-scroll-proportion="0.0" vertical-offset="180" max-vertical-offset="2235">
           <folding>
-            <element signature="e#0#7225#0" expanded="true" />
+            <element signature="e#0#11115#0" expanded="true" />
             <element signature="imports" expanded="true" />
+            <element signature="e#10750#10751#0" expanded="true" />
+            <element signature="e#10792#10793#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -841,8 +979,10 @@
       <provider selected="true" editor-type-id="text-editor">
         <state line="12" column="3" selection-start="406" selection-end="406" vertical-scroll-proportion="0.0" vertical-offset="180" max-vertical-offset="2250">
           <folding>
-            <element signature="e#0#7225#0" expanded="true" />
+            <element signature="e#0#11115#0" expanded="true" />
             <element signature="imports" expanded="true" />
+            <element signature="e#10750#10751#0" expanded="true" />
+            <element signature="e#10792#10793#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -851,8 +991,10 @@
       <provider selected="true" editor-type-id="text-editor">
         <state line="12" column="3" selection-start="406" selection-end="406" vertical-scroll-proportion="0.0" vertical-offset="180" max-vertical-offset="2250">
           <folding>
-            <element signature="e#0#7225#0" expanded="true" />
+            <element signature="e#0#11115#0" expanded="true" />
             <element signature="imports" expanded="true" />
+            <element signature="e#10750#10751#0" expanded="true" />
+            <element signature="e#10792#10793#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -894,16 +1036,12 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/org/team3309/friarlib/XboxController.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="85" column="0" selection-start="3269" selection-end="3269" vertical-scroll-proportion="0.9521531" vertical-offset="348" max-vertical-offset="2955">
-          <folding />
-        </state>
+        <state line="85" column="0" selection-start="3269" selection-end="3269" vertical-scroll-proportion="0.9521531" vertical-offset="348" max-vertical-offset="2955" />
       </provider>
     </entry>
     <entry file="jar://$USER_HOME$/sunspotfrcsdk/lib/wpilibj.jar!/edu/wpi/first/wpilibj/Victor.class">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="6" column="99" selection-start="250" selection-end="250" vertical-scroll-proportion="-3.0" vertical-offset="0" max-vertical-offset="420">
-          <folding />
-        </state>
+        <state line="6" column="99" selection-start="250" selection-end="250" vertical-scroll-proportion="-3.0" vertical-offset="0" max-vertical-offset="420" />
       </provider>
     </entry>
     <entry file="jar://$USER_HOME$/sunspotfrcsdk/lib/wpilibj.jar!/edu/wpi/first/wpilibj/SpeedController.class">
@@ -911,56 +1049,81 @@
         <state line="13" column="19" selection-start="322" selection-end="322" vertical-scroll-proportion="-7.2" vertical-offset="0" max-vertical-offset="285" />
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/org/team3309/frc2014/gmhandler/Launcher.java">
+    <entry file="jar://$USER_HOME$/sunspotfrcsdk/lib/wpilibj.jar!/edu/wpi/first/wpilibj/IterativeRobot.class">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="142" column="0" selection-start="5901" selection-end="5901" vertical-scroll-proportion="0.0" vertical-offset="328" max-vertical-offset="2925">
-          <folding>
-            <element signature="e#0#7225#0" expanded="true" />
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/org/team3309/frc2014/gmhandler/Intake.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="48" column="34" selection-start="2190" selection-end="2190" vertical-scroll-proportion="0.0" vertical-offset="249" max-vertical-offset="2205">
-          <folding />
-        </state>
+        <state line="6" column="13" selection-start="164" selection-end="164" vertical-scroll-proportion="-0.021594685" vertical-offset="88" max-vertical-offset="690" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/org/team3309/frc2014/timer/Timer.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="23" column="24" selection-start="490" selection-end="490" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="495">
+        <state line="4" column="28" selection-start="128" selection-end="128" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="495">
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="jar://$USER_HOME$/sunspotfrcsdk/lib/wpilibj.jar!/edu/wpi/first/wpilibj/IterativeRobot.class">
+    <entry file="jar://$USER_HOME$/sunspotfrcsdk/lib/wpilibj.jar!/edu/wpi/first/wpilibj/Solenoid.class">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="6" column="13" selection-start="164" selection-end="164" vertical-scroll-proportion="-0.021594685" vertical-offset="88" max-vertical-offset="690">
+        <state line="13" column="25" selection-start="535" selection-end="535" vertical-scroll-proportion="0.29900333" vertical-offset="0" max-vertical-offset="602">
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/org/team3309/frc2014/Robot.java">
+    <entry file="file://$PROJECT_DIR$/src/org/team3309/frc2014/gmhandler/Launcher.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="79" column="34" selection-start="3284" selection-end="3284" vertical-scroll-proportion="0.0" vertical-offset="1018" max-vertical-offset="2640">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/org/team3309/frc2014/subsystems/DriveTrain.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="66" column="32" selection-start="2415" selection-end="2415" vertical-scroll-proportion="0.0" vertical-offset="787" max-vertical-offset="1830">
+        <state line="80" column="25" selection-start="4284" selection-end="4284" vertical-scroll-proportion="0.0" vertical-offset="887" max-vertical-offset="4320">
           <folding>
+            <element signature="e#0#11115#0" expanded="true" />
             <element signature="imports" expanded="true" />
+            <element signature="e#10750#10751#0" expanded="true" />
+            <element signature="e#10792#10793#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/org/team3309/frc2014/drive/OctonumModule.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="24" column="16" selection-start="641" selection-end="641" vertical-scroll-proportion="-0.23584905" vertical-offset="360" max-vertical-offset="2790">
+        <state line="22" column="16" selection-start="587" selection-end="587" vertical-scroll-proportion="0.0" vertical-offset="2154" max-vertical-offset="2790">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/org/team3309/frc2014/gmhandler/Intake.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="51" column="34" selection-start="2483" selection-end="2483" vertical-scroll-proportion="0.0" vertical-offset="1845" max-vertical-offset="2640">
+          <folding>
+            <element signature="e#0#5831#0" expanded="true" />
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/org/team3309/frc2014/Robot.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="59" column="76" selection-start="2640" selection-end="2640" vertical-scroll-proportion="0.0" vertical-offset="262" max-vertical-offset="2640">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/org/team3309/frc2014/subsystems/DriveTrain.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="43" column="42" selection-start="1725" selection-end="1725" vertical-scroll-proportion="0.0" vertical-offset="274" max-vertical-offset="2160">
+          <folding>
+            <element signature="e#0#4650#0" expanded="true" />
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/org/team3309/friarlib/RobotAngleGyro.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="56" column="84" selection-start="2216" selection-end="2216" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="1275">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/org/team3309/frc2014/constantmanager/ConstantTable.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="14" column="39" selection-start="475" selection-end="475" vertical-scroll-proportion="0.092449926" vertical-offset="0" max-vertical-offset="2070">
           <folding />
         </state>
       </provider>

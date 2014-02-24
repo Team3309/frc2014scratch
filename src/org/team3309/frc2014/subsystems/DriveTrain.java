@@ -16,24 +16,33 @@ import org.team3309.friarlib.RobotAngleGyro;
  */
 public class DriveTrain{
     
-    private Solenoid modePiston;   
+    private Solenoid modePiston; 
+    private Solenoid reverseModePiston;
     private OctonumModule[] driveTrainWheels;
     private RobotAngleGyro robotAngleGyro;
     private boolean noSolenoids;
+    private boolean gyroEnabled;
+    private boolean practiceBot;
     private double maxWheelSpeed;
     private double maxStrafe;
-    private boolean gyroEnabled;
     
     public DriveTrain() {
         
-        double[] solenoidArray = ((double[]) ConstantTable.getConstantTable().getValue("DriveTrain.solenoid"));
-        if (solenoidArray[1] == 0){
+        double[] driveModePiston = ((double[]) ConstantTable.getConstantTable().getValue("DriveTrain.solenoid"));
+        double[] reverseDriveModePiston = ((double[]) ConstantTable.getConstantTable().getValue("Drivetrain.reverseSolenoid"));
+        practiceBot = ((Boolean) ConstantTable.getConstantTable().getValue("Robot.practiceBot")).booleanValue();
+        
+        if (driveModePiston[1] == 0){
             noSolenoids = true;
         }
         maxWheelSpeed = ((Double) ConstantTable.getConstantTable().getValue("DriveTrain.maxWheelSpeed")).doubleValue();
         
         if (!noSolenoids){
-            modePiston = new Solenoid((int) solenoidArray[0], (int) solenoidArray[1]);
+            modePiston = new Solenoid((int) driveModePiston[0], (int) driveModePiston[1]);
+            if (practiceBot){
+                reverseModePiston = new Solenoid((int) reverseDriveModePiston[0], (int) reverseDriveModePiston[1]);
+                reverseModePiston.set(true);
+            }
         }
         
         driveTrainWheels = new OctonumModule[4];
@@ -53,6 +62,9 @@ public class DriveTrain{
 
     public void free(){
         modePiston.free();
+        if (practiceBot){
+            reverseModePiston.free();
+        }
         robotAngleGyro.free();
         for (int i = 0; i < 4; i++){
             driveTrainWheels[i].free();                       
@@ -97,6 +109,9 @@ public class DriveTrain{
     
     public void enableTank(){
         if (!noSolenoids){
+            if (practiceBot){
+                reverseModePiston.set(false);
+            }
             modePiston.set(true);
             for (int i = 0; i < 4; i++) {
                 driveTrainWheels[i].enableTank();
@@ -107,6 +122,9 @@ public class DriveTrain{
     public void enableMecanum(){
         if (!noSolenoids){
             modePiston.set(false);
+            if (practiceBot){
+                reverseModePiston.set(true);
+            }
         }
         for (int i = 0; i < 4; i++) {
             driveTrainWheels[i].enableMecanum();

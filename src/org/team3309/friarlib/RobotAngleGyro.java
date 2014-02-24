@@ -18,10 +18,6 @@ public class RobotAngleGyro implements PIDOutput{
     private PIDController gyroPIDcontroller;
     private long lastUpdate;
     private double maxRotation;
-    private double pGyro;
-    private double iGyro;
-    private double dGyro;
-    private double[] ports;
     private double desiredPosition;
     private double desiredVelocity;
     private double pidOutput;
@@ -29,20 +25,18 @@ public class RobotAngleGyro implements PIDOutput{
     private double lastDebugMillis;
 
     public RobotAngleGyro() {
-        ports = ((double[]) ConstantTable.getConstantTable().getValue("Gyro.ports"));
-        gyro = new Gyro((int) ports[0], (int) ports[1]);
-        gyro.reset();
-        
-        pGyro = ((Double) ConstantTable.getConstantTable().getValue("Gyro.pGyro")).doubleValue();
-        iGyro = ((Double) ConstantTable.getConstantTable().getValue("Gyro.iGyro")).doubleValue();
-        dGyro = ((Double) ConstantTable.getConstantTable().getValue("Gyro.dGyro")).doubleValue();
-        
-        gyroPIDcontroller = new PIDController(pGyro, iGyro, dGyro, gyro, this);
-        gyroPIDcontroller.enable();
-        
+        double[] ports = ((double[]) ConstantTable.getConstantTable().getValue("Gyro.ports"));
+        double pGyro = ((Double) ConstantTable.getConstantTable().getValue("Gyro.pGyro")).doubleValue();
+        double iGyro = ((Double) ConstantTable.getConstantTable().getValue("Gyro.iGyro")).doubleValue();
+        double dGyro = ((Double) ConstantTable.getConstantTable().getValue("Gyro.dGyro")).doubleValue();
+        debug = ((Boolean) ConstantTable.getConstantTable().getValue("Gyro.debug")).booleanValue();
         maxRotation = ((Double)ConstantTable.getConstantTable().getValue("Gyro.maxRotation")).doubleValue();
         
-        debug = ((Boolean) ConstantTable.getConstantTable().getValue("Gyro.debug")).booleanValue();
+        gyroPIDcontroller = new PIDController(pGyro, iGyro, dGyro, gyro, this);
+        gyro = new Gyro((int) ports[0], (int) ports[1]);
+
+        gyro.reset();
+        gyroPIDcontroller.enable();
     }
     
     public double getDesiredRotation(double joystickRotation){

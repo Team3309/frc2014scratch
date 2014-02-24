@@ -18,35 +18,43 @@ import org.team3309.frc2014.timer.Timer;
 public class Intake {
     
     private Solenoid intakePiston;
+    private Solenoid reverseIntakePiston;
     private Victor topRightMotor;
     private Victor topLeftMotor;
     private Victor sideLeftMotor;
     private Victor sideRightMotor;
+    private Timer intakeTimer;
     private double topMotorSpeed;
     private double sideMotorSpeed;
-    private Timer intakeTimer;
     private double extendTime;
     private boolean lastPosition;
     private boolean intakePosition;
+    private boolean practiceBot;
+    private boolean debug;
 
     //creates intake
     public Intake(){
-
-        System.out.println("Intake constructed");
 
         double[] intakeTopLeftMotor = ((double[]) ConstantTable.getConstantTable().getValue("Intake.topleft.motor"));
         double[] intakeTopRightMotor = ((double[]) ConstantTable.getConstantTable().getValue("Intake.topright.motor"));
         double[] intakeSideLeftMotor = ((double[]) ConstantTable.getConstantTable().getValue("Intake.sideleft.motor"));
         double[] intakeSideRightMotor = ((double[]) ConstantTable.getConstantTable().getValue("Intake.sideright.motor"));
-        double[] loweringPiston = ((double[]) ConstantTable.getConstantTable().getValue("Intake.Solenoid"));
+        double[] loweringPiston = ((double[]) ConstantTable.getConstantTable().getValue("Intake.solenoid"));
+        double[] raisingPiston = ((double[]) ConstantTable.getConstantTable().getValue("Intake.reverseSolenoid"));
         extendTime = ((Double) ConstantTable.getConstantTable().getValue("Intake.extendTime")).doubleValue();
         topMotorSpeed = ((Double) ConstantTable.getConstantTable().getValue("Intake.topMotorSpeed")).doubleValue();
         sideMotorSpeed = ((Double) ConstantTable.getConstantTable().getValue("Intake.sideMotorSpeed")).doubleValue();
+        practiceBot = ((Boolean) ConstantTable.getConstantTable().getValue("Robot.practiceBot")).booleanValue();
+        debug = ((Boolean) ConstantTable.getConstantTable().getValue("Intake.debug")).booleanValue();
         
         sideRightMotor = new Victor ((int) intakeSideRightMotor[0], (int) intakeSideRightMotor[1]);
         sideLeftMotor = new Victor ((int) intakeSideLeftMotor [0], (int) intakeSideLeftMotor[1]);
-        intakePiston = new Solenoid((int) loweringPiston[0], (int) loweringPiston [1]);
         intakeTimer = new Timer();
+        intakePiston = new Solenoid((int) loweringPiston[0], (int) loweringPiston [1]);
+        if (practiceBot){
+            reverseIntakePiston = new Solenoid((int) raisingPiston[0], (int) raisingPiston[1]);
+            reverseIntakePiston.set(true);
+        }
       
       if (intakeTopRightMotor[1] != 0){
             topRightMotor = new Victor((int) intakeTopRightMotor[0], (int) intakeTopRightMotor[1]);
@@ -66,10 +74,10 @@ public class Intake {
             topRightMotor.set(-joystickValue);
         }
         if (sideLeftMotor != null){
-            sideLeftMotor.set(joystickValue);
+            sideLeftMotor.set(-joystickValue);
         }
         if (sideRightMotor != null){
-            sideRightMotor.set(-joystickValue);
+            sideRightMotor.set(joystickValue);
         }
     }
 
@@ -108,9 +116,27 @@ public class Intake {
 
     public void shiftIntakePos(boolean position){
         //detect release of intake toggle button
+        if (debug){
+            System.out.println("Shift intake called");
+        }
         if (lastPosition && !position){
+            if (debug){
+                System.out.println("shifting intake");
+            }
             intakePosition = !intakePosition;
-            intakePiston.set(intakePosition);
+            if (!intakePosition){
+                intakePiston.set(false);
+                if (practiceBot){
+                    reverseIntakePiston.set(true);
+                }
+            }
+            else {
+                if (practiceBot){
+                    reverseIntakePiston.set(false);
+                }
+                intakePiston.set(true);
+            }
+
             if (intakePosition){
                 intakeTimer.setTimer(extendTime);
             }
@@ -128,6 +154,9 @@ public class Intake {
     //resets motors and solenoids so that the constants can be reloaded
     public void free(){
         intakePiston.free();
+        if (practiceBot){
+            reverseIntakePiston.free();
+        }
         if (topRightMotor != null){
             topRightMotor.free();
         }
