@@ -31,7 +31,7 @@ public class Intake {
     private boolean lastPosition;
     private boolean intakePosition;
     private boolean debug;
-    private boolean doubleintakeSolenoid;
+    private boolean doubleIntakeSolenoid;
 
     //creates intake
     public Intake(){
@@ -54,7 +54,7 @@ public class Intake {
         }
         else {
             intakePiston = new DoubleSolenoid((int) intakePistonArray[0], (int) intakePistonArray[1], (int) intakePistonArray[2]);
-            doubleintakeSolenoid = true;
+            doubleIntakeSolenoid = true;
         }
         if (intakeTopRightMotor[1] != 0){
             topRightMotor = new Victor((int) intakeTopRightMotor[0], (int) intakeTopRightMotor[1]);
@@ -126,14 +126,14 @@ public class Intake {
             intakePosition = !intakePosition;
             if (!intakePosition){
                 //retract intake
-                if (doubleintakeSolenoid){
+                if (doubleIntakeSolenoid){
                     ((DoubleSolenoid) intakePiston).set(DoubleSolenoid.Value.kReverse);
                 }
                 else ((Solenoid) intakePiston).set(false);
             }
             else {
                 //extends intake
-                if (doubleintakeSolenoid){
+                if (doubleIntakeSolenoid){
                     ((DoubleSolenoid) intakePiston).set(DoubleSolenoid.Value.kForward);
                 }
                 else ((Solenoid) intakePiston).set(true);

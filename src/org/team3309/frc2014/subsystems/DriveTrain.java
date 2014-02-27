@@ -23,21 +23,19 @@ public class DriveTrain{
     private RobotAngleGyro robotAngleGyro;
     private boolean noSolenoids;
     private boolean gyroEnabled;
-    private boolean practiceBot;
     private double maxWheelSpeed;
     private double maxStrafe;
-    private boolean toggled;
     private boolean doubleSolenoid;
-    
+
     public DriveTrain() {
-        
+
         double[] driveModePiston = ((double[]) ConstantTable.getConstantTable().getValue("DriveTrain.solenoid"));
 
         if (driveModePiston[1] == 0){
             noSolenoids = true;
         }
         maxWheelSpeed = ((Double) ConstantTable.getConstantTable().getValue("DriveTrain.maxWheelSpeed")).doubleValue();
-        
+
         if (!noSolenoids){
             if (driveModePiston[2] == 0){
                 modePiston = new Solenoid((int) driveModePiston[0], (int) driveModePiston[1]);
@@ -47,19 +45,19 @@ public class DriveTrain{
                 doubleSolenoid = true;
             }
         }
-        
+
         driveTrainWheels = new OctonumModule[4];
         driveTrainWheels[0] = new OctonumModule("Octonum.topleft", true);
         driveTrainWheels[1] = new OctonumModule("Octonum.topright", true);
         driveTrainWheels[2] = new OctonumModule("Octonum.bottomleft", false);
         driveTrainWheels[3] = new OctonumModule("Octonum.bottomright", false);
-        
+
         robotAngleGyro = new RobotAngleGyro();
-  
+
         maxStrafe = ((Double) ConstantTable.getConstantTable().getValue("DriveTrain.maxStrafe")).doubleValue();
-        
+
         gyroEnabled = ((Boolean) ConstantTable.getConstantTable().getValue("Gyro.enabled")).booleanValue();
-        
+
         enableMecanum();
     }
 
@@ -67,17 +65,17 @@ public class DriveTrain{
         modePiston.free();
         robotAngleGyro.free();
         for (int i = 0; i < 4; i++){
-            driveTrainWheels[i].free();                       
+            driveTrainWheels[i].free();
         }
-        
+
     }
-    
+
     public void drive(double drive, double rot, double strafe) {
         //System.out.println("drive: " + String.valueOf(drive) + " rot: " + String.valueOf(rot) + " strafe: " + String.valueOf(strafe));
         double highestWheelSpeed = 1.0;
         double wheelSpeed;
         double adjustedRotation;
-        
+
         if (strafe <= -maxStrafe){
             strafe = -maxStrafe;
         }
@@ -85,21 +83,21 @@ public class DriveTrain{
             strafe = maxStrafe;
         }
         if (gyroEnabled){
-            adjustedRotation = robotAngleGyro.getDesiredRotation(rot);            
+            adjustedRotation = robotAngleGyro.getDesiredRotation(rot);
         }
         else {
             adjustedRotation = rot;
         }
 
-        
+
         for (int i = 0; i < 4; i++) {
             wheelSpeed = driveTrainWheels[i].setRawSpeed(drive, adjustedRotation, strafe);
             if (wheelSpeed > highestWheelSpeed){
                 highestWheelSpeed = wheelSpeed;
-            }           
+            }
         }
         for (int i = 0; i < 4; i++) {
-            driveTrainWheels[i].setNormalizationFactor(1 / highestWheelSpeed * maxWheelSpeed);                                
+            driveTrainWheels[i].setNormalizationFactor(1 / highestWheelSpeed * maxWheelSpeed);
         }
     }
 
@@ -110,11 +108,11 @@ public class DriveTrain{
         }
         return false;
     }*/
-    
+
         /**
      * enable TankMode by enabling Piston
      */
-    
+
     public void enableTank(){
         if (!noSolenoids){
             if (doubleSolenoid){
@@ -128,7 +126,7 @@ public class DriveTrain{
             }
         }
     }
-    
+
     public void enableMecanum(){
         if (!noSolenoids){
             if (doubleSolenoid){
@@ -148,7 +146,7 @@ public class DriveTrain{
             driveTrainWheels[i].setCoastMode(coast);
         }
     }
-    
+
     public void disablePIDControl(){
         for (int i = 0; i < 4; i++) {
             driveTrainWheels[i].disablePIDController();
@@ -156,13 +154,12 @@ public class DriveTrain{
     }
 
     public void toggleGyroOnOff(){
-        if (toggled){
+        if (!gyroEnabled){
             robotAngleGyro.reset();
             gyroEnabled = true;
         }
-        else{
+        else {
             gyroEnabled = false;
         }
-        toggled = !toggled;
     }
 }

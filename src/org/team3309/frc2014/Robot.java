@@ -34,7 +34,7 @@ public class Robot extends IterativeRobot {
     private boolean robotInitialized;
     private boolean constantIntakeSpeed;
     private boolean breaking = false;
-    private boolean pressed;
+    private boolean pastYButton;
 
     /**
      * This function is run when the robot is first started up and should be
@@ -129,10 +129,10 @@ public class Robot extends IterativeRobot {
         }
 
         //checks to see if button was released
-        if (!driveXbox.getYButton() && pressed){
+        if (!driveXbox.getYButton() && pastYButton){
             driveTrain.toggleGyroOnOff();
         }
-        pressed = driveXbox.getYButton();
+        pastYButton = driveXbox.getYButton();
 
         //breaking = driveTrain.breaking(driverRightTrigger);
         if (!breaking){
