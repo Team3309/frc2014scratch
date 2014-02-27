@@ -33,7 +33,7 @@ public class Robot extends IterativeRobot {
     private double deadband;
     private boolean robotInitialized;
     private boolean constantIntakeSpeed;
-    private boolean breaking;
+    private boolean breaking = false;
     private boolean pressed;
 
     /**
@@ -117,7 +117,7 @@ public class Robot extends IterativeRobot {
         double driverRightX = driveXbox.getRightX();
         double driverLeftX = driveXbox.getLeftX();
         double driverLeftY = driveXbox.getLeftY();
-        double driverRightTrigger = driveXbox.getRightTrigger();
+        //double driverRightTrigger = driveXbox.getRightTrigger();
         boolean driverXButton = driveXbox.getXButton();
         
         driverRightX = applyDeadband(driverRightX);
@@ -167,11 +167,8 @@ public class Robot extends IterativeRobot {
         if (launcher.isSafeToRetractIntake()){
             intake.shiftIntakePos(OperatorBButton);
         }
-        //prevents launcher from resetting or launching when the intake is NOT extended
-        if (intake.isExtended()){
-            launcher.launch(OperatorLeftBumper);
-        }
 
+        launcher.stateMachine(OperatorLeftBumper, intake.isExtended());
     }
     
     /**

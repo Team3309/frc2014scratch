@@ -5,6 +5,8 @@
  */
 
 package org.team3309.frc2014.subsystems;
+import edu.wpi.first.wpilibj.DoubleSolenoid;
+import edu.wpi.first.wpilibj.SolenoidBase;
 import org.team3309.frc2014.drive.OctonumModule;
 import edu.wpi.first.wpilibj.Solenoid;
 import org.team3309.frc2014.constantmanager.ConstantTable;
@@ -16,8 +18,7 @@ import org.team3309.friarlib.RobotAngleGyro;
  */
 public class DriveTrain{
     
-    private Solenoid modePiston; 
-    private Solenoid reverseModePiston;
+    private SolenoidBase modePiston;
     private OctonumModule[] driveTrainWheels;
     private RobotAngleGyro robotAngleGyro;
     private boolean noSolenoids;
@@ -26,23 +27,24 @@ public class DriveTrain{
     private double maxWheelSpeed;
     private double maxStrafe;
     private boolean toggled;
+    private boolean doubleSolenoid;
     
     public DriveTrain() {
         
         double[] driveModePiston = ((double[]) ConstantTable.getConstantTable().getValue("DriveTrain.solenoid"));
-        double[] reverseDriveModePiston = ((double[]) ConstantTable.getConstantTable().getValue("Drivetrain.reverseSolenoid"));
-        practiceBot = ((Boolean) ConstantTable.getConstantTable().getValue("Robot.practiceBot")).booleanValue();
-        
+
         if (driveModePiston[1] == 0){
             noSolenoids = true;
         }
         maxWheelSpeed = ((Double) ConstantTable.getConstantTable().getValue("DriveTrain.maxWheelSpeed")).doubleValue();
         
         if (!noSolenoids){
-            modePiston = new Solenoid((int) driveModePiston[0], (int) driveModePiston[1]);
-            if (practiceBot){
-                reverseModePiston = new Solenoid((int) reverseDriveModePiston[0], (int) reverseDriveModePiston[1]);
-                reverseModePiston.set(true);
+            if (driveModePiston[2] == 0){
+                modePiston = new Solenoid((int) driveModePiston[0], (int) driveModePiston[1]);
+            }
+            else{
+                modePiston = new DoubleSolenoid((int) driveModePiston[0], (int) driveModePiston[1], (int) driveModePiston[2]);
+                doubleSolenoid = true;
             }
         }
         
@@ -63,9 +65,6 @@ public class DriveTrain{
 
     public void free(){
         modePiston.free();
-        if (practiceBot){
-            reverseModePiston.free();
-        }
         robotAngleGyro.free();
         for (int i = 0; i < 4; i++){
             driveTrainWheels[i].free();                       
@@ -118,10 +117,12 @@ public class DriveTrain{
     
     public void enableTank(){
         if (!noSolenoids){
-            if (practiceBot){
-                reverseModePiston.set(false);
+            if (doubleSolenoid){
+                ((DoubleSolenoid) modePiston).set(DoubleSolenoid.Value.kForward);
             }
-            modePiston.set(true);
+            else{
+                ((Solenoid) modePiston).set(true);
+            }
             for (int i = 0; i < 4; i++) {
                 driveTrainWheels[i].enableTank();
             }
@@ -130,9 +131,11 @@ public class DriveTrain{
     
     public void enableMecanum(){
         if (!noSolenoids){
-            modePiston.set(false);
-            if (practiceBot){
-                reverseModePiston.set(true);
+            if (doubleSolenoid){
+                ((DoubleSolenoid) modePiston).set(DoubleSolenoid.Value.kReverse);
+            }
+            else{
+                ((Solenoid) modePiston).set(false);
             }
         }
         for (int i = 0; i < 4; i++) {

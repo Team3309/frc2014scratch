@@ -5,11 +5,9 @@
  */
 package org.team3309.frc2014.gmhandler;
 
-import edu.wpi.first.wpilibj.Solenoid;
-import edu.wpi.first.wpilibj.Victor;
+import edu.wpi.first.wpilibj.*;
 import org.team3309.frc2014.constantmanager.ConstantTable;
 import org.team3309.frc2014.timer.Timer;
-import edu.wpi.first.wpilibj.DigitalInput;
 
 /**
  *
@@ -19,10 +17,8 @@ public class Launcher {
 
     private Victor winchTopMotor;
     private Victor winchBottomMotor;
-    private Solenoid latchPiston;
-    private Solenoid reverseLatchPiston;
-    private Solenoid dogPiston;
-    private Solenoid reverseDogPiston;
+    private SolenoidBase latchPiston;
+    private SolenoidBase dogPiston;
     private Timer catapultTimer;
     private Timer stoppingMotorTimer;
     private Timer dogTimer;
@@ -37,7 +33,8 @@ public class Launcher {
     private boolean safeToRetractIntake;
     private boolean launcherEnabled;
     private boolean launcherDebug;
-    private boolean practiceBot;
+    private boolean doubleLatchSolenoid;
+    private boolean doubleDogSolenoid;
     private static final int unknown = 0;
     private static final int readyToLaunch = 1;
     private static final int launching = 2;
@@ -54,15 +51,12 @@ public class Launcher {
         double [] launcherWinchMotorBot = ((double[]) ConstantTable.getConstantTable().getValue("Launcher.winchMotorBot"));
         double [] launcherWinchMotorTop = ((double[]) ConstantTable.getConstantTable().getValue("Launcher.winchMotorTop"));
         double [] launcherLatchPiston = ((double[]) ConstantTable.getConstantTable().getValue("Launcher.latchSolenoid"));
-        double [] launcherReverseLatchPiston = ((double[]) ConstantTable.getConstantTable().getValue("Launcher.reverseLatchSolenoid"));
         double [] launcherDogPiston = ((double[]) ConstantTable.getConstantTable().getValue("Launcher.dogSolenoid"));
-        double [] launcherReverseDogPiston = ((double[]) ConstantTable.getConstantTable().getValue("Launcher.reverseDogSolenoid"));
         double [] launcherCatapultSensor = ((double[]) ConstantTable.getConstantTable().getValue("Launcher.catapultSensor"));
         double [] launcherLatchSensor = ((double[]) ConstantTable.getConstantTable().getValue("Launcher.latchSensor"));
         motorSpeed = ((Double) ConstantTable.getConstantTable().getValue("Launcher.motorSpeed")).doubleValue();
         launcherEnabled = ((Boolean) ConstantTable.getConstantTable().getValue("Launcher.enabled")).booleanValue();
         launcherDebug = ((Boolean) ConstantTable.getConstantTable().getValue("Launcher.debug")).booleanValue();
-        practiceBot = ((Boolean) ConstantTable.getConstantTable().getValue("Robot.practiceBot")).booleanValue();
 
         //Times are in seconds
         launchTime = ((Double) ConstantTable.getConstantTable().getValue("Launcher.launchTime")).doubleValue();
@@ -74,15 +68,21 @@ public class Launcher {
         dogTimer = new Timer();
         winchBottomMotor = new Victor((int) launcherWinchMotorBot[0], (int) launcherWinchMotorBot[1]);
         winchTopMotor = new Victor((int) launcherWinchMotorTop[0], (int) launcherWinchMotorTop[1]);
-        latchPiston = new Solenoid((int) launcherLatchPiston[0], (int) launcherLatchPiston[1]);
-        dogPiston = new Solenoid((int) launcherDogPiston[0], (int) launcherDogPiston[1]);
         catapultSensor = new DigitalInput((int) launcherCatapultSensor[0], (int) launcherCatapultSensor[1]);
         latchSensor = new DigitalInput((int) launcherLatchSensor[0], (int) launcherLatchSensor[1]);
-        if (practiceBot){
-            reverseDogPiston = new Solenoid((int) launcherReverseDogPiston[0], (int) launcherReverseDogPiston[1]);
-            reverseLatchPiston = new Solenoid((int) launcherReverseLatchPiston[0], (int) launcherReverseLatchPiston[1]);
-            reverseDogPiston.set(true);
-            reverseLatchPiston.set(true);
+        if (launcherLatchPiston[2] == 0){
+            latchPiston = new Solenoid((int) launcherLatchPiston[0], (int) launcherLatchPiston[1]);
+        }
+        else {
+            latchPiston = new DoubleSolenoid((int) launcherLatchPiston[0], (int) launcherLatchPiston[1], (int) launcherLatchPiston[2]);
+            doubleLatchSolenoid = true;
+        }
+        if (launcherDogPiston[2] == 0){
+            dogPiston = new Solenoid((int) launcherDogPiston[0], (int) launcherDogPiston[1]);
+        }
+        else {
+            dogPiston = new DoubleSolenoid((int) launcherDogPiston[0], (int) launcherDogPiston[1], (int) launcherDogPiston[2]);
+            doubleDogSolenoid = true;
         }
 
         catapultStatus = unknown;
@@ -98,7 +98,7 @@ public class Launcher {
     public boolean isCatapultLatched() {
         return latchSensor.get();
     }
-    public void launch(boolean buttonPressed) {
+    public void stateMachine(boolean buttonPressed, boolean safeToMove) {
 
         //Status unknown
         if (catapultStatus == unknown){
@@ -125,20 +125,20 @@ public class Launcher {
 
         //Status ready to launch
         if (catapultStatus == readyToLaunch) {
-            if (launcherEnabled && buttonPressed) {
+            if (launcherEnabled && buttonPressed && safeToMove) {
                 catapultStatus = launching;
                 catapultTimer.setTimer(launchTime);
                 safeToRetractIntake = false;
-                if (practiceBot){
-                    reverseLatchPiston.set(false);
+                if (doubleLatchSolenoid){
+                    ((DoubleSolenoid) latchPiston).set(DoubleSolenoid.Value.kForward);
                 }
-                latchPiston.set(true);
+                else ((Solenoid) latchPiston).set(true);
                 launchErrorCount = 0;
                 if (launcherDebug){
                     System.out.println("Catapult status: launching");
                 }
             }
-            safeToRetractIntake = true;
+            else safeToRetractIntake = true;
         }
 
         //Status launching
@@ -146,15 +146,15 @@ public class Launcher {
             if (catapultTimer.isExpired()) {
                 //check for good launch
                 if (!isCatapultLatched() && !isCatapultInPos()) {
-                    latchPiston.set(false);
-                    if (practiceBot){
-                        reverseLatchPiston.set(true);
+                    if (doubleLatchSolenoid){
+                        ((DoubleSolenoid) latchPiston).set(DoubleSolenoid.Value.kReverse);
                     }
+                    else ((Solenoid) latchPiston).set(false);
                     catapultTimer.disableTimer();
-                    if (practiceBot){
-                        reverseDogPiston.set(false);
+                    if (doubleDogSolenoid){
+                        ((DoubleSolenoid) dogPiston).set(DoubleSolenoid.Value.kForward);
                     }
-                    dogPiston.set(true);
+                    else ((Solenoid)dogPiston).set(true);
                     dogTimer.setTimer(dogTime);
                     catapultStatus = engagingDog;
                     if (launcherDebug){
@@ -205,10 +205,10 @@ public class Launcher {
         //Status stopping Motors
         if (catapultStatus == stoppingMotors){
             if (stoppingMotorTimer.isExpired()){
-                dogPiston.set(false);
-                if (practiceBot){
-                    reverseDogPiston.set(true);
+                if (doubleDogSolenoid){
+                    ((DoubleSolenoid) dogPiston).set(DoubleSolenoid.Value.kReverse);
                 }
+                else ((Solenoid) dogPiston).set(false);
                 dogTimer.setTimer(dogTime);
                 catapultStatus = disengagingDog;
                 if (launcherDebug){
@@ -239,10 +239,10 @@ public class Launcher {
         //Status errorLaunch
         if (catapultStatus == errorLaunch){
             System.out.println("Error Launch");
-            if (practiceBot){
-                reverseLatchPiston.set(false);
+            if (doubleLatchSolenoid){
+                ((DoubleSolenoid) latchPiston).set(DoubleSolenoid.Value.kForward);
             }
-            latchPiston.set(true);
+            else ((Solenoid) latchPiston).set(true);
             catapultStatus = launching;
         }
 
@@ -272,10 +272,6 @@ public class Launcher {
         winchTopMotor.free();
         dogPiston.free();
         latchPiston.free();
-        if (practiceBot){
-            reverseDogPiston.free();
-            reverseLatchPiston.free();
-        }
         latchSensor.free();
         catapultSensor.free();
     }
