@@ -67,6 +67,10 @@ public class RobotAngleGyro implements PIDOutput{
         gyroPIDcontroller.free();
         gyro.free();
     }
+
+    public void reset(){
+        gyro.reset();
+    }
     
     //DONT REMOVE FOR FIELD CENTRIC INCOMPLETE
     //public double[] calculateFieldCentricDriveStrafe(double drive, double strafe){

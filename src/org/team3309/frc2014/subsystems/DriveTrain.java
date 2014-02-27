@@ -25,6 +25,7 @@ public class DriveTrain{
     private boolean practiceBot;
     private double maxWheelSpeed;
     private double maxStrafe;
+    private boolean toggled;
     
     public DriveTrain() {
         
@@ -46,10 +47,10 @@ public class DriveTrain{
         }
         
         driveTrainWheels = new OctonumModule[4];
-        driveTrainWheels[0] = new OctonumModule("Octonum.topleft");    
-        driveTrainWheels[1] = new OctonumModule("Octonum.topright"); 
-        driveTrainWheels[2] = new OctonumModule("Octonum.bottomleft");            
-        driveTrainWheels[3] = new OctonumModule("Octonum.bottomright");
+        driveTrainWheels[0] = new OctonumModule("Octonum.topleft", true);
+        driveTrainWheels[1] = new OctonumModule("Octonum.topright", true);
+        driveTrainWheels[2] = new OctonumModule("Octonum.bottomleft", false);
+        driveTrainWheels[3] = new OctonumModule("Octonum.bottomright", false);
         
         robotAngleGyro = new RobotAngleGyro();
   
@@ -102,6 +103,14 @@ public class DriveTrain{
             driveTrainWheels[i].setNormalizationFactor(1 / highestWheelSpeed * maxWheelSpeed);                                
         }
     }
+
+    /*public boolean breaking(double breakingPower){
+        for (int i = 0; i < 4; i++) {
+            driveTrainWheels[i].breaking(breakingPower);
+            return true;
+        }
+        return false;
+    }*/
     
         /**
      * enable TankMode by enabling Piston
@@ -135,5 +144,22 @@ public class DriveTrain{
         for (int i = 0; i < 4; i++) {
             driveTrainWheels[i].setCoastMode(coast);
         }
+    }
+    
+    public void disablePIDControl(){
+        for (int i = 0; i < 4; i++) {
+            driveTrainWheels[i].disablePIDController();
+        }
+    }
+
+    public void toggleGyroOnOff(){
+        if (toggled){
+            robotAngleGyro.reset();
+            gyroEnabled = true;
+        }
+        else{
+            gyroEnabled = false;
+        }
+        toggled = !toggled;
     }
 }

@@ -33,6 +33,8 @@ public class Robot extends IterativeRobot {
     private double deadband;
     private boolean robotInitialized;
     private boolean constantIntakeSpeed;
+    private boolean breaking;
+    private boolean pressed;
 
     /**
      * This function is run when the robot is first started up and should be
@@ -115,12 +117,27 @@ public class Robot extends IterativeRobot {
         double driverRightX = driveXbox.getRightX();
         double driverLeftX = driveXbox.getLeftX();
         double driverLeftY = driveXbox.getLeftY();
+        double driverRightTrigger = driveXbox.getRightTrigger();
+        boolean driverXButton = driveXbox.getXButton();
         
         driverRightX = applyDeadband(driverRightX);
         driverLeftX = applyDeadband(driverLeftX);
         driverLeftY = applyDeadband(driverLeftY);
-        
-        driveTrain.drive(driverLeftY, driverRightX, driverLeftX);
+
+        if (driverXButton){
+            driveTrain.disablePIDControl();
+        }
+
+        //checks to see if button was released
+        if (!driveXbox.getYButton() && pressed){
+            driveTrain.toggleGyroOnOff();
+        }
+        pressed = driveXbox.getYButton();
+
+        //breaking = driveTrain.breaking(driverRightTrigger);
+        if (!breaking){
+            driveTrain.drive(driverLeftY, driverRightX, driverLeftX);
+        }
 
         /*Operator Buttons*/
 

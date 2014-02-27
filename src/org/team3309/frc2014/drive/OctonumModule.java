@@ -46,8 +46,9 @@ public class OctonumModule implements PIDOutput{
     private boolean coastMode;
     private boolean debug;
     
-    public OctonumModule(String wheelName){
+    public OctonumModule(String wheelName, boolean isFront){
         this.wheelName = wheelName;
+        boolean front = isFront;
         double[] driveMotorArray = ((double[]) ConstantTable.getConstantTable().getValue(wheelName + ".motor"));
         double[] encoderArrayA = ((double[]) ConstantTable.getConstantTable().getValue(wheelName + ".encoderA"));
         double[] encoderArrayB = ((double[]) ConstantTable.getConstantTable().getValue(wheelName + ".encoderB"));
@@ -165,6 +166,15 @@ public class OctonumModule implements PIDOutput{
         }
         coastMode = coast;
     }
+
+    public void disablePIDController(){
+        pidControl.disable();
+        noEncoders = true;
+    }
+
+    /*public void breaking(double breakingPower){
+
+    }*/
 
     public void pidWrite(double pidOutput) {        
         totalError += pidControl.getError() * pidControl.getI();
