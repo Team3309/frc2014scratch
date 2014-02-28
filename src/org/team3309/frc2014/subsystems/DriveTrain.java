@@ -141,12 +141,6 @@ public class DriveTrain{
         }
     }
 
-    public void setCoastMode(boolean coast){
-        for (int i = 0; i < 4; i++) {
-            driveTrainWheels[i].setCoastMode(coast);
-        }
-    }
-
     public void disablePIDControl(){
         for (int i = 0; i < 4; i++) {
             driveTrainWheels[i].disablePIDController();
@@ -160,6 +154,13 @@ public class DriveTrain{
         }
         else {
             gyroEnabled = false;
+        }
+    }
+
+    public void minimizeMovement(){
+        for (int i = 0; i < 4; i++){
+            driveTrainWheels[i].stopMoving();
+            enableTank();
         }
     }
 }

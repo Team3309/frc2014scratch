@@ -103,22 +103,13 @@ public class Robot extends IterativeRobot {
 
         /*DRIVER BUTTONS*/
 
-        //Changes drives, only when held
-        //cause Michael wants it that way
-        if (driveXbox.getRightBumper()){
-            driveTrain.enableTank();
-        }
-        else {
-            driveTrain.enableMecanum();
-        }
-        
-        driveTrain.setCoastMode(driveXbox.getLeftBumper());
-
         double driverRightX = driveXbox.getRightX();
         double driverLeftX = driveXbox.getLeftX();
         double driverLeftY = driveXbox.getLeftY();
         //double driverRightTrigger = driveXbox.getRightTrigger();
         boolean driverXButton = driveXbox.getXButton();
+        boolean driverLeftBumper = driveXbox.getLeftBumper();
+        boolean driverRightBumper = driveXbox.getRightBumper();
         
         driverRightX = applyDeadband(driverRightX);
         driverLeftX = applyDeadband(driverLeftX);
@@ -136,10 +127,21 @@ public class Robot extends IterativeRobot {
 
         //breaking = driveTrain.breaking(driverRightTrigger);
         if (!breaking){
-            driveTrain.drive(driverLeftY, driverRightX, driverLeftX);
+            if (driverLeftBumper){
+                driveTrain.minimizeMovement();
+            }
+            else {
+                if (driverRightBumper){
+                    driveTrain.enableTank();
+                }
+                else {
+                    driveTrain.enableMecanum();
+                }
+                driveTrain.drive(driverLeftY, driverRightX, driverLeftX);
+            }
         }
 
-        /*Operator Buttons*/
+        /*OPERATOR BUTTONS*/
 
         boolean OperatorLeftBumper = operatorXbox.getLeftBumper();
         boolean OperatorBButton = operatorXbox.getBButton();
@@ -170,10 +172,7 @@ public class Robot extends IterativeRobot {
 
         launcher.stateMachine(OperatorLeftBumper, intake.isExtended());
     }
-    
-    /**
-     * This function is called periodically during test mode
-     */
+
     public void testPeriodic() {
         robotEnable();
         // LiveWindow.run();

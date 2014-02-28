@@ -43,7 +43,6 @@ public class OctonumModule implements PIDOutput{
     private double wheelSpeed;
     private boolean isTank;
     private boolean noEncoders;
-    private boolean coastMode;
     private boolean debug;
     private boolean front;
     
@@ -141,10 +140,20 @@ public class OctonumModule implements PIDOutput{
             if (isTank){
                 setpoint *= inchesPerSecondMaxTank;
             }
-            else {
-                setpoint *= inchesPerSecondMaxMecanum;
+            else setpoint *= inchesPerSecondMaxMecanum;
+
+            if (setpoint == 0){
+                pidControl.disable();
+                pidControl.setSetpoint(0);
             }
-            pidControl.setSetpoint(setpoint);
+            else {
+                if (!pidControl.isEnable()){
+                    //clear the integral term
+                    resetPID();
+                    pidControl.enable();
+                }
+                pidControl.setSetpoint(setpoint);
+            }
         }
         
     }
@@ -160,24 +169,26 @@ public class OctonumModule implements PIDOutput{
         isTank = false;
         encoder.setDistancePerPulse(pulsesPerInchMecanum);
     }
-    
-    public void setCoastMode(boolean coast){
-        //detect release of coast button
-        if (coastMode && !coast){
-            pidControl.reset();
-            pidControl.enable();
-        }
-        coastMode = coast;
-    }
 
     public void disablePIDController(){
         pidControl.disable();
         noEncoders = true;
     }
 
+    public void stopMoving(){
+        resetPID();
+        pidControl.enable();
+        pidControl.setSetpoint(0);
+    }
+
     /*public void breaking(double breakingPower){
 
     }*/
+
+    private void resetPID(){
+        pidControl.reset();
+        totalError = 0;
+    }
 
     public void pidWrite(double pidOutput) {        
         totalError += pidControl.getError() * pidControl.getI();
@@ -194,11 +205,7 @@ public class OctonumModule implements PIDOutput{
                 " Setpoint: " + String.valueOf((float) pidControl.getSetpoint()));
           
         }
-        double motorSpeed = pidOutput;
-        if (coastMode){
-            motorSpeed = 0;
-        }
-        driveMotor.set(motorSpeed);
+
+        driveMotor.set(pidOutput);
     }
-    
 }
