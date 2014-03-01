@@ -71,7 +71,7 @@ public class DriveTrain{
     }
 
     public void drive(double drive, double rot, double strafe) {
-        //System.out.println("drive: " + String.valueOf(drive) + " rot: " + String.valueOf(rot) + " strafe: " + String.valueOf(strafe));
+
         double highestWheelSpeed = 1.0;
         double wheelSpeed;
         double adjustedRotation;

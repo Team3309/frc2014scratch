@@ -181,6 +181,14 @@ public class Robot extends IterativeRobot {
 
 
     private double applyDeadband(double joystickValue){
+
+        // Sometimes the xBox controller can give us a value greater than one, so this caps it at 1
+        if (joystickValue > 1){
+            joystickValue = 1;
+        }
+        else if (joystickValue < -1){
+            joystickValue = -1;
+        }
         if (joystickValue >= -deadband && joystickValue <= deadband){
             joystickValue = 0;
         }

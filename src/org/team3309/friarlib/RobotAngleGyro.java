@@ -19,7 +19,6 @@ public class RobotAngleGyro implements PIDOutput{
     private long lastUpdate;
     private double maxRotation;
     private double desiredPosition;
-    private double desiredVelocity;
     private double pidOutput;
     private boolean debug;
     private double lastDebugMillis;
@@ -31,9 +30,9 @@ public class RobotAngleGyro implements PIDOutput{
         double dGyro = ((Double) ConstantTable.getConstantTable().getValue("Gyro.dGyro")).doubleValue();
         debug = ((Boolean) ConstantTable.getConstantTable().getValue("Gyro.debug")).booleanValue();
         maxRotation = ((Double)ConstantTable.getConstantTable().getValue("Gyro.maxRotation")).doubleValue();
-        
-        gyroPIDcontroller = new PIDController(pGyro, iGyro, dGyro, gyro, this);
+
         gyro = new Gyro((int) ports[0], (int) ports[1]);
+        gyroPIDcontroller = new PIDController(pGyro, iGyro, dGyro, gyro, this);
 
         gyro.reset();
         gyroPIDcontroller.enable();
@@ -48,7 +47,7 @@ public class RobotAngleGyro implements PIDOutput{
         double timeElapsed = (currentUpdate - lastUpdate) / 1000d;
         lastUpdate = currentUpdate;
     
-        desiredVelocity = joystickRotation * maxRotation;
+        double desiredVelocity = joystickRotation * maxRotation;
         desiredPosition += timeElapsed * desiredVelocity;
                 
         gyroPIDcontroller.setSetpoint(desiredPosition);

@@ -75,6 +75,9 @@ public class Intake {
         }
         if (sideLeftMotor != null){
             sideLeftMotor.set(-joystickValue);
+            if (joystickValue != 0 && debug){
+                System.out.println("Intake motor speed: " + String.valueOf(joystickValue));
+            }
         }
         if (sideRightMotor != null){
             sideRightMotor.set(joystickValue);
@@ -115,9 +118,6 @@ public class Intake {
     }
 
     public void shiftIntakePos(boolean position){
-        if (debug){
-            System.out.println("Shift intake called");
-        }
         //detect release of intake toggle button
         if (lastPosition && !position){
             if (debug){

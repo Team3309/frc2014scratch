@@ -42,7 +42,7 @@ public class OctonumModule implements PIDOutput{
     private double inchesPerSecondMaxMecanum;
     private double wheelSpeed;
     private boolean isTank;
-    private boolean noEncoders;
+    private boolean ignoreEncoders;
     private boolean debug;
     private boolean front;
     
@@ -58,9 +58,7 @@ public class OctonumModule implements PIDOutput{
         
         driveMotor = new Victor ((int) driveMotorArray[0],(int) driveMotorArray[1]);
 
-        if (encoderArrayA[0] == 0){
-            noEncoders = true;
-        } else{
+        if (encoderArrayA[0] != 0){
 
             encoder = new Encoder (
                     (int) encoderArrayA[0], 
@@ -98,9 +96,9 @@ public class OctonumModule implements PIDOutput{
     public void free(){
         driveMotor.free();
         if (encoder != null){
-                encoder.free();
-        }        
-        pidControl.free();               
+            encoder.free();
+            pidControl.free();
+        }
     }
     
     /**
@@ -117,8 +115,13 @@ public class OctonumModule implements PIDOutput{
         double driveModified = drive * multipliers[0];
         double strafeModified = strafe * multipliers[2];
 
-        if (!front){
-            driveModified = driveModified - 1;
+        // For smooth arc turns, reduce rotation of wheels at the rear of the direction
+        // the bot is driving at. Amount of reduction is proportional to the drive speed.
+        if (!front && drive > 0){
+            rotModified = rotModified * (1 - drive);
+        }
+        if (front && drive < 0) {
+            rotModified = rotModified * (1 + drive);
         }
 
         wheelSpeed = driveModified + rotModified;
@@ -133,7 +136,7 @@ public class OctonumModule implements PIDOutput{
     public void setNormalizationFactor(double factor){
         double setpoint = wheelSpeed * factor;
         
-        if (noEncoders){
+        if (encoder == null || ignoreEncoders){
             driveMotor.set(setpoint);
         }
         else{
@@ -159,26 +162,34 @@ public class OctonumModule implements PIDOutput{
     }
 
     public void enableTank(){
-        pidControl.setPID(pTank, iTank, dTank, fTank);
+        if (encoder != null){
+            pidControl.setPID(pTank, iTank, dTank, fTank);
+            encoder.setDistancePerPulse(pulsesPerInchTank);
+        }
         isTank = true;
-        encoder.setDistancePerPulse(pulsesPerInchTank);  
     }
     
     public void enableMecanum(){
-        pidControl.setPID(pMecanum, iMecanum, dMecanum, fMecanum);
+        if (encoder != null){
+            pidControl.setPID(pMecanum, iMecanum, dMecanum, fMecanum);
+            encoder.setDistancePerPulse(pulsesPerInchMecanum);
+        }
         isTank = false;
-        encoder.setDistancePerPulse(pulsesPerInchMecanum);
     }
 
     public void disablePIDController(){
-        pidControl.disable();
-        noEncoders = true;
+        if (encoder != null){
+            pidControl.disable();
+        }
+        ignoreEncoders = true;
     }
 
     public void stopMoving(){
-        resetPID();
-        pidControl.enable();
-        pidControl.setSetpoint(0);
+        if (encoder != null){
+            resetPID();
+            pidControl.enable();
+            pidControl.setSetpoint(0);
+        }
     }
 
     /*public void breaking(double breakingPower){
@@ -186,11 +197,15 @@ public class OctonumModule implements PIDOutput{
     }*/
 
     private void resetPID(){
-        pidControl.reset();
+        if (encoder != null){
+            pidControl.reset();
+        }
         totalError = 0;
     }
 
-    public void pidWrite(double pidOutput) {        
+    public void pidWrite(double pidOutput) {
+
+        // Keep track of total error for tuning because the PIDController does not return total error
         totalError += pidControl.getError() * pidControl.getI();
         if (totalError > 1){
             totalError = 1;
