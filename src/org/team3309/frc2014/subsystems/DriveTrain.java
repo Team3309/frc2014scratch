@@ -6,6 +6,7 @@
 
 package org.team3309.frc2014.subsystems;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
+import edu.wpi.first.wpilibj.Gyro;
 import edu.wpi.first.wpilibj.SolenoidBase;
 import org.team3309.frc2014.drive.OctonumModule;
 import edu.wpi.first.wpilibj.Solenoid;
@@ -23,20 +24,17 @@ public class DriveTrain{
     private RobotAngleGyro robotAngleGyro;
     private boolean noSolenoids;
     private boolean gyroEnabled;
-    private double maxWheelSpeed;
     private double maxStrafe;
     private boolean doubleSolenoid;
 
-    public DriveTrain() {
+    public DriveTrain(Gyro gyro) {
 
         double[] driveModePiston = ((double[]) ConstantTable.getConstantTable().getValue("DriveTrain.solenoid"));
 
         if (driveModePiston[1] == 0){
             noSolenoids = true;
         }
-        maxWheelSpeed = ((Double) ConstantTable.getConstantTable().getValue("DriveTrain.maxWheelSpeed")).doubleValue();
-
-        if (!noSolenoids){
+        else {
             if (driveModePiston[2] == 0){
                 modePiston = new Solenoid((int) driveModePiston[0], (int) driveModePiston[1]);
             }
@@ -52,12 +50,13 @@ public class DriveTrain{
         driveTrainWheels[2] = new OctonumModule("Octonum.bottomleft", false);
         driveTrainWheels[3] = new OctonumModule("Octonum.bottomright", false);
 
-        robotAngleGyro = new RobotAngleGyro();
+        robotAngleGyro = new RobotAngleGyro(gyro);
 
         maxStrafe = ((Double) ConstantTable.getConstantTable().getValue("DriveTrain.maxStrafe")).doubleValue();
 
         gyroEnabled = ((Boolean) ConstantTable.getConstantTable().getValue("Gyro.enabled")).booleanValue();
 
+        setGyroMode();
         enableMecanum();
     }
 
@@ -83,7 +82,7 @@ public class DriveTrain{
             strafe = maxStrafe;
         }
         if (gyroEnabled){
-            adjustedRotation = robotAngleGyro.getDesiredRotation(rot);
+            adjustedRotation = robotAngleGyro.getDesiredRotation(rot, drive + strafe);
         }
         else {
             adjustedRotation = rot;
@@ -97,7 +96,7 @@ public class DriveTrain{
             }
         }
         for (int i = 0; i < 4; i++) {
-            driveTrainWheels[i].setNormalizationFactor(1 / highestWheelSpeed * maxWheelSpeed);
+            driveTrainWheels[i].setNormalizationFactor(1 / highestWheelSpeed);
         }
     }
 
@@ -142,8 +141,21 @@ public class DriveTrain{
     }
 
     public void togglePIDControl(){
+
         for (int i = 0; i < 4; i++) {
             driveTrainWheels[i].togglePIDController();
+        }
+
+        setGyroMode();
+    }
+
+    private void setGyroMode(){
+
+        if (driveTrainWheels[1].areEncodersEnabled()){
+            robotAngleGyro.setWheelSpeedControlMode();
+        }
+        else {
+            robotAngleGyro.setVoltageControlMode();
         }
     }
 

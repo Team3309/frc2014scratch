@@ -28,8 +28,6 @@ public class Intake {
     private double topMotorSpeed;
     private double sideMotorSpeed;
     private double extendTime;
-    private boolean lastPosition;
-    private boolean intakePosition;
     private boolean debug;
     private boolean doubleIntakeSolenoid;
 
@@ -67,6 +65,15 @@ public class Intake {
 
     public void moveBall(double joystickValue){
 
+        // Some motors start at different voltages, this insures
+        // that all motors start spinning at the same time
+        if (joystickValue > 0){
+            joystickValue = .3 + (.7 * joystickValue);
+        }
+        else if (joystickValue < 0){
+            joystickValue = -.3 + (.7 * joystickValue);
+        }
+
         if (topLeftMotor != null){
             topLeftMotor.set(joystickValue);
         }
@@ -75,9 +82,6 @@ public class Intake {
         }
         if (sideLeftMotor != null){
             sideLeftMotor.set(-joystickValue);
-            if (joystickValue != 0 && debug){
-                System.out.println("Intake motor speed: " + String.valueOf(joystickValue));
-            }
         }
         if (sideRightMotor != null){
             sideRightMotor.set(joystickValue);
@@ -117,36 +121,29 @@ public class Intake {
         setMotorSpeed(0);
     }
 
-    public void shiftIntakePos(boolean position){
-        //detect release of intake toggle button
-        if (lastPosition && !position){
-            if (debug){
-                System.out.println("shifting intake");
-            }
-            intakePosition = !intakePosition;
-            if (!intakePosition){
-                //retract intake
-                if (doubleIntakeSolenoid){
-                    ((DoubleSolenoid) intakePiston).set(DoubleSolenoid.Value.kReverse);
-                }
-                else ((Solenoid) intakePiston).set(false);
-            }
-            else {
-                //extends intake
-                if (doubleIntakeSolenoid){
-                    ((DoubleSolenoid) intakePiston).set(DoubleSolenoid.Value.kForward);
-                }
-                else ((Solenoid) intakePiston).set(true);
-            }
-
-            if (intakePosition){
-                intakeTimer.setTimer(extendTime);
-            }
-            else {
-                intakeTimer.disableTimer();
-            }
+    public void retractIntake(){
+        if (debug){
+            System.out.println("Retracting Intake");
         }
-        lastPosition = position;
+        intakeTimer.disableTimer();
+
+        if (doubleIntakeSolenoid){
+            ((DoubleSolenoid) intakePiston).set(DoubleSolenoid.Value.kReverse);
+        }
+        else ((Solenoid) intakePiston).set(false);
+    }
+
+    public void extendIntake(){
+        if (debug){
+            System.out.println("Extending Intake");
+        }
+
+        if (doubleIntakeSolenoid){
+            ((DoubleSolenoid) intakePiston).set(DoubleSolenoid.Value.kForward);
+        }
+        else ((Solenoid) intakePiston).set(true);
+
+        intakeTimer.setTimer(extendTime);
     }
     
     public boolean isExtended(){

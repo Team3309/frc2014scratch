@@ -8,6 +8,7 @@
 package org.team3309.frc2014;
 
 import edu.wpi.first.wpilibj.Compressor;
+import edu.wpi.first.wpilibj.Gyro;
 import org.team3309.frc2014.gmhandler.Launcher;
 import org.team3309.frc2014.subsystems.DriveTrain;
 import org.team3309.friarlib.XboxController;
@@ -31,23 +32,20 @@ public class Robot extends IterativeRobot {
     private Intake intake;
     private DriveTrain driveTrain;
     private Launcher launcher;
+    private Gyro gyro;
+    private Toggle intakeRetractedToggle;
+    private Toggle drivePIDControllerToggle;
+    private Toggle gyroToggle;
+    private Timer launchTimer;
+    private Timer driveTimer;
+    private Timer intakeTimer;
     private double deadband;
     private boolean robotInitialized;
     private boolean constantIntakeSpeed;
     private boolean breaking = false;
-    private boolean pastYButton;
-    private boolean autonomousOneBallLeft;
-    private boolean autonomousOneBallMiddle;
-    private boolean autonomousOneBallRight;
-    private boolean autonomousTwoBallLeft;
-    private boolean autonomousTwoBallMiddle;
-    private boolean autonomousTwoBallRight;
-    private boolean autonomousThreeBallLeft;
-    private boolean autonomousThreeBallMiddle;
-    private boolean autonomousThreeBallRight;
-    private Timer launchTimer;
-    private Timer driveTimer;
-    private Timer intakeTimer;
+    private boolean intakeRetracted;
+    private String autonomousPosition;
+    private int autonomousNumberOfBalls;
     private int autoStatus;
     private static final int startingAutonomous = 1;
     private static final int launching = 2;
@@ -66,6 +64,14 @@ public class Robot extends IterativeRobot {
         //CommandBase.init();
         double[] pressureSwitch = ((double[]) ConstantTable.getConstantTable().getValue("Compressor.pressureswitch"));
         double[] compressorRelay = ((double[]) ConstantTable.getConstantTable().getValue("Compressor.relay"));
+        double[] ports = ((double[]) ConstantTable.getConstantTable().getValue("Gyro.ports"));
+
+        // Create gyro here because of delay in spinning up
+        // If done later robot will have a delay in starting
+        gyro = new Gyro((int) ports[0], (int) ports[1]);
+        gyroToggle = new Toggle();
+        drivePIDControllerToggle = new Toggle();
+        intakeRetractedToggle = new Toggle();
         
         Compressor compressor = new Compressor((int) pressureSwitch[0], (int) pressureSwitch[1], (int) compressorRelay[0], (int) compressorRelay[1]);
         compressor.start();
@@ -74,22 +80,12 @@ public class Robot extends IterativeRobot {
     
     public void robotEnable(){
         if (!robotInitialized){
-            driveTrain = new DriveTrain();
+            driveTrain = new DriveTrain(gyro);
             launcher = new Launcher();
             intake = new Intake();
             robotInitialized = true;
             deadband = ((Double) ConstantTable.getConstantTable().getValue("Controller.deadband")).doubleValue();
             constantIntakeSpeed = ((Boolean) ConstantTable.getConstantTable().getValue("Controller.constantIntakeSpeed")).booleanValue();
-            autonomousOneBallLeft= ((Boolean) ConstantTable.getConstantTable().getValue("Autonomous.oneBallLeft")).booleanValue();
-            autonomousOneBallMiddle= ((Boolean) ConstantTable.getConstantTable().getValue("Autonomous.oneBallMiddle")).booleanValue();
-            autonomousOneBallRight= ((Boolean) ConstantTable.getConstantTable().getValue("Autonomous.oneBallRight")).booleanValue();
-            autonomousTwoBallLeft= ((Boolean) ConstantTable.getConstantTable().getValue("Autonomous.twoBallLeft")).booleanValue();
-            autonomousTwoBallMiddle= ((Boolean) ConstantTable.getConstantTable().getValue("Autonomous.twoBallMiddle")).booleanValue();
-            autonomousTwoBallRight= ((Boolean) ConstantTable.getConstantTable().getValue("Autonomous.twoBallRight")).booleanValue();
-            autonomousThreeBallLeft= ((Boolean) ConstantTable.getConstantTable().getValue("Autonomous.threeBallLeft")).booleanValue();
-            autonomousThreeBallMiddle= ((Boolean) ConstantTable.getConstantTable().getValue("Autonomous.threeBallMiddle")).booleanValue();
-            autonomousThreeBallRight= ((Boolean) ConstantTable.getConstantTable().getValue("Autonomous.threeBallRight")).booleanValue();
-
         }
     }
 
@@ -110,43 +106,8 @@ public class Robot extends IterativeRobot {
     
     public void autonomousInit() {
         robotEnable();
-
-        // Checking to see which autonomous game plan we are doing
-        if (autonomousOneBallLeft){
-            oneBallLeft();
-        }
-
-        else if (autonomousOneBallMiddle){
-            oneBallMiddle();
-        }
-
-        else if (autonomousOneBallRight){
-            oneBallRight();
-        }
-
-        else if (autonomousTwoBallLeft){
-            twoBallsLeft();
-        }
-
-        else if (autonomousTwoBallMiddle){
-            twoBallsMiddle();
-        }
-
-        else if (autonomousTwoBallRight){
-            twoBallsRight();
-        }
-
-        else if (autonomousThreeBallLeft){
-            threeBallsLeft();
-        }
-
-        else if (autonomousThreeBallMiddle){
-            threeBallsMiddle();
-        }
-
-        else if (autonomousThreeBallRight){
-            threeBallsRight();
-        }
+        autonomousNumberOfBalls = ((Integer) ConstantTable.getConstantTable().getValue("Autonomous.numberOfBalls")).intValue();
+        //autonomousPosition = ((String) ConstantTable.getConstantTable().getValue("Autonomous.position"));
     }
 
     /**
@@ -154,15 +115,12 @@ public class Robot extends IterativeRobot {
      */
     public void autonomousPeriodic() {
         Scheduler.getInstance().run();
-        robotEnable();
-        
-          
-        
-        
+
+        autonomousStateMachine();
     }
 
     public void teleopInit() {
-        
+        robotEnable();
     }
 
     /**
@@ -178,6 +136,7 @@ public class Robot extends IterativeRobot {
         double driverLeftY = driveXbox.getLeftY();
         //double driverRightTrigger = driveXbox.getRightTrigger();
         boolean driverXButton = driveXbox.getXButton();
+        boolean driverYButton = driveXbox.getYButton();
         boolean driverLeftBumper = driveXbox.getLeftBumper();
         boolean driverRightBumper = driveXbox.getRightBumper();
         
@@ -185,15 +144,15 @@ public class Robot extends IterativeRobot {
         driverLeftX = applyDeadband(driverLeftX);
         driverLeftY = applyDeadband(driverLeftY);
 
-        if (driverXButton){
+        // Checks to see if button was released
+        if (drivePIDControllerToggle.toggle(driverXButton)){
             driveTrain.togglePIDControl();
         }
 
         //checks to see if button was released
-        if (!driveXbox.getYButton() && pastYButton){
+        if (gyroToggle.toggle(driverYButton)){
             driveTrain.toggleGyroOnOff();
         }
-        pastYButton = driveXbox.getYButton();
 
         //breaking = driveTrain.breaking(driverRightTrigger);
         if (!breaking){
@@ -219,7 +178,7 @@ public class Robot extends IterativeRobot {
 
         OperatorLeftY = applyDeadband(OperatorLeftY);
 
-        //swaps controls between constant speed or adjusted speed
+        // Swaps controls between constant speed or adjusted speed
         if (!constantIntakeSpeed){
             intake.moveBall(OperatorLeftY);
         }
@@ -237,9 +196,19 @@ public class Robot extends IterativeRobot {
 
         //prevents intake from retracting when launcher is resetting
         if (launcher.isSafeToRetractIntake()){
-            intake.shiftIntakePos(OperatorBButton);
+            if (intakeRetractedToggle.toggle(OperatorBButton)){
+                intakeRetracted = !intakeRetracted;
+                if (intakeRetracted){
+                    intake.retractIntake();
+                }
+                else {
+                    intake.extendIntake();
+                }
+            }
         }
 
+        // Launcher is checking to see if the intake is physically in place
+        // because the launcher takes time to extend
         launcher.stateMachine(OperatorLeftBumper, intake.isExtended());
     }
 
@@ -271,49 +240,28 @@ public class Robot extends IterativeRobot {
         return joystickValue;
     }
     
-    private void oneBallLeft(){
+    private void autonomousStateMachine(){
 
     if (autoStatus == startingAutonomous){
-            intake.shiftIntakePos(false);
-            intake.shiftIntakePos(true);
+            intake.extendIntake();
             launcher.stateMachine(true, intake.isExtended());
             launchTimer.setTimer(3.0);
 
-            
-              
             }           
         }
 
-    private void oneBallMiddle(){
-
-    }
-
-    private void oneBallRight(){
-
-    }
-
-    private void twoBallsLeft(){
+    
+    // Subclassed because only Robot.java uses toggles
+    public class Toggle{
+        boolean lastButtonValue;
         
-    }
-
-    private void twoBallsMiddle(){
-
-    }
-
-    private void twoBallsRight(){
-
-    }
-
-    private void threeBallsLeft(){
-        
-    }
-
-    private void threeBallsMiddle(){
-
-    }
-
-    private void threeBallsRight(){
-
+        public boolean toggle(boolean button){
+            
+            boolean shouldToggle = !button && lastButtonValue;
+            lastButtonValue = button;
+            
+            return shouldToggle;
+        }
     }
 }
 

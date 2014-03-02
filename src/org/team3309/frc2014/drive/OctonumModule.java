@@ -42,6 +42,7 @@ public class OctonumModule implements PIDOutput{
     private double inchesPerSecondMaxTank;
     private double inchesPerSecondMaxMecanum;
     private double wheelSpeed;
+    private double maxWheelSpeed;
     private boolean isTank;
     private boolean ignoreEncoders;
     private boolean debug;
@@ -54,6 +55,7 @@ public class OctonumModule implements PIDOutput{
         double[] encoderArrayA = ((double[]) ConstantTable.getConstantTable().getValue(wheelName + ".encoderA"));
         double[] encoderArrayB = ((double[]) ConstantTable.getConstantTable().getValue(wheelName + ".encoderB"));
         boolean isEncoderFlipped = ((Boolean) ConstantTable.getConstantTable().getValue(wheelName + ".flipped")).booleanValue();
+        maxWheelSpeed = ((Double) ConstantTable.getConstantTable().getValue("DriveTrain.maxWheelSpeed")).doubleValue();
         debug = ((Boolean) ConstantTable.getConstantTable().getValue(wheelName + ".debug")).booleanValue();
         multipliers = ((double[]) ConstantTable.getConstantTable().getValue(wheelName + ".multipliers"));     
         
@@ -142,9 +144,9 @@ public class OctonumModule implements PIDOutput{
         }
         else{
             if (isTank){
-                setpoint *= inchesPerSecondMaxTank;
+                setpoint *= inchesPerSecondMaxTank * maxWheelSpeed;
             }
-            else setpoint *= inchesPerSecondMaxMecanum;
+            else setpoint *= inchesPerSecondMaxMecanum * maxWheelSpeed;
 
             if (setpoint == 0){
                 pidControl.disable();
@@ -180,20 +182,18 @@ public class OctonumModule implements PIDOutput{
 
     public void togglePIDController(){
 
-        // Checks to see if ignoreEncoders is true at the start of togglePIDController
-        // To prepare the pidController to be ready when ignoreEncoders is set to false
-        if (ignoreEncoders){
-            SmartDashboard.putString("PID", "");
-            if (encoder != null){
-                pidControl.enable();
-            }
-        }
         ignoreEncoders = !ignoreEncoders;
 
         if (ignoreEncoders){
-            SmartDashboard.putString("No PID", "");
             if (encoder != null){
+                SmartDashboard.putString("No PID", " ");
                 pidControl.reset();
+            }
+        }
+        else {
+            if (encoder != null){
+                SmartDashboard.putString("PID", " ");
+                pidControl.enable();
             }
         }
     }
@@ -217,6 +217,10 @@ public class OctonumModule implements PIDOutput{
             pidControl.reset();
         }
         totalError = 0;
+    }
+
+    public boolean areEncodersEnabled(){
+        return (encoder != null && !ignoreEncoders);
     }
 
     public void pidWrite(double pidOutput) {

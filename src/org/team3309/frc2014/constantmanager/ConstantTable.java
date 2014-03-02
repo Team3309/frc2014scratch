@@ -42,7 +42,7 @@ public class ConstantTable {
     }
     
     private void loadFromFile (InputStream inputStream){
-        byte[] buffer = new byte[2048];
+        byte[] buffer = new byte[10000];
         String content = "";
 
         try {
@@ -83,6 +83,9 @@ public class ConstantTable {
                 }
                 else if ("false".equals(value)){
                     box.put(key, Boolean.valueOf(false));
+                }
+                else if (Util.contains(value, "\"")){
+                    box.put(key, value);
                 }
                 else {
                     box.put(key, Integer.valueOf(value));

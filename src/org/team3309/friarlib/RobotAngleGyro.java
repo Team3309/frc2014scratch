@@ -20,25 +20,32 @@ public class RobotAngleGyro implements PIDOutput{
     private double maxRotation;
     private double desiredPosition;
     private double pidOutput;
-    private boolean debug;
     private double lastDebugMillis;
+    private double movement;
+    private boolean debug;
+    private boolean voltageControl;
+    private double[] voltagePIDOutputRange;
 
-    public RobotAngleGyro() {
-        double[] ports = ((double[]) ConstantTable.getConstantTable().getValue("Gyro.ports"));
+    public RobotAngleGyro(Gyro gyro) {
+
         double pGyro = ((Double) ConstantTable.getConstantTable().getValue("Gyro.pGyro")).doubleValue();
         double iGyro = ((Double) ConstantTable.getConstantTable().getValue("Gyro.iGyro")).doubleValue();
         double dGyro = ((Double) ConstantTable.getConstantTable().getValue("Gyro.dGyro")).doubleValue();
         debug = ((Boolean) ConstantTable.getConstantTable().getValue("Gyro.debug")).booleanValue();
         maxRotation = ((Double)ConstantTable.getConstantTable().getValue("Gyro.maxRotation")).doubleValue();
+        voltagePIDOutputRange = ((double []) ConstantTable.getConstantTable().getValue("Gyro.voltagePIDoutputRange"));
 
-        gyro = new Gyro((int) ports[0], (int) ports[1]);
+        this.gyro = gyro;
         gyroPIDcontroller = new PIDController(pGyro, iGyro, dGyro, gyro, this);
 
         gyro.reset();
         gyroPIDcontroller.enable();
     }
     
-    public double getDesiredRotation(double joystickRotation){
+    public double getDesiredRotation(double joystickRotation, double movement){
+
+        this.movement = movement;
+
         if (lastUpdate == 0){
             lastUpdate = System.currentTimeMillis();
         }
@@ -64,11 +71,21 @@ public class RobotAngleGyro implements PIDOutput{
     
     public void free(){
         gyroPIDcontroller.free();
-        gyro.free();
     }
 
     public void reset(){
         gyro.reset();
+        desiredPosition = 0;
+    }
+
+    public void setVoltageControlMode(){
+        // Anything less than .3 is not enough to move the bot, this
+        // scales it from .3 to 1
+        voltageControl = true;
+    }
+
+    public void setWheelSpeedControlMode(){
+        voltageControl = false;
     }
     
     //DONT REMOVE FOR FIELD CENTRIC INCOMPLETE
@@ -82,7 +99,19 @@ public class RobotAngleGyro implements PIDOutput{
   //  }
 
     public void pidWrite(double d) {
-        pidOutput = d;
+        // Stopping rotation when error is 0
+        if (voltageControl){
+            if (d > 0 && movement == 0){
+                pidOutput = voltagePIDOutputRange[0] + d * (voltagePIDOutputRange[1] - voltagePIDOutputRange[0]);
+            }
+            else if (d < 0 && movement == 0){
+                pidOutput = -voltagePIDOutputRange[0] + d * (voltagePIDOutputRange[1] - voltagePIDOutputRange[0]);
+            }
+            else {
+                pidOutput = d;
+            }
+        }
+        else pidOutput = d;
     }
 }
 
