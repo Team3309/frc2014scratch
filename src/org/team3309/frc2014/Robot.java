@@ -116,7 +116,7 @@ public class Robot extends IterativeRobot {
         driverLeftY = applyDeadband(driverLeftY);
 
         if (driverXButton){
-            driveTrain.disablePIDControl();
+            driveTrain.togglePIDControl();
         }
 
         //checks to see if button was released

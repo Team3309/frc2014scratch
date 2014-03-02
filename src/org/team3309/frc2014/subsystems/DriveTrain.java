@@ -141,9 +141,9 @@ public class DriveTrain{
         }
     }
 
-    public void disablePIDControl(){
+    public void togglePIDControl(){
         for (int i = 0; i < 4; i++) {
-            driveTrainWheels[i].disablePIDController();
+            driveTrainWheels[i].togglePIDController();
         }
     }
 

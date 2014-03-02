@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj.PIDController;
 import edu.wpi.first.wpilibj.PIDOutput;
 import edu.wpi.first.wpilibj.PIDSource.PIDSourceParameter;
 import edu.wpi.first.wpilibj.Victor;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import org.team3309.frc2014.constantmanager.ConstantTable;
 
 
@@ -177,12 +178,27 @@ public class OctonumModule implements PIDOutput{
         isTank = false;
     }
 
-    public void disablePIDController(){
-        if (encoder != null){
-            pidControl.disable();
+    public void togglePIDController(){
+
+        // Checks to see if ignoreEncoders is true at the start of togglePIDController
+        // To prepare the pidController to be ready when ignoreEncoders is set to false
+        if (ignoreEncoders){
+            SmartDashboard.putString("PID", "");
+            if (encoder != null){
+                pidControl.enable();
+            }
         }
-        ignoreEncoders = true;
+        ignoreEncoders = !ignoreEncoders;
+
+        if (ignoreEncoders){
+            SmartDashboard.putString("No PID", "");
+            if (encoder != null){
+                pidControl.reset();
+            }
+        }
     }
+
+
 
     public void stopMoving(){
         if (encoder != null){
