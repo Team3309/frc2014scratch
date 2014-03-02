@@ -36,6 +36,15 @@ public class Robot extends IterativeRobot {
     private boolean constantIntakeSpeed;
     private boolean breaking = false;
     private boolean pastYButton;
+    private boolean autonomousOneBallLeft;
+    private boolean autonomousOneBallMiddle;
+    private boolean autonomousOneBallRight;
+    private boolean autonomousTwoBallLeft;
+    private boolean autonomousTwoBallMiddle;
+    private boolean autonomousTwoBallRight;
+    private boolean autonomousThreeBallLeft;
+    private boolean autonomousThreeBallMiddle;
+    private boolean autonomousThreeBallRight;
     private Timer launchTimer;
     private Timer driveTimer;
     private Timer intakeTimer;
@@ -71,6 +80,16 @@ public class Robot extends IterativeRobot {
             robotInitialized = true;
             deadband = ((Double) ConstantTable.getConstantTable().getValue("Controller.deadband")).doubleValue();
             constantIntakeSpeed = ((Boolean) ConstantTable.getConstantTable().getValue("Controller.constantIntakeSpeed")).booleanValue();
+            autonomousOneBallLeft= ((Boolean) ConstantTable.getConstantTable().getValue("Autonomous.oneBallLeft")).booleanValue();
+            autonomousOneBallMiddle= ((Boolean) ConstantTable.getConstantTable().getValue("Autonomous.oneBallMiddle")).booleanValue();
+            autonomousOneBallRight= ((Boolean) ConstantTable.getConstantTable().getValue("Autonomous.oneBallRight")).booleanValue();
+            autonomousTwoBallLeft= ((Boolean) ConstantTable.getConstantTable().getValue("Autonomous.twoBallLeft")).booleanValue();
+            autonomousTwoBallMiddle= ((Boolean) ConstantTable.getConstantTable().getValue("Autonomous.twoBallMiddle")).booleanValue();
+            autonomousTwoBallRight= ((Boolean) ConstantTable.getConstantTable().getValue("Autonomous.twoBallRight")).booleanValue();
+            autonomousThreeBallLeft= ((Boolean) ConstantTable.getConstantTable().getValue("Autonomous.threeBallLeft")).booleanValue();
+            autonomousThreeBallMiddle= ((Boolean) ConstantTable.getConstantTable().getValue("Autonomous.threeBallMiddle")).booleanValue();
+            autonomousThreeBallRight= ((Boolean) ConstantTable.getConstantTable().getValue("Autonomous.threeBallRight")).booleanValue();
+
         }
     }
 
@@ -91,8 +110,43 @@ public class Robot extends IterativeRobot {
     
     public void autonomousInit() {
         robotEnable();
-        
 
+        // Checking to see which autonomous game plan we are doing
+        if (autonomousOneBallLeft){
+            oneBallLeft();
+        }
+
+        if (autonomousOneBallMiddle){
+            oneBallMiddle();
+        }
+
+        if (autonomousOneBallRight){
+            oneBallRight();
+        }
+
+        if (autonomousTwoBallLeft){
+            twoBallsLeft();
+        }
+
+        if (autonomousTwoBallMiddle){
+            twoBallsMiddle();
+        }
+
+        if (autonomousTwoBallRight){
+            twoBallsRight();
+        }
+
+        if (autonomousThreeBallLeft){
+            threeBallsLeft();
+        }
+
+        if (autonomousThreeBallMiddle){
+            threeBallsMiddle();
+        }
+
+        if (autonomousThreeBallRight){
+            threeBallsRight();
+        }
     }
 
     /**
@@ -217,24 +271,49 @@ public class Robot extends IterativeRobot {
         return joystickValue;
     }
     
-    private void oneBall(){
-      
+    private void oneBallLeft(){
+
     if (autoStatus == startingAutonomous){
             intake.shiftIntakePos(false);
             intake.shiftIntakePos(true);
             launcher.stateMachine(true, intake.isExtended());
             launchTimer.setTimer(3.0);
-            
+
             
               
             }           
         }
-    private void twoBalls(){
+
+    private void oneBallMiddle(){
+
+    }
+
+    private void oneBallRight(){
+
+    }
+
+    private void twoBallsLeft(){
         
     }
-    
-    private void threeBalls(){
+
+    private void twoBallsMiddle(){
+
+    }
+
+    private void twoBallsRight(){
+
+    }
+
+    private void threeBallsLeft(){
         
+    }
+
+    private void threeBallsMiddle(){
+
+    }
+
+    private void threeBallsRight(){
+
     }
 }
 

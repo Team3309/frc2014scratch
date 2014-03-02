@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="5862877d-e901-4aa0-add5-2efa1bab39d8" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/org/team3309/frc2014/subsystems/DriveTrain.java" afterPath="$PROJECT_DIR$/src/org/team3309/frc2014/subsystems/DriveTrain.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/res/Constants.txt" afterPath="$PROJECT_DIR$/res/Constants.txt" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/org/team3309/frc2014/drive/OctonumModule.java" afterPath="$PROJECT_DIR$/src/org/team3309/frc2014/drive/OctonumModule.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/org/team3309/frc2014/Robot.java" afterPath="$PROJECT_DIR$/src/org/team3309/frc2014/Robot.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
@@ -72,16 +72,16 @@
       <file leaf-file-name="Launcher.java" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/org/team3309/frc2014/gmhandler/Launcher.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="38" column="13" selection-start="1176" selection-end="1176" vertical-scroll-proportion="0.0" vertical-offset="1300" max-vertical-offset="4140">
+            <state line="94" column="31" selection-start="4478" selection-end="4478" vertical-scroll-proportion="0.0" vertical-offset="1410" max-vertical-offset="4260">
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="OctonumModule.java" pinned="false" current="true" current-in-tab="true">
+      <file leaf-file-name="OctonumModule.java" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/org/team3309/frc2014/drive/OctonumModule.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="193" column="41" selection-start="7377" selection-end="7377" vertical-scroll-proportion="0.6586922" vertical-offset="2317" max-vertical-offset="3540">
+            <state line="108" column="47" selection-start="4804" selection-end="4804" vertical-scroll-proportion="0.0" vertical-offset="1620" max-vertical-offset="3705">
               <folding />
             </state>
           </provider>
@@ -108,26 +108,28 @@
       <file leaf-file-name="DriveTrain.java" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/org/team3309/frc2014/subsystems/DriveTrain.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="145" column="38" selection-start="4485" selection-end="4485" vertical-scroll-proportion="0.0" vertical-offset="1803" max-vertical-offset="2430">
+            <state line="22" column="24" selection-start="675" selection-end="675" vertical-scroll-proportion="0.0" vertical-offset="330" max-vertical-offset="2565">
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="Robot.java" pinned="false" current="false" current-in-tab="false">
+      <file leaf-file-name="OI.java" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/org/team3309/frc2014/OI.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="9" column="3" selection-start="295" selection-end="295" vertical-scroll-proportion="0.0" vertical-offset="135" max-vertical-offset="750">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="Robot.java" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/org/team3309/frc2014/Robot.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="118" column="29" selection-start="4416" selection-end="4416" vertical-scroll-proportion="0.0" vertical-offset="1748" max-vertical-offset="2955">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="XboxController.java" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/org/team3309/friarlib/XboxController.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="33" column="13" selection-start="1582" selection-end="1582" vertical-scroll-proportion="0.0" vertical-offset="495" max-vertical-offset="3285">
-              <folding />
+            <state line="113" column="66" selection-start="5363" selection-end="5363" vertical-scroll-proportion="-3.4446254" vertical-offset="3735" max-vertical-offset="4860">
+              <folding>
+                <element signature="imports" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -144,7 +146,7 @@
       <file leaf-file-name="Intake.java" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/org/team3309/frc2014/gmhandler/Intake.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="73" column="46" selection-start="3191" selection-end="3191" vertical-scroll-proportion="0.0" vertical-offset="1095" max-vertical-offset="2490">
+            <state line="73" column="46" selection-start="3191" selection-end="3191" vertical-scroll-proportion="0.0" vertical-offset="1095" max-vertical-offset="2625">
               <folding />
             </state>
           </provider>
@@ -158,7 +160,6 @@
     </FindUsagesManager>
   </component>
   <component name="Git.Settings">
-    <option name="UPDATE_TYPE" value="REBASE" />
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="IdeDocumentHistory">
@@ -171,8 +172,8 @@
         <option value="$PROJECT_DIR$/src/org/team3309/friarlib/RobotAngleGyro.java" />
         <option value="$PROJECT_DIR$/src/org/team3309/frc2014/gmhandler/Intake.java" />
         <option value="$PROJECT_DIR$/src/org/team3309/frc2014/subsystems/DriveTrain.java" />
-        <option value="$PROJECT_DIR$/src/org/team3309/frc2014/Robot.java" />
         <option value="$PROJECT_DIR$/src/org/team3309/frc2014/drive/OctonumModule.java" />
+        <option value="$PROJECT_DIR$/src/org/team3309/frc2014/Robot.java" />
       </list>
     </option>
   </component>
@@ -209,7 +210,6 @@
     </navigator>
     <panes>
       <pane id="Scope" />
-      <pane id="PackagesPane" />
       <pane id="ProjectPane">
         <subPane>
           <PATH>
@@ -408,6 +408,7 @@
           </PATH>
         </subPane>
       </pane>
+      <pane id="PackagesPane" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -489,19 +490,6 @@
       <option name="PORT" value="5005" />
       <method />
     </configuration>
-    <configuration default="true" type="Applet" factoryName="Applet">
-      <module name="" />
-      <option name="MAIN_CLASS_NAME" />
-      <option name="HTML_FILE_NAME" />
-      <option name="HTML_USED" value="false" />
-      <option name="WIDTH" value="400" />
-      <option name="HEIGHT" value="300" />
-      <option name="POLICY_FILE" value="$APPLICATION_HOME_DIR$/bin/appletviewer.policy" />
-      <option name="VM_PARAMETERS" />
-      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
-      <option name="ALTERNATIVE_JRE_PATH" />
-      <method />
-    </configuration>
     <configuration default="true" type="TestNG" factoryName="TestNG">
       <module name="" />
       <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
@@ -527,6 +515,19 @@
       <envs />
       <properties />
       <listeners />
+      <method />
+    </configuration>
+    <configuration default="true" type="Applet" factoryName="Applet">
+      <module name="" />
+      <option name="MAIN_CLASS_NAME" />
+      <option name="HTML_FILE_NAME" />
+      <option name="HTML_USED" value="false" />
+      <option name="WIDTH" value="400" />
+      <option name="HEIGHT" value="300" />
+      <option name="POLICY_FILE" value="$APPLICATION_HOME_DIR$/bin/appletviewer.policy" />
+      <option name="VM_PARAMETERS" />
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
+      <option name="ALTERNATIVE_JRE_PATH" />
       <method />
     </configuration>
     <configuration default="true" type="Application" factoryName="Application">
@@ -716,7 +717,11 @@
       <created>1393559820034</created>
       <updated>1393559820034</updated>
     </task>
-    <option name="localTasksCounter" value="27" />
+    <task id="LOCAL-00027" summary="Changed disable PID controller to a toggle">
+      <created>1393718954450</created>
+      <updated>1393718954451</updated>
+    </task>
+    <option name="localTasksCounter" value="28" />
     <servers />
   </component>
   <component name="ToolWindowManager">
@@ -738,7 +743,7 @@
       <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="SLIDING" type="SLIDING" visible="false" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Application Servers" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.12759416" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.23597233" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
@@ -760,7 +765,6 @@
     <option name="myTodoPanelSettings">
       <TodoPanelSettings />
     </option>
-    <MESSAGE value="Added 2012 constants" />
     <MESSAGE value="Added arrays for module and port numbers. Separated mode2012 flag into separate Solenoid and encoder flags" />
     <MESSAGE value="Added compressor code, swapping drive modes works. Gyro implementation require for drive to work properly." />
     <MESSAGE value="Added DriveHeading file and new Gyro File" />
@@ -785,7 +789,8 @@
     <MESSAGE value="Beginning of day 2/26/14" />
     <MESSAGE value="Fixed launcher bug" />
     <MESSAGE value="Button to freeze in place, coasting when joystick is free, and fixed  few bugs" />
-    <option name="LAST_COMMIT_MESSAGE" value="Button to freeze in place, coasting when joystick is free, and fixed  few bugs" />
+    <MESSAGE value="Changed disable PID controller to a toggle" />
+    <option name="LAST_COMMIT_MESSAGE" value="Changed disable PID controller to a toggle" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager />
@@ -797,14 +802,7 @@
   <component name="editorHistoryManager">
     <entry file="file://$PROJECT_DIR$/src/org/team3309/frc2014/gmhandler/Intake.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="51" column="34" selection-start="2483" selection-end="2483" vertical-scroll-proportion="0.0" vertical-offset="871" max-vertical-offset="2640">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/org/team3309/frc2014/gmhandler/Launcher.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="108" column="18" selection-start="4860" selection-end="4860" vertical-scroll-proportion="0.0" vertical-offset="1620" max-vertical-offset="3855">
+        <state line="73" column="46" selection-start="3191" selection-end="3191" vertical-scroll-proportion="0.0" vertical-offset="1095" max-vertical-offset="2625">
           <folding />
         </state>
       </provider>
@@ -840,7 +838,9 @@
     <entry file="file://$PROJECT_DIR$/src/org/team3309/frc2014/Robot.java">
       <provider selected="true" editor-type-id="text-editor">
         <state line="127" column="50" selection-start="4572" selection-end="4572" vertical-scroll-proportion="0.0" vertical-offset="1905" max-vertical-offset="2820">
-          <folding />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
@@ -896,7 +896,9 @@
     <entry file="file://$PROJECT_DIR$/src/org/team3309/frc2014/Robot.java">
       <provider selected="true" editor-type-id="text-editor">
         <state line="136" column="35" selection-start="4815" selection-end="4815" vertical-scroll-proportion="0.0" vertical-offset="211" max-vertical-offset="2910">
-          <folding />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
@@ -938,7 +940,9 @@
     <entry file="file://$PROJECT_DIR$/src/org/team3309/frc2014/Robot.java">
       <provider selected="true" editor-type-id="text-editor">
         <state line="149" column="33" selection-start="5033" selection-end="5033" vertical-scroll-proportion="0.0" vertical-offset="1795" max-vertical-offset="2760">
-          <folding />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
@@ -1080,13 +1084,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/org/team3309/friarlib/XboxController.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="33" column="13" selection-start="1582" selection-end="1582" vertical-scroll-proportion="0.0" vertical-offset="1797" max-vertical-offset="2955">
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/org/team3309/frc2014/gmhandler/Intake.java">
       <provider selected="true" editor-type-id="text-editor">
         <state line="73" column="46" selection-start="3191" selection-end="3191" vertical-scroll-proportion="0.0" vertical-offset="1095" max-vertical-offset="2490">
@@ -1094,31 +1091,47 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/org/team3309/frc2014/gmhandler/Launcher.java">
+    <entry file="file://$PROJECT_DIR$/src/org/team3309/friarlib/XboxController.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="38" column="13" selection-start="1176" selection-end="1176" vertical-scroll-proportion="0.0" vertical-offset="210" max-vertical-offset="4140">
+        <state line="33" column="13" selection-start="1582" selection-end="1582" vertical-scroll-proportion="-0.5263158" vertical-offset="495" max-vertical-offset="2955">
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/org/team3309/frc2014/subsystems/DriveTrain.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="145" column="38" selection-start="4485" selection-end="4485" vertical-scroll-proportion="0.0" vertical-offset="1803" max-vertical-offset="2430">
+        <state line="22" column="24" selection-start="675" selection-end="675" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="2430">
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/org/team3309/frc2014/Robot.java">
+    <entry file="file://$PROJECT_DIR$/src/org/team3309/frc2014/OI.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="118" column="29" selection-start="4416" selection-end="4416" vertical-scroll-proportion="0.0" vertical-offset="1304" max-vertical-offset="2955">
+        <state line="9" column="3" selection-start="295" selection-end="295" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="735">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/org/team3309/frc2014/gmhandler/Launcher.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="94" column="31" selection-start="4478" selection-end="4478" vertical-scroll-proportion="0.0" vertical-offset="2620" max-vertical-offset="4140">
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/org/team3309/frc2014/drive/OctonumModule.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="193" column="41" selection-start="7377" selection-end="7377" vertical-scroll-proportion="0.6586922" vertical-offset="2317" max-vertical-offset="3540">
+        <state line="108" column="47" selection-start="4804" selection-end="4804" vertical-scroll-proportion="0.0" vertical-offset="1356" max-vertical-offset="3645">
           <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/org/team3309/frc2014/Robot.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="113" column="66" selection-start="5363" selection-end="5363" vertical-scroll-proportion="-3.4446254" vertical-offset="3735" max-vertical-offset="4860">
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>

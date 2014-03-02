@@ -106,7 +106,7 @@ public class OctonumModule implements PIDOutput{
      * calculate how the motor should move based on the joystick input
      * @param drive - forward/backward
      * @param rot - rotation
-     * @param strafe - left/right (only for Meccanum)
+     * @param strafe - left/right (only for Mecanum)
      */
     
     
