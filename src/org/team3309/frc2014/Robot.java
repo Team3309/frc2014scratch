@@ -15,6 +15,7 @@ import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.command.Scheduler;
 import org.team3309.frc2014.constantmanager.ConstantTable;
 import org.team3309.frc2014.gmhandler.Intake;
+import org.team3309.frc2014.timer.Timer;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -35,6 +36,15 @@ public class Robot extends IterativeRobot {
     private boolean constantIntakeSpeed;
     private boolean breaking = false;
     private boolean pastYButton;
+    private Timer launchTimer;
+    private Timer driveTimer;
+    private Timer intakeTimer;
+    private int autoStatus;
+    private static final int startingAutonomous = 1;
+    private static final int launching = 2;
+    private static final int turning = 3;
+    
+    
 
     /**
      * This function is run when the robot is first started up and should be
@@ -81,6 +91,7 @@ public class Robot extends IterativeRobot {
     
     public void autonomousInit() {
         robotEnable();
+        
 
     }
 
@@ -89,10 +100,15 @@ public class Robot extends IterativeRobot {
      */
     public void autonomousPeriodic() {
         Scheduler.getInstance().run();
+        robotEnable();
+        
+          
+        
+        
     }
 
     public void teleopInit() {
-        robotEnable();
+        
     }
 
     /**
@@ -200,4 +216,30 @@ public class Robot extends IterativeRobot {
         }
         return joystickValue;
     }
+    
+    private void oneBall(){
+      
+    if (autoStatus == startingAutonomous){
+            intake.shiftIntakePos(false);
+            intake.shiftIntakePos(true);
+            launcher.stateMachine(true, intake.isExtended());
+            launchTimer.setTimer(3.0);
+            
+            
+              
+            }           
+        }
+    private void twoBalls(){
+        
+    }
+    
+    private void threeBalls(){
+        
+    }
 }
+
+    
+    
+    
+    
+    
