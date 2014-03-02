@@ -116,35 +116,35 @@ public class Robot extends IterativeRobot {
             oneBallLeft();
         }
 
-        if (autonomousOneBallMiddle){
+        else if (autonomousOneBallMiddle){
             oneBallMiddle();
         }
 
-        if (autonomousOneBallRight){
+        else if (autonomousOneBallRight){
             oneBallRight();
         }
 
-        if (autonomousTwoBallLeft){
+        else if (autonomousTwoBallLeft){
             twoBallsLeft();
         }
 
-        if (autonomousTwoBallMiddle){
+        else if (autonomousTwoBallMiddle){
             twoBallsMiddle();
         }
 
-        if (autonomousTwoBallRight){
+        else if (autonomousTwoBallRight){
             twoBallsRight();
         }
 
-        if (autonomousThreeBallLeft){
+        else if (autonomousThreeBallLeft){
             threeBallsLeft();
         }
 
-        if (autonomousThreeBallMiddle){
+        else if (autonomousThreeBallMiddle){
             threeBallsMiddle();
         }
 
-        if (autonomousThreeBallRight){
+        else if (autonomousThreeBallRight){
             threeBallsRight();
         }
     }
