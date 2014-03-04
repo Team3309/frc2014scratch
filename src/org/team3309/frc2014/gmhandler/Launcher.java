@@ -114,6 +114,7 @@ public class Launcher {
 
         //Status unknown
         if (catapultStatus == unknown){
+
             if (launcherEnabled){
                 if (doubleDogSolenoid){
                     ((DoubleSolenoid) dogPiston).set(DoubleSolenoid.Value.kReverse);
@@ -126,7 +127,7 @@ public class Launcher {
                         System.out.println("Catapult status: Ready to Launch");
                     }
                 }
-                else {
+                else if (safeToMove) {
                     safeToRetractIntake = false;
                     catapultTimer.setTimer((launchTime));
                     catapultStatus = launching;

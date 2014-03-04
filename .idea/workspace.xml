@@ -2,6 +2,8 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="5862877d-e901-4aa0-add5-2efa1bab39d8" name="Default" comment="">
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/org/team3309/frc2014/gmhandler/Launcher.java" afterPath="$PROJECT_DIR$/src/org/team3309/frc2014/gmhandler/Launcher.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/org/team3309/frc2014/Robot.java" afterPath="$PROJECT_DIR$/src/org/team3309/frc2014/Robot.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="frc2014scratch.iws" />
@@ -66,13 +68,13 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="Launcher.java" pinned="false" current="true" current-in-tab="true">
+      <file leaf-file-name="Launcher.java" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/org/team3309/frc2014/gmhandler/Launcher.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="25" column="35" selection-start="720" selection-end="720" vertical-scroll-proportion="-4.54067" vertical-offset="3132" max-vertical-offset="4485">
+            <state line="136" column="17" selection-start="6184" selection-end="6184" vertical-scroll-proportion="0.0" vertical-offset="1518" max-vertical-offset="4500">
               <folding>
-                <element signature="e#11651#11652#0" expanded="true" />
-                <element signature="e#11693#11694#0" expanded="true" />
+                <element signature="e#11668#11669#0" expanded="true" />
+                <element signature="e#11710#11711#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -123,12 +125,12 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="Robot.java" pinned="false" current="false" current-in-tab="false">
+      <file leaf-file-name="Robot.java" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/org/team3309/frc2014/Robot.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="207" column="9" selection-start="7598" selection-end="7598" vertical-scroll-proportion="0.0" vertical-offset="2791" max-vertical-offset="4155">
+            <state line="77" column="42" selection-start="3380" selection-end="3380" vertical-scroll-proportion="-1.0602605" vertical-offset="1806" max-vertical-offset="4170">
               <folding>
-                <element signature="e#0#9234#0" expanded="true" />
+                <element signature="e#0#9269#0" expanded="true" />
                 <element signature="imports" expanded="true" />
               </folding>
             </state>
@@ -173,9 +175,9 @@
         <option value="$PROJECT_DIR$/src/org/team3309/frc2014/constantmanager/ConstantTable.java" />
         <option value="$PROJECT_DIR$/src/org/team3309/frc2014/subsystems/DriveTrain.java" />
         <option value="$PROJECT_DIR$/src/org/team3309/friarlib/RobotAngleGyro.java" />
-        <option value="$PROJECT_DIR$/src/org/team3309/frc2014/Robot.java" />
         <option value="$PROJECT_DIR$/src/org/team3309/frc2014/timer/Timer.java" />
         <option value="$PROJECT_DIR$/src/org/team3309/frc2014/gmhandler/Launcher.java" />
+        <option value="$PROJECT_DIR$/src/org/team3309/frc2014/Robot.java" />
       </list>
     </option>
   </component>
@@ -739,7 +741,11 @@
       <created>1393912958958</created>
       <updated>1393912958958</updated>
     </task>
-    <option name="localTasksCounter" value="32" />
+    <task id="LOCAL-00032" summary="Code that works: Launcher, intake, drive, swapping drivetrains, everything but autonomous. Some cool neato features still need to be added.&#10;">
+      <created>1393912980040</created>
+      <updated>1393912980040</updated>
+    </task>
+    <option name="localTasksCounter" value="33" />
     <servers />
   </component>
   <component name="ToolWindowManager">
@@ -808,7 +814,6 @@
     <option name="myTodoPanelSettings">
       <TodoPanelSettings />
     </option>
-    <MESSAGE value="Fixed encoders and victor port numbers. Got Speed control working!" />
     <MESSAGE value="Added deadband. Need to modify PID constants more" />
     <MESSAGE value="Added some code for RobotAngleGyro and new constants" />
     <MESSAGE value="Added some code for RobotAngleGyro and new constants&#10;" />
@@ -833,7 +838,8 @@
     <MESSAGE value="Fixed autonomous so it doesn't try preforming more than one Autonomous game plans" />
     <MESSAGE value="Changed autonomous around, adjusted some rotation stuff, added toggle subclass to robot.java, gyro + voltage control = not ideal" />
     <MESSAGE value="Code that works: Launcher, intake, drive, swapping drivetrains, everything but autonomous. Some cool neato features still need to be added." />
-    <option name="LAST_COMMIT_MESSAGE" value="Code that works: Launcher, intake, drive, swapping drivetrains, everything but autonomous. Some cool neato features still need to be added." />
+    <MESSAGE value="Code that works: Launcher, intake, drive, swapping drivetrains, everything but autonomous. Some cool neato features still need to be added.&#10;" />
+    <option name="LAST_COMMIT_MESSAGE" value="Code that works: Launcher, intake, drive, swapping drivetrains, everything but autonomous. Some cool neato features still need to be added.&#10;" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager />
@@ -875,7 +881,7 @@
       <provider selected="true" editor-type-id="text-editor">
         <state line="127" column="50" selection-start="4572" selection-end="4572" vertical-scroll-proportion="0.0" vertical-offset="1905" max-vertical-offset="2820">
           <folding>
-            <element signature="e#0#9234#0" expanded="true" />
+            <element signature="e#0#9269#0" expanded="true" />
             <element signature="imports" expanded="true" />
           </folding>
         </state>
@@ -913,8 +919,8 @@
       <provider selected="true" editor-type-id="text-editor">
         <state line="51" column="49" selection-start="2064" selection-end="2064" vertical-scroll-proportion="0.0" vertical-offset="120" max-vertical-offset="2955">
           <folding>
-            <element signature="e#11651#11652#0" expanded="true" />
-            <element signature="e#11693#11694#0" expanded="true" />
+            <element signature="e#11668#11669#0" expanded="true" />
+            <element signature="e#11710#11711#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -937,7 +943,7 @@
       <provider selected="true" editor-type-id="text-editor">
         <state line="136" column="35" selection-start="4815" selection-end="4815" vertical-scroll-proportion="0.0" vertical-offset="211" max-vertical-offset="2910">
           <folding>
-            <element signature="e#0#9234#0" expanded="true" />
+            <element signature="e#0#9269#0" expanded="true" />
             <element signature="imports" expanded="true" />
           </folding>
         </state>
@@ -961,8 +967,8 @@
       <provider selected="true" editor-type-id="text-editor">
         <state line="108" column="16" selection-start="4544" selection-end="4544" vertical-scroll-proportion="0.0" vertical-offset="1430" max-vertical-offset="2505">
           <folding>
-            <element signature="e#11651#11652#0" expanded="true" />
-            <element signature="e#11693#11694#0" expanded="true" />
+            <element signature="e#11668#11669#0" expanded="true" />
+            <element signature="e#11710#11711#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -985,7 +991,7 @@
       <provider selected="true" editor-type-id="text-editor">
         <state line="149" column="33" selection-start="5033" selection-end="5033" vertical-scroll-proportion="0.0" vertical-offset="1795" max-vertical-offset="2760">
           <folding>
-            <element signature="e#0#9234#0" expanded="true" />
+            <element signature="e#0#9269#0" expanded="true" />
             <element signature="imports" expanded="true" />
           </folding>
         </state>
@@ -1009,8 +1015,8 @@
       <provider selected="true" editor-type-id="text-editor">
         <state line="9" column="12" selection-start="270" selection-end="270" vertical-scroll-proportion="0.0" vertical-offset="135" max-vertical-offset="2265">
           <folding>
-            <element signature="e#11651#11652#0" expanded="true" />
-            <element signature="e#11693#11694#0" expanded="true" />
+            <element signature="e#11668#11669#0" expanded="true" />
+            <element signature="e#11710#11711#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -1019,8 +1025,8 @@
       <provider selected="true" editor-type-id="text-editor">
         <state line="12" column="3" selection-start="406" selection-end="406" vertical-scroll-proportion="0.0" vertical-offset="180" max-vertical-offset="2235">
           <folding>
-            <element signature="e#11651#11652#0" expanded="true" />
-            <element signature="e#11693#11694#0" expanded="true" />
+            <element signature="e#11668#11669#0" expanded="true" />
+            <element signature="e#11710#11711#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -1029,8 +1035,8 @@
       <provider selected="true" editor-type-id="text-editor">
         <state line="12" column="3" selection-start="406" selection-end="406" vertical-scroll-proportion="0.0" vertical-offset="180" max-vertical-offset="2250">
           <folding>
-            <element signature="e#11651#11652#0" expanded="true" />
-            <element signature="e#11693#11694#0" expanded="true" />
+            <element signature="e#11668#11669#0" expanded="true" />
+            <element signature="e#11710#11711#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -1039,8 +1045,8 @@
       <provider selected="true" editor-type-id="text-editor">
         <state line="12" column="3" selection-start="406" selection-end="406" vertical-scroll-proportion="0.0" vertical-offset="180" max-vertical-offset="2250">
           <folding>
-            <element signature="e#11651#11652#0" expanded="true" />
-            <element signature="e#11693#11694#0" expanded="true" />
+            <element signature="e#11668#11669#0" expanded="true" />
+            <element signature="e#11710#11711#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -1153,16 +1159,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/org/team3309/frc2014/Robot.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="207" column="9" selection-start="7598" selection-end="7598" vertical-scroll-proportion="0.0" vertical-offset="2791" max-vertical-offset="4155">
-          <folding>
-            <element signature="e#0#9234#0" expanded="true" />
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/org/team3309/frc2014/gmhandler/Intake.java">
       <provider selected="true" editor-type-id="text-editor">
         <state line="145" column="41" selection-start="5190" selection-end="5190" vertical-scroll-proportion="0.0" vertical-offset="1582" max-vertical-offset="2445">
@@ -1193,10 +1189,20 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/org/team3309/frc2014/gmhandler/Launcher.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="25" column="35" selection-start="720" selection-end="720" vertical-scroll-proportion="-4.54067" vertical-offset="3132" max-vertical-offset="4485">
+        <state line="136" column="17" selection-start="6184" selection-end="6184" vertical-scroll-proportion="0.0" vertical-offset="1518" max-vertical-offset="4500">
           <folding>
-            <element signature="e#11651#11652#0" expanded="true" />
-            <element signature="e#11693#11694#0" expanded="true" />
+            <element signature="e#11668#11669#0" expanded="true" />
+            <element signature="e#11710#11711#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/org/team3309/frc2014/Robot.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="77" column="42" selection-start="3380" selection-end="3380" vertical-scroll-proportion="-1.0602605" vertical-offset="1806" max-vertical-offset="4170">
+          <folding>
+            <element signature="e#0#9269#0" expanded="true" />
+            <element signature="imports" expanded="true" />
           </folding>
         </state>
       </provider>

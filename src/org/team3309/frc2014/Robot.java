@@ -83,6 +83,7 @@ public class Robot extends IterativeRobot {
             driveTrain = new DriveTrain(gyro);
             launcher = new Launcher();
             intake = new Intake();
+            intake.extendIntake();
             robotInitialized = true;
             deadband = ((Double) ConstantTable.getConstantTable().getValue("Controller.deadband")).doubleValue();
             constantIntakeSpeed = ((Boolean) ConstantTable.getConstantTable().getValue("Controller.constantIntakeSpeed")).booleanValue();
