@@ -22,6 +22,8 @@ public class Launcher {
     private Timer catapultTimer;
     private Timer stoppingMotorTimer;
     private Timer dogTimer;
+    private Timer winchTimer;
+    private Timer launchErrorTimer;
     private DigitalInput catapultSensor;
     private DigitalInput latchSensor;
     private int catapultStatus;
@@ -30,11 +32,13 @@ public class Launcher {
     private double launchTime;
     private double stoppingMotorTime;
     private double dogTime;
+    private double winchTime;
     private boolean safeToRetractIntake;
     private boolean launcherEnabled;
     private boolean launcherDebug;
     private boolean doubleLatchSolenoid;
     private boolean doubleDogSolenoid;
+    private boolean sensorDebug;
     private static final int unknown = 0;
     private static final int readyToLaunch = 1;
     private static final int launching = 2;
@@ -57,15 +61,19 @@ public class Launcher {
         motorSpeed = ((Double) ConstantTable.getConstantTable().getValue("Launcher.motorSpeed")).doubleValue();
         launcherEnabled = ((Boolean) ConstantTable.getConstantTable().getValue("Launcher.enabled")).booleanValue();
         launcherDebug = ((Boolean) ConstantTable.getConstantTable().getValue("Launcher.debug")).booleanValue();
+        sensorDebug = ((Boolean) ConstantTable.getConstantTable().getValue("Launcher.sensorDebug")).booleanValue();
 
         //Times are in seconds
         launchTime = ((Double) ConstantTable.getConstantTable().getValue("Launcher.launchTime")).doubleValue();
         stoppingMotorTime = ((Double) ConstantTable.getConstantTable().getValue("Launcher.stoppingMotorTime")).doubleValue();
         dogTime = ((Double) ConstantTable.getConstantTable().getValue("Launcher.dogTime")).doubleValue();
+        winchTime = ((Double) ConstantTable.getConstantTable().getValue("Launcher.winchTime")).doubleValue();
 
         catapultTimer = new Timer();
         stoppingMotorTimer = new Timer();
         dogTimer = new Timer();
+        winchTimer = new Timer();
+        launchErrorTimer = new Timer();
         winchBottomMotor = new Victor((int) launcherWinchMotorBot[0], (int) launcherWinchMotorBot[1]);
         winchTopMotor = new Victor((int) launcherWinchMotorTop[0], (int) launcherWinchMotorTop[1]);
         catapultSensor = new DigitalInput((int) launcherCatapultSensor[0], (int) launcherCatapultSensor[1]);
@@ -92,17 +100,26 @@ public class Launcher {
     }
 
     public boolean isCatapultInPos() {
-        return catapultSensor.get();
+        return !catapultSensor.get();
     }
 
     public boolean isCatapultLatched() {
-        return latchSensor.get();
+        return !latchSensor.get();
     }
     public void stateMachine(boolean buttonPressed, boolean safeToMove) {
+
+        if (sensorDebug){
+            System.out.println("Catapult in Position: " + String.valueOf(isCatapultInPos()) + " Latched: " + String.valueOf(isCatapultLatched()));
+        }
 
         //Status unknown
         if (catapultStatus == unknown){
             if (launcherEnabled){
+                if (doubleDogSolenoid){
+                    ((DoubleSolenoid) dogPiston).set(DoubleSolenoid.Value.kReverse);
+                }
+                else ((Solenoid) dogPiston).set(false);
+
                 if (isCatapultInPos() && isCatapultLatched()){
                     catapultStatus = readyToLaunch;
                     if (launcherDebug){
@@ -121,6 +138,7 @@ public class Launcher {
             else {
                 safeToRetractIntake = true;
             }
+
         }
 
         //Status ready to launch
@@ -163,6 +181,7 @@ public class Launcher {
                 }
                 else {
                     launchErrorCount++;
+                    launchErrorTimer.setTimer(0.5);
                     catapultStatus = errorLaunch;
                     if (launcherDebug){
                         System.out.println("Catapult status: error launch");
@@ -182,6 +201,7 @@ public class Launcher {
             if (dogTimer.isExpired()){
                 winchBottomMotor.set(motorSpeed);
                 winchTopMotor.set(motorSpeed);
+                winchTimer.setTimer(winchTime);
                 catapultStatus = winching;
                 if (launcherDebug){
                     System.out.println("Catapult status: winching");
@@ -199,6 +219,9 @@ public class Launcher {
                 if (launcherDebug){
                     System.out.println("Catapult status: stoppingMotors");
                 }
+            }
+            else if (winchTimer.isExpired()){
+                catapultStatus = errorResetting;
             }
         }
 
@@ -229,9 +252,6 @@ public class Launcher {
                 }
                 else {
                     catapultStatus = errorResetting;
-                    if (launcherDebug){
-                        System.out.println("Catapult status: error resetting");
-                    }
                 }
             }
         }
@@ -243,7 +263,9 @@ public class Launcher {
                 ((DoubleSolenoid) latchPiston).set(DoubleSolenoid.Value.kForward);
             }
             else ((Solenoid) latchPiston).set(true);
-            catapultStatus = launching;
+            if (launchErrorTimer.isExpired()){
+                catapultStatus = launching;
+            }
         }
 
         //Status errorResetting
@@ -257,7 +279,6 @@ public class Launcher {
 
         //Status Disabled
         if (catapultStatus == disabled) {
-            System.out.println("Disabling Launcher");
             winchTopMotor.disable();
             winchBottomMotor.disable();
         }
