@@ -116,10 +116,7 @@ public class Launcher {
         if (catapultStatus == unknown){
 
             if (launcherEnabled){
-                if (doubleDogSolenoid){
-                    ((DoubleSolenoid) dogPiston).set(DoubleSolenoid.Value.kReverse);
-                }
-                else ((Solenoid) dogPiston).set(false);
+                disengageDog();
 
                 if (isCatapultInPos() && isCatapultLatched()){
                     catapultStatus = readyToLaunch;
@@ -148,10 +145,7 @@ public class Launcher {
                 catapultStatus = launching;
                 catapultTimer.setTimer(launchTime);
                 safeToRetractIntake = false;
-                if (doubleLatchSolenoid){
-                    ((DoubleSolenoid) latchPiston).set(DoubleSolenoid.Value.kForward);
-                }
-                else ((Solenoid) latchPiston).set(true);
+                openLatch();
                 launchErrorCount = 0;
                 if (launcherDebug){
                     System.out.println("Catapult status: launching");
@@ -165,15 +159,9 @@ public class Launcher {
             if (catapultTimer.isExpired()) {
                 //check for good launch
                 if (!isCatapultLatched() && !isCatapultInPos()) {
-                    if (doubleLatchSolenoid){
-                        ((DoubleSolenoid) latchPiston).set(DoubleSolenoid.Value.kReverse);
-                    }
-                    else ((Solenoid) latchPiston).set(false);
+                    closeLatch();
                     catapultTimer.disableTimer();
-                    if (doubleDogSolenoid){
-                        ((DoubleSolenoid) dogPiston).set(DoubleSolenoid.Value.kForward);
-                    }
-                    else ((Solenoid)dogPiston).set(true);
+                    engageDog();
                     dogTimer.setTimer(dogTime);
                     catapultStatus = engagingDog;
                     if (launcherDebug){
@@ -229,10 +217,7 @@ public class Launcher {
         //Status stopping Motors
         if (catapultStatus == stoppingMotors){
             if (stoppingMotorTimer.isExpired()){
-                if (doubleDogSolenoid){
-                    ((DoubleSolenoid) dogPiston).set(DoubleSolenoid.Value.kReverse);
-                }
-                else ((Solenoid) dogPiston).set(false);
+                disengageDog();
                 dogTimer.setTimer(dogTime);
                 catapultStatus = disengagingDog;
                 if (launcherDebug){
@@ -260,10 +245,7 @@ public class Launcher {
         //Status errorLaunch
         if (catapultStatus == errorLaunch){
             System.out.println("Error Launch");
-            if (doubleLatchSolenoid){
-                ((DoubleSolenoid) latchPiston).set(DoubleSolenoid.Value.kForward);
-            }
-            else ((Solenoid) latchPiston).set(true);
+            openLatch();
             if (launchErrorTimer.isExpired()){
                 catapultStatus = launching;
             }
@@ -297,4 +279,34 @@ public class Launcher {
         latchSensor.free();
         catapultSensor.free();
     }
+    
+    public void openLatch (){
+        if (doubleLatchSolenoid){
+            ((DoubleSolenoid) latchPiston).set(DoubleSolenoid.Value.kForward);
+        }
+        else ((Solenoid) latchPiston).set(true);    
+    }
+    
+    public void closeLatch(){
+        if (doubleLatchSolenoid){
+            ((DoubleSolenoid) latchPiston).set(DoubleSolenoid.Value.kReverse);
+        }
+        else ((Solenoid) latchPiston).set(false);    
+    }
+    
+    public void engageDog(){
+        if (doubleDogSolenoid){
+            ((DoubleSolenoid) dogPiston).set(DoubleSolenoid.Value.kForward);
+        }
+        else ((Solenoid)dogPiston).set(true);
+    }
+    
+    public void disengageDog(){
+        if (doubleDogSolenoid){
+            ((DoubleSolenoid) dogPiston).set(DoubleSolenoid.Value.kReverse);
+        }
+        else ((Solenoid) dogPiston).set(false);
+    }
+    
+    
 }
