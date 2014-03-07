@@ -8,6 +8,7 @@
 package org.team3309.frc2014;
 
 import edu.wpi.first.wpilibj.Compressor;
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Gyro;
 import org.team3309.frc2014.gmhandler.Launcher;
 import org.team3309.frc2014.subsystems.DriveTrain;
@@ -37,21 +38,37 @@ public class Robot extends IterativeRobot {
     private Toggle drivePIDControllerToggle;
     private Toggle gyroToggle;
     private Timer launchTimer;
-    private Timer driveTimer;
+    private Timer autoDriveTimer;
     private Timer intakeTimer;
+    private Timer hotGoalTimer;
+    private Timer autoRotateTimer;
+    private DigitalInput hotGoalSensor;
     private double deadband;
+    private double launchTime;
     private boolean robotInitialized;
     private boolean constantIntakeSpeed;
     private boolean breaking = false;
     private boolean intakeRetracted;
+    private boolean shouldLaunch;
+    private boolean autoDebug;
+    private boolean notFirstTime;
     private String autonomousPosition;
     private int autonomousNumberOfBalls;
     private int autoStatus;
-    private static final int startingAutonomous = 1;
-    private static final int launching = 2;
-    private static final int turning = 3;
-    
-    
+    private static final int choosingStatus = 1;
+    private static final int noBall = 2;
+    private static final int oneBallLeft = 3;
+    private static final int oneBallMiddle = 4;
+    private static final int oneBallRight = 5;
+    private static final int twoBallLeft = 6;
+    private static final int twoBallMiddle = 7;
+    private static final int twoBallRight = 8;
+    private static final int threeBallLeft = 9;
+    private static final int threeBallMiddle = 10;
+    private static final int threeBallRight = 11;
+    private static final int movingForward = 12;
+    private static final int rotatingRight = 13;
+
 
     /**
      * This function is run when the robot is first started up and should be
@@ -62,7 +79,7 @@ public class Robot extends IterativeRobot {
         operatorXbox = new XboxController(2);
         // Initialize all subsystems
         //CommandBase.init();
-        double[] pressureSwitch = ((double[]) ConstantTable.getConstantTable().getValue("Compressor.pressureswitch"));
+        double[] pressureSwitch = ((double[]) ConstantTable.getConstantTable().getValue("Compressor.pressureSwitch"));
         double[] compressorRelay = ((double[]) ConstantTable.getConstantTable().getValue("Compressor.relay"));
         double[] ports = ((double[]) ConstantTable.getConstantTable().getValue("Gyro.ports"));
 
@@ -109,6 +126,13 @@ public class Robot extends IterativeRobot {
         robotEnable();
         autonomousNumberOfBalls = ((Integer) ConstantTable.getConstantTable().getValue("Autonomous.numberOfBalls")).intValue();
         //autonomousPosition = ((String) ConstantTable.getConstantTable().getValue("Autonomous.position"));
+        autoDebug = ((Boolean) ConstantTable.getConstantTable().getValue("Autonomous.debug")).booleanValue();
+        launchTime = ((Double) ConstantTable.getConstantTable().getValue("Launcher.launchTime")).doubleValue();
+        double[] hotGoalSensorArray = ((double[]) ConstantTable.getConstantTable().getValue("Autonomous.hotGoalSensor"));
+
+        hotGoalSensor = new DigitalInput((int) hotGoalSensorArray[0],(int) hotGoalSensorArray[1]);
+        hotGoalTimer = new Timer();
+        autoRotateTimer = new Timer();
     }
 
     /**
@@ -145,12 +169,12 @@ public class Robot extends IterativeRobot {
         driverLeftX = applyDeadband(driverLeftX);
         driverLeftY = applyDeadband(driverLeftY);
 
-        // Checks to see if button was released
+        // Checks to see if button was pressed
         if (drivePIDControllerToggle.toggle(driverXButton)){
             driveTrain.togglePIDControl();
         }
 
-        //checks to see if button was released
+        //checks to see if button was pressed
         if (gyroToggle.toggle(driverYButton)){
             driveTrain.toggleGyroOnOff();
         }
@@ -175,9 +199,19 @@ public class Robot extends IterativeRobot {
 
         boolean OperatorLeftBumper = operatorXbox.getLeftBumper();
         boolean OperatorBButton = operatorXbox.getBButton();
+        boolean OperatorRightBumper = operatorXbox.getRightBumper();
+        boolean OperatorAButton = operatorXbox.getAButton();
+        boolean OperatorYButton = operatorXbox.getYButton();
         double OperatorLeftY = operatorXbox.getLeftY();
 
         OperatorLeftY = applyDeadband(OperatorLeftY);
+
+        if (OperatorRightBumper) {
+            launcher.enablePocketPiston();
+        }
+        else {
+            launcher.disengagePocketPiston();
+        }
 
         // Swaps controls between constant speed or adjusted speed
         if (!constantIntakeSpeed){
@@ -195,6 +229,7 @@ public class Robot extends IterativeRobot {
             }
         }
 
+
         //prevents intake from retracting when launcher is resetting
         if (launcher.isSafeToRetractIntake()){
             if (intakeRetractedToggle.toggle(OperatorBButton)){
@@ -206,11 +241,12 @@ public class Robot extends IterativeRobot {
                     intake.extendIntake();
                 }
             }
+
         }
 
         // Launcher is checking to see if the intake is physically in place
         // because the launcher takes time to extend
-        launcher.stateMachine(OperatorLeftBumper, intake.isExtended());
+        launcher.stateMachine(OperatorLeftBumper, OperatorAButton, OperatorYButton, intake.isExtended());
     }
 
     public void testPeriodic() {
@@ -243,13 +279,135 @@ public class Robot extends IterativeRobot {
     
     private void autonomousStateMachine(){
 
-    if (autoStatus == startingAutonomous){
-            intake.extendIntake();
-            launcher.stateMachine(true, intake.isExtended());
-            launchTimer.setTimer(3.0);
+        if (autoStatus == choosingStatus){
 
-            }           
+            if (autonomousNumberOfBalls == 1){
+                if (autonomousPosition.equals("left")){
+                    if (autoDebug){
+                        System.out.println("One ball left");
+                    }
+                    autoStatus = oneBallLeft;
+                }
+                else if (autonomousPosition.equals("middle")){
+                    if (autoDebug){
+                        System.out.println("One ball middle");
+                    }
+                    autoStatus = oneBallMiddle;
+                }
+                else {
+                    if (autoDebug){
+                        System.out.println("One ball right");
+                    }
+                    autoStatus = oneBallRight;
+                }
+            }
+            else if (autonomousNumberOfBalls == 2){
+                if (autonomousPosition.equals("left")){
+                    if (autoDebug){
+                        System.out.println("Two ball left");
+                    }
+                    autoStatus = twoBallLeft;
+                }
+                else if (autonomousPosition.equals("middle")){
+                    if (autoDebug){
+                        System.out.println("Two ball middle");
+                    }
+                    autoStatus = twoBallMiddle;
+                }
+                else {
+                    if (autoDebug){
+                        System.out.println("Two ball right");
+                    }
+                    autoStatus = twoBallRight;
+                }
+            }
+            else if (autonomousNumberOfBalls == 3){
+                if (autonomousPosition.equals("left")){
+                    if (autoDebug){
+                        System.out.println("Three ball left");
+                    }
+                    autoStatus = threeBallLeft;
+                }
+                else if (autonomousPosition.equals("middle")){
+                    if (autoDebug){
+                        System.out.println("Three ball middle");
+                    }
+                    autoStatus = threeBallMiddle;
+                }
+                else {
+                    if (autoDebug){
+                        System.out.println("Three ball right");
+                    }
+                    autoStatus = threeBallRight;
+                }
+            }
+            else {
+                if (autoDebug){
+                    System.out.println("No ball");
+                }
+                autoStatus = noBall;
+            }
+            
+            if (autoStatus == noBall){
+                intake.extendIntake();
+            }
+
+            if (!notFirstTime){
+                hotGoalTimer.setTimer(0.2);
+                notFirstTime = true;
+            }
+
         }
+        
+        if (autoStatus == noBall){
+            autoDriveTimer.setTimer(1.4);
+            autoStatus = movingForward;
+        }
+
+        if (autoStatus == oneBallLeft){
+
+            if (hotGoalTimer.isExpired()){
+                hotGoalTimer.disableTimer();
+                if (hotGoalSensor.get()){
+                    shouldLaunch = true;
+                    launchTimer.setTimer(launchTime);
+                }
+                else {
+                    autoRotateTimer.setTimer(.5);
+                    autoStatus = rotatingRight;
+
+                }
+            }
+            else if (launchTimer.isExpired()){
+                autoDriveTimer.setTimer(1.4);
+                autoStatus = movingForward;
+            }
+
+        }
+
+        if (autoStatus == rotatingRight){
+            driveTrain.drive(0, 0.75, 0);
+            if (autoRotateTimer.isExpired()){
+                autoRotateTimer.disableTimer();
+                driveTrain.drive(0, 0, 0);
+            }
+        }
+
+        if (autoStatus == movingForward){
+            if (autoDebug){
+                System.out.println("Moving Forward");
+            }
+            driveTrain.drive(0.75, 0, 0);
+            if (autoDriveTimer.isExpired()){
+                autoDriveTimer.disableTimer();
+                driveTrain.drive(0, 0, 0);
+            }
+        }
+
+        launcher.stateMachine(shouldLaunch, false, false, intake.isExtended());
+    }
+
+
 
     
     // Subclassed because only Robot.java uses toggles
@@ -258,7 +416,7 @@ public class Robot extends IterativeRobot {
         
         public boolean toggle(boolean button){
             
-            boolean shouldToggle = !button && lastButtonValue;
+            boolean shouldToggle = button && !lastButtonValue;
             lastButtonValue = button;
             
             return shouldToggle;

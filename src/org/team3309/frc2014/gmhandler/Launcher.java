@@ -19,11 +19,12 @@ public class Launcher {
     private Victor winchBottomMotor;
     private SolenoidBase latchPiston;
     private SolenoidBase dogPiston;
+    private SolenoidBase pocketPiston;
     private Timer catapultTimer;
     private Timer stoppingMotorTimer;
     private Timer dogTimer;
     private Timer winchTimer;
-    private Timer launchErrorTimer;
+    private Timer pocketPistonTimer;
     private DigitalInput catapultSensor;
     private DigitalInput latchSensor;
     private int catapultStatus;
@@ -38,7 +39,11 @@ public class Launcher {
     private boolean launcherDebug;
     private boolean doubleLatchSolenoid;
     private boolean doubleDogSolenoid;
+    private boolean doublePocketPiston;
     private boolean sensorDebug;
+    private boolean overrideOperatorPocketPiston;
+    private boolean pocketPistonEngaged;
+    private boolean autoReset;
     private static final int unknown = 0;
     private static final int readyToLaunch = 1;
     private static final int launching = 2;
@@ -46,9 +51,11 @@ public class Launcher {
     private static final int winching = 4;
     private static final int stoppingMotors = 5;
     private static final int disengagingDog = 6;
-    private static final int errorLaunch = 7;
-    private static final int errorResetting = 8;
-    private static final int disabled = 9;
+    private static final int disengagingPocketPiston = 7;
+    private static final int errorLaunch = 8;
+    private static final int errorResetting = 9;
+    private static final int disabled = 10;
+    private static final int launchNow = 11;
 
     public Launcher() {
 
@@ -56,6 +63,7 @@ public class Launcher {
         double [] launcherWinchMotorTop = ((double[]) ConstantTable.getConstantTable().getValue("Launcher.winchMotorTop"));
         double [] launcherLatchPiston = ((double[]) ConstantTable.getConstantTable().getValue("Launcher.latchSolenoid"));
         double [] launcherDogPiston = ((double[]) ConstantTable.getConstantTable().getValue("Launcher.dogSolenoid"));
+        double [] launcherPocketPiston = ((double[]) ConstantTable.getConstantTable().getValue("Launcher.pocketPiston"));
         double [] launcherCatapultSensor = ((double[]) ConstantTable.getConstantTable().getValue("Launcher.catapultSensor"));
         double [] launcherLatchSensor = ((double[]) ConstantTable.getConstantTable().getValue("Launcher.latchSensor"));
         motorSpeed = ((Double) ConstantTable.getConstantTable().getValue("Launcher.motorSpeed")).doubleValue();
@@ -73,7 +81,8 @@ public class Launcher {
         stoppingMotorTimer = new Timer();
         dogTimer = new Timer();
         winchTimer = new Timer();
-        launchErrorTimer = new Timer();
+        pocketPistonTimer = new Timer();
+        
         winchBottomMotor = new Victor((int) launcherWinchMotorBot[0], (int) launcherWinchMotorBot[1]);
         winchTopMotor = new Victor((int) launcherWinchMotorTop[0], (int) launcherWinchMotorTop[1]);
         catapultSensor = new DigitalInput((int) launcherCatapultSensor[0], (int) launcherCatapultSensor[1]);
@@ -92,6 +101,13 @@ public class Launcher {
             dogPiston = new DoubleSolenoid((int) launcherDogPiston[0], (int) launcherDogPiston[1], (int) launcherDogPiston[2]);
             doubleDogSolenoid = true;
         }
+        if (launcherPocketPiston[2] == 0){
+            pocketPiston = new Solenoid((int) launcherPocketPiston[0], (int) launcherPocketPiston[1]);
+        }
+        else {
+            pocketPiston = new DoubleSolenoid((int) launcherPocketPiston[0], (int) launcherPocketPiston[1], (int) launcherPocketPiston[2]);
+            doublePocketPiston = true;
+        }
 
         catapultStatus = unknown;
         if (launcherDebug){
@@ -106,17 +122,19 @@ public class Launcher {
     public boolean isCatapultLatched() {
         return !latchSensor.get();
     }
-    public void stateMachine(boolean buttonPressed, boolean safeToMove) {
+    public void stateMachine(boolean launchAndReset, boolean manualLaunch, boolean manualReset, boolean safeToMove) {
 
         if (sensorDebug){
             System.out.println("Catapult in Position: " + String.valueOf(isCatapultInPos()) + " Latched: " + String.valueOf(isCatapultLatched()));
         }
+
 
         //Status unknown
         if (catapultStatus == unknown){
 
             if (launcherEnabled){
                 disengageDog();
+                autoReset = false;
 
                 if (isCatapultInPos() && isCatapultLatched()){
                     catapultStatus = readyToLaunch;
@@ -127,6 +145,7 @@ public class Launcher {
                 else if (safeToMove) {
                     safeToRetractIntake = false;
                     catapultTimer.setTimer((launchTime));
+                    autoReset = true;
                     catapultStatus = launching;
                     if (launcherDebug){
                         System.out.println("Catapult status: launching");
@@ -140,46 +159,81 @@ public class Launcher {
         }
 
         //Status ready to launch
-        if (catapultStatus == readyToLaunch) {
-            if (launcherEnabled && buttonPressed && safeToMove) {
-                catapultStatus = launching;
-                catapultTimer.setTimer(launchTime);
-                safeToRetractIntake = false;
-                openLatch();
-                launchErrorCount = 0;
-                if (launcherDebug){
-                    System.out.println("Catapult status: launching");
+        if ((catapultStatus == readyToLaunch || catapultStatus == launchNow) && safeToMove) {
+            if (launchAndReset || manualLaunch || catapultStatus == launchNow) {
+                if (!pocketPistonEngaged){
+
+                    //Launch
+                    catapultStatus = launching;
+                    catapultTimer.setTimer(launchTime);
+                    safeToRetractIntake = false;
+                    openLatch();
+                    launchErrorCount = 0;
+                    if (launcherDebug){
+                        System.out.println("Catapult status: launching");
+                    }
+
+                    //Determines if the launcher should use old or new reset value
+                    if (catapultStatus != launchNow){
+                        autoReset = launchAndReset;
+                    }
+                }
+                else {
+
+                    //Disengaging pocket piston before launch
+                    pocketPistonTimer.setTimer(0.2);
+                    overrideOperatorPocketPiston = true;
+                    autoReset = launchAndReset;
+                    catapultStatus = disengagingPocketPiston;
+                    if (launcherDebug){
+                        System.out.println("Catapult status: disengaging pocket piston");
+                    }
                 }
             }
-            else safeToRetractIntake = true;
+            else {
+
+                //Not yet time to launch
+                safeToRetractIntake = true;
+                overrideOperatorPocketPiston = false;
+            }
         }
 
         //Status launching
         if (catapultStatus == launching) {
             if (catapultTimer.isExpired()) {
+
                 //check for good launch
                 if (!isCatapultLatched() && !isCatapultInPos()) {
-                    closeLatch();
-                    catapultTimer.disableTimer();
-                    engageDog();
-                    dogTimer.setTimer(dogTime);
-                    catapultStatus = engagingDog;
-                    if (launcherDebug){
-                        System.out.println("Catapult status: engagingDog");
+
+                    //Check to see if time to reset
+                    if (autoReset || manualReset){
+                        catapultTimer.disableTimer();
+                        closeLatch();
+                        engageDog();
+                        dogTimer.setTimer(dogTime);
+                        autoReset = false;
+                        catapultStatus = engagingDog;
+
+                        if (launcherDebug){
+                            System.out.println("Catapult status: engaging dog");
+                        }
                     }
                 }
                 else {
+
+                    //Launcher error
                     launchErrorCount++;
-                    launchErrorTimer.setTimer(0.5);
                     catapultStatus = errorLaunch;
-                    if (launcherDebug){
+
+                    //Makes sure to print error launch only once and not again on second time through
+                    if (launchErrorCount == 0){
                         System.out.println("Catapult status: error launch");
                     }
+
+                    //Disables Launcher if count gets to 2
                     if (launchErrorCount >= 2) {
                         catapultStatus = disabled;
-                        if (launcherDebug){
-                            System.out.println("Catapult status: disabled");
-                        }
+                        System.out.println("Catapult status: disabled");
                     }
                 }
             }
@@ -206,7 +260,7 @@ public class Launcher {
                 stoppingMotorTimer.setTimer(stoppingMotorTime);
                 catapultStatus = stoppingMotors;
                 if (launcherDebug){
-                    System.out.println("Catapult status: stoppingMotors");
+                    System.out.println("Catapult status: stopping motors");
                 }
             }
             else if (winchTimer.isExpired()){
@@ -221,7 +275,7 @@ public class Launcher {
                 dogTimer.setTimer(dogTime);
                 catapultStatus = disengagingDog;
                 if (launcherDebug){
-                    System.out.println("Catapult status: disengaging Dog");
+                    System.out.println("Catapult status: disengaging dog");
                 }
             }
         }
@@ -242,18 +296,31 @@ public class Launcher {
             }
         }
 
+        //Status disengaging Pocket Piston
+        if (catapultStatus == disengagingPocketPiston){
+            safeToRetractIntake = false;
+            overrideOperatorPocketPiston = true;
+            disengagePocketPiston();
+            if (pocketPistonTimer.isExpired()){
+                pocketPistonTimer.disableTimer();
+                catapultStatus = launchNow;
+            }
+        }
+
         //Status errorLaunch
         if (catapultStatus == errorLaunch){
-            System.out.println("Error Launch");
+
             openLatch();
-            if (launchErrorTimer.isExpired()){
-                catapultStatus = launching;
+            catapultTimer.setTimer(launchTime);
+            catapultStatus = launching;
+            if (launcherDebug){
+                System.out.println("Catapult status: launching");
             }
         }
 
         //Status errorResetting
         if (catapultStatus == errorResetting){
-            System.out.println("Error Resetting");
+
             catapultStatus = disabled;
             if (launcherDebug){
                 System.out.println("Catapult status: disabled");
@@ -264,6 +331,7 @@ public class Launcher {
         if (catapultStatus == disabled) {
             winchTopMotor.disable();
             winchBottomMotor.disable();
+            safeToRetractIntake = true;
         }
     }
 
@@ -278,6 +346,7 @@ public class Launcher {
         latchPiston.free();
         latchSensor.free();
         catapultSensor.free();
+        pocketPiston.free();
     }
     
     public void openLatch (){
@@ -306,6 +375,34 @@ public class Launcher {
             ((DoubleSolenoid) dogPiston).set(DoubleSolenoid.Value.kReverse);
         }
         else ((Solenoid) dogPiston).set(false);
+    }
+    
+    public void disengagePocketPiston(){
+        if (doublePocketPiston){
+            ((DoubleSolenoid) pocketPiston).set(DoubleSolenoid.Value.kReverse);
+        }
+        else ((Solenoid) pocketPiston).set(false);
+
+        if (launcherDebug && pocketPistonEngaged){
+            System.out.println("disengaging pocket piston");
+        }
+
+        pocketPistonEngaged = false;
+    }
+    
+    public void enablePocketPiston(){
+        if (!overrideOperatorPocketPiston){
+            if (doublePocketPiston){
+                ((DoubleSolenoid) pocketPiston).set(DoubleSolenoid.Value.kForward);
+            }
+            else ((Solenoid) pocketPiston).set(true);
+
+            if (launcherDebug && !pocketPistonEngaged){
+                System.out.println("engaging pocket piston");
+            }
+
+            pocketPistonEngaged = true;
+        }
     }
     
     

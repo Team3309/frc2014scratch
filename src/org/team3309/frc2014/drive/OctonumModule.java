@@ -120,6 +120,7 @@ public class OctonumModule implements PIDOutput{
 
         // For smooth arc turns, reduce rotation of wheels at the rear of the direction
         // the bot is driving at. Amount of reduction is proportional to the drive speed.
+
         if (!front && drive > 0){
             rotModified = rotModified * (1 - drive);
         }
@@ -186,13 +187,15 @@ public class OctonumModule implements PIDOutput{
 
         if (ignoreEncoders){
             if (encoder != null){
-                SmartDashboard.putString("No PID", " ");
+                SmartDashboard.putString("No PID", " No PID");
+                System.out.println("No PID");
                 pidControl.reset();
             }
         }
         else {
             if (encoder != null){
-                SmartDashboard.putString("PID", " ");
+                SmartDashboard.putString("PID", " PID");
+                System.out.println("PID");
                 pidControl.enable();
             }
         }
@@ -238,7 +241,6 @@ public class OctonumModule implements PIDOutput{
                 " PIDOutput: " + String.valueOf((float) pidOutput) +
                 " Encoder: " + String.valueOf((float) encoder.getRate()) +
                 " Setpoint: " + String.valueOf((float) pidControl.getSetpoint()));
-          
         }
 
         driveMotor.set(pidOutput);
