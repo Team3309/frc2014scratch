@@ -266,13 +266,18 @@ public class Robot extends IterativeRobot {
         boolean driverAButton = driveXbox.getAButton();
         boolean driverBButton = driveXbox.getBButton();
         boolean driverRightBumper = driveXbox.getRightBumper();
+        boolean driverLeftBumper = driveXbox.getLeftBumper();
         boolean driverDup = driveXbox.getDPadUp();
         boolean driverDleft = driveXbox.getDPadLeft();
         boolean driverDright = driveXbox.getDPadRight();
         boolean driverDdown = driveXbox.getDPadDown();
+        double driverLeftJoystick = driveXbox.getLeftY();
+        
+        
+        
         
         if (testSelection == testDrive){
-            
+            if (d)
         }
         
         else if (testSelection == testIntake){
@@ -315,6 +320,22 @@ public class Robot extends IterativeRobot {
             
             if (driverBButton){
             launcher.disengageDog();
+            }
+            
+            if (driverRightBumper){
+                launcher.enablePocketPiston();
+            }
+            
+            if (driverLeftBumper){
+                launcher.disengagePocketPiston();
+            }
+            
+            if (driverLeftJoystick > 0){
+                launcher.loweringLauncher();
+            }
+            
+            if (driverLeftJoystick < 0){
+                launcher.stoppingLowering();
             }
         }
             

@@ -242,8 +242,7 @@ public class Launcher {
         //Status engaging dog
         if (catapultStatus == engagingDog){
             if (dogTimer.isExpired()){
-                winchBottomMotor.set(motorSpeed);
-                winchTopMotor.set(motorSpeed);
+                loweringLauncher();
                 winchTimer.setTimer(winchTime);
                 catapultStatus = winching;
                 if (launcherDebug){
@@ -255,8 +254,7 @@ public class Launcher {
         //Status winching
         if (catapultStatus == winching){
             if (isCatapultInPos() && isCatapultLatched()) {
-                winchBottomMotor.set(0);
-                winchTopMotor.set(0);
+                stoppingLowering();
                 stoppingMotorTimer.setTimer(stoppingMotorTime);
                 catapultStatus = stoppingMotors;
                 if (launcherDebug){
@@ -405,5 +403,13 @@ public class Launcher {
         }
     }
     
+    public void loweringLauncher(){
+        winchBottomMotor.set(motorSpeed);
+        winchTopMotor.set(motorSpeed);
+    }
     
+    public void stoppingLowering(){
+        winchBottomMotor.set(0);
+        winchTopMotor.set(0);
+    }
 }
