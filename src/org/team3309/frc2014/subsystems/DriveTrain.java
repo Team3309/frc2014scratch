@@ -175,7 +175,12 @@ public class DriveTrain{
             enableTank();
         }
     }
-    
-    public void enableWheels(){
+
+    public void enableTestMode(int wheelNum){
+        driveTrainWheels[wheelNum].enableTestMode();
+    }
+
+    public void disableTestMode(int wheelNum){
+        driveTrainWheels[wheelNum].disableTestMode();
     }
 }

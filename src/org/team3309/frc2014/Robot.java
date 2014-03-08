@@ -105,10 +105,10 @@ public class Robot extends IterativeRobot {
             driveTrain = new DriveTrain(gyro);
             launcher = new Launcher();
             intake = new Intake();
+            intake.extendIntake();
             robotInitialized = true;
             deadband = ((Double) ConstantTable.getConstantTable().getValue("Controller.deadband")).doubleValue();
             constantIntakeSpeed = ((Boolean) ConstantTable.getConstantTable().getValue("Controller.constantIntakeSpeed")).booleanValue();
-            
         }
     }
 
@@ -149,7 +149,9 @@ public class Robot extends IterativeRobot {
         autonomousStateMachine();
     }
 
-    
+    public void teleopInit() {
+        robotEnable();
+    }
 
     /**
      * This function is called periodically during operator control
@@ -249,7 +251,8 @@ public class Robot extends IterativeRobot {
 
         // Launcher is checking to see if the intake is physically in place
         // because the launcher takes time to extend
-        launcher.stateMachine(OperatorLeftBumper, OperatorAButton, OperatorYButton, intake.isExtended());
+        boolean[] launcherParameterArray = {OperatorLeftBumper, OperatorAButton, OperatorYButton, intake.isExtended(), OperatorXButton};
+        launcher.stateMachine(launcherParameterArray);
     }
     
     public void testInit(){
@@ -261,6 +264,25 @@ public class Robot extends IterativeRobot {
 
     public void testPeriodic() {
         // LiveWindow.run();
+
+        boolean driverDownPad = driveXbox.getDPadDown();
+        boolean driverUpPad = driveXbox.getDPadUp();
+        boolean driverRightPad = driveXbox.getDPadRight();
+        boolean driverLeftPad = driveXbox.getDPadLeft();
+
+        //Disables and renables each wheel accordingly
+        if (driverDownPad) driveTrain.enableTestMode(0);
+        else driveTrain.disableTestMode(0);
+
+        if (driverUpPad) driveTrain.enableTestMode(1);
+        else driveTrain.disableTestMode(1);
+
+        if (driverLeftPad) driveTrain.enableTestMode(2);
+        else driveTrain.disableTestMode(2);
+
+        if (driverRightPad) driveTrain.enableTestMode(3);
+        else driveTrain.disableTestMode(3);
+
         boolean driverXButton = driveXbox.getXButton();        
         boolean driverYButton = driveXbox.getYButton();
         boolean driverAButton = driveXbox.getAButton();
@@ -516,7 +538,12 @@ public class Robot extends IterativeRobot {
             }
         }
 
-        launcher.stateMachine(shouldLaunch, false, false, intake.isExtended());
+        //Parameters pulled out to help with documentation
+        boolean manualLaunch = false;
+        boolean manualReset = false;
+        boolean renableLauncher = false;
+        boolean[] launcherParameterArray = {shouldLaunch, manualLaunch, manualReset, intake.isExtended(), renableLauncher};
+        launcher.stateMachine(launcherParameterArray);
     }
 
 

@@ -47,7 +47,8 @@ public class OctonumModule implements PIDOutput{
     private boolean ignoreEncoders;
     private boolean debug;
     private boolean front;
-    
+    private boolean testMode;
+
     public OctonumModule(String wheelName, boolean isFront){
         this.wheelName = wheelName;
         front = isFront;
@@ -138,7 +139,12 @@ public class OctonumModule implements PIDOutput{
     }
     
     public void setNormalizationFactor(double factor){
+
         double setpoint = wheelSpeed * factor;
+
+        if (testMode){
+            setpoint = 0;
+        }
         
         if (encoder == null || ignoreEncoders){
             driveMotor.set(setpoint);
@@ -204,7 +210,7 @@ public class OctonumModule implements PIDOutput{
 
 
     public void stopMoving(){
-        if (encoder != null){
+        if (encoder != null && !ignoreEncoders){
             resetPID();
             pidControl.enable();
             pidControl.setSetpoint(0);
@@ -244,5 +250,13 @@ public class OctonumModule implements PIDOutput{
         }
 
         driveMotor.set(pidOutput);
+    }
+
+    public void enableTestMode(){
+        testMode = true;
+    }
+
+    public void disableTestMode(){
+        testMode = false;
     }
 }
