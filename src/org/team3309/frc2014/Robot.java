@@ -68,6 +68,11 @@ public class Robot extends IterativeRobot {
     private static final int threeBallRight = 11;
     private static final int movingForward = 12;
     private static final int rotatingRight = 13;
+    private int testSelection;
+    private int testDrive = 0;
+    private int testIntake = 1;
+    private int testShooting = 2;
+    private int testSensor = 3;
 
 
     /**
@@ -100,10 +105,10 @@ public class Robot extends IterativeRobot {
             driveTrain = new DriveTrain(gyro);
             launcher = new Launcher();
             intake = new Intake();
-            intake.extendIntake();
             robotInitialized = true;
             deadband = ((Double) ConstantTable.getConstantTable().getValue("Controller.deadband")).doubleValue();
             constantIntakeSpeed = ((Boolean) ConstantTable.getConstantTable().getValue("Controller.constantIntakeSpeed")).booleanValue();
+            
         }
     }
 
@@ -144,9 +149,7 @@ public class Robot extends IterativeRobot {
         autonomousStateMachine();
     }
 
-    public void teleopInit() {
-        robotEnable();
-    }
+    
 
     /**
      * This function is called periodically during operator control
@@ -248,10 +251,98 @@ public class Robot extends IterativeRobot {
         // because the launcher takes time to extend
         launcher.stateMachine(OperatorLeftBumper, OperatorAButton, OperatorYButton, intake.isExtended());
     }
+    
+    public void testInit(){
+        
+        
+        robotEnable();
+   
+    }
 
     public void testPeriodic() {
-        robotEnable();
         // LiveWindow.run();
+        boolean driverXButton = driveXbox.getXButton();        
+        boolean driverYButton = driveXbox.getYButton();
+        boolean driverAButton = driveXbox.getAButton();
+        boolean driverBButton = driveXbox.getBButton();
+        boolean driverRightBumper = driveXbox.getRightBumper();
+        boolean driverDup = driveXbox.getDPadUp();
+        boolean driverDleft = driveXbox.getDPadLeft();
+        boolean driverDright = driveXbox.getDPadRight();
+        boolean driverDdown = driveXbox.getDPadDown();
+        
+        if (testSelection == testDrive){
+            
+        }
+        
+        else if (testSelection == testIntake){
+        
+            if (driverXButton){
+               intake.extendIntake();
+            }
+            
+            if (driverYButton){
+                intake.retractIntake();
+            }
+            
+            if (driverAButton){
+                intake.pullIn();
+            }
+            
+            if (driverBButton){
+                intake.pushOut();
+            }
+            
+            if (driverRightBumper){
+                intake.stopMotors();
+            }
+            
+        } 
+        
+        else if (testSelection == testShooting){
+            
+            if (driverXButton){
+            launcher.openLatch();
+            }
+            
+            if (driverYButton){
+            launcher.closeLatch();
+            }
+            
+            if (driverAButton){
+            launcher.engageDog();
+            }
+            
+            if (driverBButton){
+            launcher.disengageDog();
+            }
+        }
+            
+        else if(testSelection == testSensor){
+            
+        }
+        
+        
+    
+        if (driverDup){
+            testSelection = testDrive;
+            
+        }
+        
+        if (driverDleft){
+            testSelection = testIntake;
+            
+        }
+       
+        if (driverDright){
+            testSelection = testShooting;
+           
+        }
+        
+        if (driverDdown){
+            testSelection = testSensor;
+        }
+
         
     }
 
