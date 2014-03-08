@@ -212,6 +212,7 @@ public class Robot extends IterativeRobot {
         boolean OperatorRightBumper = operatorXbox.getRightBumper();
         boolean OperatorAButton = operatorXbox.getAButton();
         boolean OperatorYButton = operatorXbox.getYButton();
+        boolean OperatorXButton = operatorXbox.getXButton();
         double OperatorLeftY = operatorXbox.getLeftY();
         boolean OperatorXButton = operatorXbox.getXButton();
         
