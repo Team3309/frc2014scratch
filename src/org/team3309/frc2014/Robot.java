@@ -277,7 +277,7 @@ public class Robot extends IterativeRobot {
         
         
         if (testSelection == testDrive){
-            if (d)
+            
         }
         
         else if (testSelection == testIntake){
