@@ -37,6 +37,7 @@ public class Robot extends IterativeRobot {
     private Toggle intakeRetractedToggle;
     private Toggle drivePIDControllerToggle;
     private Toggle gyroToggle;
+    private Toggle driveToggle;
     private Timer launchTimer;
     private Timer autoDriveTimer;
     private Timer intakeTimer;
@@ -52,6 +53,10 @@ public class Robot extends IterativeRobot {
     private boolean shouldLaunch;
     private boolean autoDebug;
     private boolean notFirstTime;
+    private boolean driveTopLeftEnabled;
+    private boolean driveTopRightEnabled;
+    private boolean driveBottomLeftEnabled;
+    private boolean driveBottomRightEnabled;
     private String autonomousPosition;
     private int autonomousNumberOfBalls;
     private int autoStatus;
@@ -208,6 +213,8 @@ public class Robot extends IterativeRobot {
         boolean OperatorAButton = operatorXbox.getAButton();
         boolean OperatorYButton = operatorXbox.getYButton();
         double OperatorLeftY = operatorXbox.getLeftY();
+        boolean OperatorXButton = operatorXbox.getXButton();
+        
 
         OperatorLeftY = applyDeadband(OperatorLeftY);
 
@@ -263,26 +270,9 @@ public class Robot extends IterativeRobot {
     }
 
     public void testPeriodic() {
-        // LiveWindow.run();
-
-        boolean driverDownPad = driveXbox.getDPadDown();
-        boolean driverUpPad = driveXbox.getDPadUp();
-        boolean driverRightPad = driveXbox.getDPadRight();
-        boolean driverLeftPad = driveXbox.getDPadLeft();
-
+        // LiveWindow.run();        
         //Disables and renables each wheel accordingly
-        if (driverDownPad) driveTrain.enableTestMode(0);
-        else driveTrain.disableTestMode(0);
-
-        if (driverUpPad) driveTrain.enableTestMode(1);
-        else driveTrain.disableTestMode(1);
-
-        if (driverLeftPad) driveTrain.enableTestMode(2);
-        else driveTrain.disableTestMode(2);
-
-        if (driverRightPad) driveTrain.enableTestMode(3);
-        else driveTrain.disableTestMode(3);
-
+        
         boolean driverXButton = driveXbox.getXButton();        
         boolean driverYButton = driveXbox.getYButton();
         boolean driverAButton = driveXbox.getAButton();
@@ -299,6 +289,59 @@ public class Robot extends IterativeRobot {
         
         
         if (testSelection == testDrive){
+            
+            if (driveToggle.toggle(driverDup)) {
+                driveTopLeftEnabled = !driveTopLeftEnabled;
+                
+                if (driveTopLeftEnabled){
+                    driveTrain.enableTestMode("topLeft");
+                    
+                } 
+                else {
+                    driveTrain.disableTestMode("topLeft");
+                }
+                
+            }
+        
+
+        if (driveToggle.toggle(driverDright)) {
+                driveTopRightEnabled = !driveTopRightEnabled;
+                
+                if (driveTopRightEnabled){
+                    driveTrain.enableTestMode("topRight");
+                    
+                } 
+                else {
+                    driveTrain.disableTestMode("topRight");
+                }
+                
+            }
+        
+        if (driveToggle.toggle(driverDdown)) {
+                driveBottomLeftEnabled = !driveBottomLeftEnabled;
+                
+                if (driveBottomLeftEnabled){
+                    driveTrain.enableTestMode("bottomleft");
+                    
+                } 
+                else {
+                    driveTrain.disableTestMode("bottomleft");
+                }
+                
+            }
+        
+        if (driveToggle.toggle(driverDright)) {
+                driveBottomRightEnabled = !driveBottomRightEnabled;
+                
+                if (driveBottomRightEnabled){
+                    driveTrain.enableTestMode("bottomright");
+                    
+                } 
+                else {
+                    driveTrain.disableTestMode("bottomright");
+                }
+                
+            }
             
         }
         

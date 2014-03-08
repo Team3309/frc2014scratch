@@ -26,6 +26,7 @@ public class DriveTrain{
     private boolean gyroEnabled;
     private double maxStrafe;
     private boolean doubleSolenoid;
+    private int wheelNum;
 
     public DriveTrain(Gyro gyro) {
 
@@ -176,11 +177,44 @@ public class DriveTrain{
         }
     }
 
-    public void enableTestMode(int wheelNum){
+    public void enableTestMode(String wheelName){
+        if (wheelName.equals("topLeft")){
+        wheelNum = 0;        
+        }
+        
+        if (wheelName.equals("topRight")){
+        wheelNum = 1;        
+        }
+        
+        if (wheelName.equals("bottomLeft")){
+        wheelNum = 2;        
+        }
+        
+        if (wheelName.equals("bottomRight")){
+        wheelNum = 3;        
+        }
+        
         driveTrainWheels[wheelNum].enableTestMode();
     }
-
-    public void disableTestMode(int wheelNum){
+    
+    
+    public void disableTestMode(String wheelName){
+        if (wheelName.equals("topLeft")){
+            wheelNum = 0;
+        }
+        
+        if (wheelName.equals("topRight")){
+        wheelNum = 1;        
+        }
+        
+        if (wheelName.equals("bottomLeft")){
+        wheelNum = 2;        
+        }
+        
+        if (wheelName.equals("bottomRight")){
+        wheelNum = 3;        
+        }
+        
         driveTrainWheels[wheelNum].disableTestMode();
     }
 }
