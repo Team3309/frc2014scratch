@@ -122,7 +122,13 @@ public class Launcher {
     public boolean isCatapultLatched() {
         return !latchSensor.get();
     }
-    public void stateMachine(boolean launchAndReset, boolean manualLaunch, boolean manualReset, boolean safeToMove) {
+    public void stateMachine(boolean[] launcherParameterArray) {
+
+        boolean launchAndReset = launcherParameterArray[0];
+        boolean manualLaunch = launcherParameterArray[1];
+        boolean manualReset = launcherParameterArray[2];
+        boolean safeToMove = launcherParameterArray[3];
+        boolean renableLauncher = launcherParameterArray[4];
 
         if (sensorDebug){
             System.out.println("Catapult in Position: " + String.valueOf(isCatapultInPos()) + " Latched: " + String.valueOf(isCatapultLatched()));
@@ -263,6 +269,7 @@ public class Launcher {
             }
             else if (winchTimer.isExpired()){
                 catapultStatus = errorResetting;
+                System.out.println("Catapult status: error winching");
             }
         }
 
@@ -327,9 +334,20 @@ public class Launcher {
 
         //Status Disabled
         if (catapultStatus == disabled) {
-            winchTopMotor.disable();
-            winchBottomMotor.disable();
+            winchTopMotor.set(0);
+            winchBottomMotor.set(0);
+            autoReset = false;
+            catapultTimer.disableTimer();
+            stoppingMotorTimer.disableTimer();
+            dogTimer.disableTimer();
+            winchTimer.disableTimer();
+            pocketPistonTimer.disableTimer();
             safeToRetractIntake = true;
+            launcherEnabled = false;
+            if (renableLauncher){
+                launcherEnabled = true;
+                catapultStatus = unknown;
+            }
         }
     }
 
