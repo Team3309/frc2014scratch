@@ -173,6 +173,8 @@ public class DriveTrain{
         for (int i = 0; i < 4; i++){
             driveTrainWheels[i].normalMovement();
         }
+    }
+
     public void enableTestMode(String wheelName){
         if (wheelName.equals("topLeft")){
         wheelNum = 0;        
@@ -192,11 +194,6 @@ public class DriveTrain{
         
         driveTrainWheels[wheelNum].enableTestMode();
     }
-
-    public void enableTestMode(){
-    }
-
-    public void disableTestMode(int wheelNum){
     
     
     public void disableTestMode(String wheelName){

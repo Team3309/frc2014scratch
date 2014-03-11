@@ -81,10 +81,6 @@ public class Robot extends IterativeRobot {
     private static final int rotatingLeft = 12;
     private static final int pullIn = 13;
     private int testSelection;
-    private int testDrive = 0;
-    private int testIntake = 1;
-    private int testShooting = 2;
-    private int testSensor = 3;
 
 
     /**
@@ -233,7 +229,6 @@ public class Robot extends IterativeRobot {
         boolean OperatorYButton = operatorXbox.getYButton();
         boolean OperatorXButton = operatorXbox.getXButton();
         double OperatorLeftY = operatorXbox.getLeftY();
-        boolean OperatorXButton = operatorXbox.getXButton();
         
 
         OperatorLeftY = applyDeadband(OperatorLeftY);
@@ -286,9 +281,9 @@ public class Robot extends IterativeRobot {
     }
     
     public void testInit(){
-        
-        
+
         robotEnable();
+        driveToggle = new Toggle();
    
     }
 
@@ -296,23 +291,28 @@ public class Robot extends IterativeRobot {
         robotEnable();
         // LiveWindow.run();
 
+        final int testDrive = 0;
+        final int testIntake = 1;
+        final int testShooting = 2;
+        final int testSensor = 3;
+
         boolean driverDownPad = driveXbox.getDPadDown();
         boolean driverUpPad = driveXbox.getDPadUp();
         boolean driverRightPad = driveXbox.getDPadRight();
         boolean driverLeftPad = driveXbox.getDPadLeft();
 
         //Disables and renables each wheel accordingly
-        if (driverDownPad) driveTrain.enableTestMode(0);
-        else driveTrain.disableTestMode(0);
+        if (driverDownPad) driveTrain.enableTestMode("topLeft");
+        else driveTrain.disableTestMode("topLeft");
 
-        if (driverUpPad) driveTrain.enableTestMode(1);
-        else driveTrain.disableTestMode(1);
+        if (driverUpPad) driveTrain.enableTestMode("topRight");
+        else driveTrain.disableTestMode("topRight");
 
-        if (driverLeftPad) driveTrain.enableTestMode(2);
-        else driveTrain.disableTestMode(2);
+        if (driverLeftPad) driveTrain.enableTestMode("bottomLeft");
+        else driveTrain.disableTestMode("bottomLeft");
 
-        if (driverRightPad) driveTrain.enableTestMode(3);
-        else driveTrain.disableTestMode(3);
+        if (driverRightPad) driveTrain.enableTestMode("bottomRight");
+        else driveTrain.disableTestMode("bottomRight");
 
         // LiveWindow.run();        
         //Disables and renables each wheel accordingly
@@ -365,11 +365,11 @@ public class Robot extends IterativeRobot {
                 driveBottomLeftEnabled = !driveBottomLeftEnabled;
                 
                 if (driveBottomLeftEnabled){
-                    driveTrain.enableTestMode("bottomleft");
+                    driveTrain.enableTestMode("bottomLeft");
                     
                 } 
                 else {
-                    driveTrain.disableTestMode("bottomleft");
+                    driveTrain.disableTestMode("bottomLeft");
                 }
                 
             }
@@ -378,11 +378,11 @@ public class Robot extends IterativeRobot {
                 driveBottomRightEnabled = !driveBottomRightEnabled;
                 
                 if (driveBottomRightEnabled){
-                    driveTrain.enableTestMode("bottomright");
+                    driveTrain.enableTestMode("bottomRight");
                     
                 } 
                 else {
-                    driveTrain.disableTestMode("bottomright");
+                    driveTrain.disableTestMode("bottomRight");
                 }
                 
             }
