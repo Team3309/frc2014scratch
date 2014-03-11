@@ -293,6 +293,27 @@ public class Robot extends IterativeRobot {
     }
 
     public void testPeriodic() {
+        robotEnable();
+        // LiveWindow.run();
+
+        boolean driverDownPad = driveXbox.getDPadDown();
+        boolean driverUpPad = driveXbox.getDPadUp();
+        boolean driverRightPad = driveXbox.getDPadRight();
+        boolean driverLeftPad = driveXbox.getDPadLeft();
+
+        //Disables and renables each wheel accordingly
+        if (driverDownPad) driveTrain.enableTestMode(0);
+        else driveTrain.disableTestMode(0);
+
+        if (driverUpPad) driveTrain.enableTestMode(1);
+        else driveTrain.disableTestMode(1);
+
+        if (driverLeftPad) driveTrain.enableTestMode(2);
+        else driveTrain.disableTestMode(2);
+
+        if (driverRightPad) driveTrain.enableTestMode(3);
+        else driveTrain.disableTestMode(3);
+
         // LiveWindow.run();        
         //Disables and renables each wheel accordingly
         
@@ -719,9 +740,6 @@ public class Robot extends IterativeRobot {
             if (autoDriveTimer.isExpired()){
                 autoDriveTimer.disableTimer();
                 driveTrain.drive(0, 0, 0);
-                for (int i = 0; i == 0; i ++){
-                    System.out.println("End of autonomous");
-                }
             }
         }
 
@@ -731,7 +749,6 @@ public class Robot extends IterativeRobot {
         boolean renableLauncher = false;
         boolean[] launcherParameterArray = {shouldLaunch, manualLaunch, manualReset, intake.isExtended(), renableLauncher};
         launcher.stateMachine(launcherParameterArray);
-        shouldLaunch = false;
     }
 
 
@@ -750,9 +767,3 @@ public class Robot extends IterativeRobot {
         }
     }
 }
-
-    
-    
-    
-    
-    
