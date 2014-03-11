@@ -7,6 +7,7 @@ package org.team3309.friarlib;
 import edu.wpi.first.wpilibj.PIDController;
 import edu.wpi.first.wpilibj.Gyro;
 import edu.wpi.first.wpilibj.PIDOutput;
+import edu.wpi.first.wpilibj.PIDSource;
 import org.team3309.frc2014.constantmanager.ConstantTable;
 
 /**
@@ -15,88 +16,125 @@ import org.team3309.frc2014.constantmanager.ConstantTable;
  */
 public class RobotAngleGyro implements PIDOutput{
     private Gyro gyro;
-    private PIDController gyroPIDcontroller;
+    private PIDController gyroPIDController;
     private long lastUpdate;
+    private boolean debug;
+    private boolean voltageControl;
+    private boolean isTank;
     private double maxRotation;
     private double desiredPosition;
     private double pidOutput;
     private double lastDebugMillis;
     private double movement;
-    private boolean debug;
-    private boolean voltageControl;
+    private double desiredVelocity;
     private double[] voltagePIDOutputRange;
+    private double[] gyroPIDArrayMecanum;
+    private double[] gyroPIDArrayTank;
 
     public RobotAngleGyro(Gyro gyro) {
 
-        double pGyro = ((Double) ConstantTable.getConstantTable().getValue("Gyro.pGyro")).doubleValue();
-        double iGyro = ((Double) ConstantTable.getConstantTable().getValue("Gyro.iGyro")).doubleValue();
-        double dGyro = ((Double) ConstantTable.getConstantTable().getValue("Gyro.dGyro")).doubleValue();
+        gyroPIDArrayMecanum = ((double[]) ConstantTable.getConstantTable().getValue("Gyro.pidValuesMecanum"));
+        gyroPIDArrayTank = ((double[]) ConstantTable.getConstantTable().getValue("Gyro.pidValuesTank"));
         debug = ((Boolean) ConstantTable.getConstantTable().getValue("Gyro.debug")).booleanValue();
         maxRotation = ((Double)ConstantTable.getConstantTable().getValue("Gyro.maxRotation")).doubleValue();
-        voltagePIDOutputRange = ((double []) ConstantTable.getConstantTable().getValue("Gyro.voltagePIDoutputRange"));
+        voltagePIDOutputRange = ((double []) ConstantTable.getConstantTable().getValue("Gyro.voltagePIDOutputRange"));
 
         this.gyro = gyro;
-        gyroPIDcontroller = new PIDController(pGyro, iGyro, dGyro, gyro, this);
+        gyroPIDController = new PIDController(gyroPIDArrayMecanum[0], gyroPIDArrayMecanum[1], gyroPIDArrayMecanum[2], gyroPIDArrayMecanum[3], gyro, this);
 
         gyro.reset();
-        gyroPIDcontroller.enable();
+        gyroPIDController.enable();
     }
-    
-    public double getDesiredRotation(double joystickRotation, double movement){
 
-        this.movement = movement;
+    //Returns desired angular velocity
+    public double getDesiredRotationVelocity(double joystickRotation, double movement){
 
-        if (lastUpdate == 0){
-            lastUpdate = System.currentTimeMillis();
+        if (isTank){
+            gyroPIDController.setPID(gyroPIDArrayTank[0], gyroPIDArrayTank[1], gyroPIDArrayTank[2], gyroPIDArrayTank[3]);
         }
+        else {
+            gyroPIDController.setPID(gyroPIDArrayMecanum[0], gyroPIDArrayMecanum[1], gyroPIDArrayMecanum[2], gyroPIDArrayMecanum[3]);
+        }
+
+        //Sets gyro to send the angular velocity to the PID controller versus current angle
+        gyro.setPIDSourceParameter(PIDSource.PIDSourceParameter.kRate);
+        this.movement = movement;
     
         long currentUpdate = System.currentTimeMillis();
-        double timeElapsed = (currentUpdate - lastUpdate) / 1000d;
-        lastUpdate = currentUpdate;
-    
-        double desiredVelocity = joystickRotation * maxRotation;
-        desiredPosition += timeElapsed * desiredVelocity;
-                
-        gyroPIDcontroller.setSetpoint(desiredPosition);
+        desiredVelocity = joystickRotation * maxRotation;
+
+        gyroPIDController.setSetpoint(desiredVelocity);
         
         if (debug && lastDebugMillis + 250 < currentUpdate){
-            System.out.println(" desired position: " + String.valueOf((float) desiredPosition) +
-                    " gyro angle: " + String.valueOf((float) gyro.getAngle() +
+            System.out.println(" desired velocity: " + String.valueOf((float) desiredVelocity) +
+                    " gyro velocity: " + String.valueOf((float) gyro.getRate() +
                     " pidOutput: " + String.valueOf((float) pidOutput))); 
             lastDebugMillis = currentUpdate;
         }
        
         return pidOutput;
     }
+
+    //Saved for use in freeze in place button to maintain current angle position
+    public double getDesiredRotationPosition(double joystickRotation, double movement){
+
+        if (isTank){
+            gyroPIDController.setPID(gyroPIDArrayTank[0], gyroPIDArrayTank[1], gyroPIDArrayTank[2], gyroPIDArrayTank[3]);
+        }
+        else {
+            gyroPIDController.setPID(gyroPIDArrayMecanum[0], gyroPIDArrayMecanum[1], gyroPIDArrayMecanum[2], gyroPIDArrayMecanum[3]);
+        }
+
+        gyro.setPIDSourceParameter(PIDSource.PIDSourceParameter.kAngle);
+        this.movement = movement;
+
+        if (lastUpdate == 0){
+            lastUpdate = System.currentTimeMillis();
+        }
+
+        long currentUpdate = System.currentTimeMillis();
+        double timeElapsed = (currentUpdate - lastUpdate) / 1000d;
+        lastUpdate = currentUpdate;
+
+        double desiredVelocity = joystickRotation * maxRotation;
+        desiredPosition += timeElapsed * desiredVelocity;
+
+        gyroPIDController.setSetpoint(desiredPosition);
+
+        if (debug && lastDebugMillis + 250 < currentUpdate){
+            System.out.println(" desired position: " + String.valueOf((float) desiredPosition) +
+                    " gyro angle: " + String.valueOf((float) gyro.getAngle() +
+                    " pidOutput: " + String.valueOf((float) pidOutput)));
+            lastDebugMillis = currentUpdate;
+        }
+
+        return pidOutput;
+    }
     
     public void free(){
-        gyroPIDcontroller.free();
+        gyroPIDController.free();
     }
 
     public void reset(){
         gyro.reset();
-        desiredPosition = 0;
+        desiredVelocity = 0;
+    }
+
+    public void setTank(){
+        isTank = true;
+    }
+
+    public void setMecanum(){
+        isTank = false;
     }
 
     public void setVoltageControlMode(){
-        // Anything less than .3 is not enough to move the bot, this
-        // scales it from .3 to 1
         voltageControl = true;
     }
 
     public void setWheelSpeedControlMode(){
         voltageControl = false;
     }
-    
-    //DONT REMOVE FOR FIELD CENTRIC INCOMPLETE
-    //public double[] calculateFieldCentricDriveStrafe(double drive, double strafe){
-        //double r = Math.sqrt(drive*drive + strafe*strafe);
-        //double theta = MathUtils.atan(strafe/drive);
-        //double[] fieldCentricDriveStrafe;
-       // fieldCentricDriveStrafe[0]
-                
-       // return fieldCentricDriveStrafe;
-  //  }
 
     public void pidWrite(double d) {
         // Stopping rotation when error is 0
@@ -113,5 +151,15 @@ public class RobotAngleGyro implements PIDOutput{
         }
         else pidOutput = d;
     }
+
+    //DONT REMOVE FOR FIELD CENTRIC INCOMPLETE
+    //public double[] calculateFieldCentricDriveStrafe(double drive, double strafe){
+    //double r = Math.sqrt(drive*drive + strafe*strafe);
+    //double theta = MathUtils.atan(strafe/drive);
+    //double[] fieldCentricDriveStrafe;
+    // fieldCentricDriveStrafe[0]
+
+    // return fieldCentricDriveStrafe;
+    //  }
 }
 

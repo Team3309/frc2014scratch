@@ -9,12 +9,12 @@ package org.team3309.frc2014.drive;
 
 import edu.wpi.first.wpilibj.CounterBase;
 import edu.wpi.first.wpilibj.Encoder;
-import edu.wpi.first.wpilibj.PIDController;
 import edu.wpi.first.wpilibj.PIDOutput;
 import edu.wpi.first.wpilibj.PIDSource.PIDSourceParameter;
 import edu.wpi.first.wpilibj.Victor;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import org.team3309.frc2014.constantmanager.ConstantTable;
+import org.team3309.friarlib.FriarPIDController;
 
 
 /**
@@ -25,29 +25,27 @@ public class OctonumModule implements PIDOutput{
     
     private Victor driveMotor;
     private Encoder encoder;
-    private PIDController pidControl;
+    private FriarPIDController pidControl;
     private String wheelName;
     private double[] multipliers;
-    private double totalError;
-    private double pTank;
-    private double iTank;
-    private double dTank;
-    private double fTank;
-    private double pMecanum;
-    private double iMecanum;
-    private double dMecanum;
-    private double fMecanum;
+    private double[] mecanumAccelPIDValues;
+    private double[] mecanumDecelPIDValues;
+    private double[] tankAccelPIDValues;
+    private double[] tankDecelPIDValues;
     private double pulsesPerInchTank;
     private double pulsesPerInchMecanum;
     private double inchesPerSecondMaxTank;
     private double inchesPerSecondMaxMecanum;
     private double wheelSpeed;
     private double maxWheelSpeed;
+    private double lastTime;
+    private double desiredPosition;
     private boolean isTank;
     private boolean ignoreEncoders;
     private boolean debug;
     private boolean front;
     private boolean testMode;
+    private boolean velocityControl;
 
     public OctonumModule(String wheelName, boolean isFront){
         this.wheelName = wheelName;
@@ -81,20 +79,16 @@ public class OctonumModule implements PIDOutput{
             encoder.setPIDSourceParameter(PIDSourceParameter.kRate);
             encoder.setReverseDirection(isEncoderFlipped);
             encoder.start();
-            
-            pMecanum = ((Double) ConstantTable.getConstantTable().getValue("Octonum.pMecanum")).doubleValue();
-            iMecanum = ((Double) ConstantTable.getConstantTable().getValue("Octonum.iMecanum")).doubleValue();
-            dMecanum = ((Double) ConstantTable.getConstantTable().getValue("Octonum.dMecanum")).doubleValue();
-            fMecanum = ((Double) ConstantTable.getConstantTable().getValue("Octonum.fMecanum")).doubleValue();
-            pTank = ((Double) ConstantTable.getConstantTable().getValue("Octonum.pTank")).doubleValue();
-            iTank = ((Double) ConstantTable.getConstantTable().getValue("Octonum.iTank")).doubleValue();
-            dTank = ((Double) ConstantTable.getConstantTable().getValue("Octonum.dTank")).doubleValue();
-            fTank = ((Double) ConstantTable.getConstantTable().getValue("Octonum.fTank")).doubleValue();
-            
-            pidControl = new PIDController(pMecanum, iMecanum, dMecanum, fMecanum, encoder, this);
+
+            mecanumAccelPIDValues = ((double[]) ConstantTable.getConstantTable().getValue("Octonum.mecanumAccelPIDValues"));
+            mecanumDecelPIDValues = ((double[]) ConstantTable.getConstantTable().getValue("Octonum.mecanumDecelPIDValues"));
+            tankAccelPIDValues = ((double[]) ConstantTable.getConstantTable().getValue("Octonum.tankAccelPIDValues"));
+            tankDecelPIDValues = ((double[]) ConstantTable.getConstantTable().getValue("Octonum.tankDecelPIDValues"));
+
+            pidControl = new FriarPIDController(mecanumAccelPIDValues, mecanumDecelPIDValues, encoder, this);
             pidControl.enable();
         }
-        
+
     }
     
     public void free(){
@@ -112,7 +106,7 @@ public class OctonumModule implements PIDOutput{
      * @param strafe - left/right (only for Mecanum)
      */
     
-    
+
     public double setRawSpeed(double drive, double rot, double strafe){
 
         double rotModified = rot * multipliers[1];
@@ -140,22 +134,26 @@ public class OctonumModule implements PIDOutput{
     
     public void setNormalizationFactor(double factor){
 
-        double setpoint = wheelSpeed * factor;
+        double desiredSpeed = wheelSpeed * factor;
+
+        double timeElapsed = lastTime - System.currentTimeMillis();
+        lastTime = System.currentTimeMillis();
+
+        desiredPosition += desiredSpeed * timeElapsed;
 
         if (testMode){
-            setpoint = 0;
+            driveMotor.set(0);
         }
-        
         if (encoder == null || ignoreEncoders){
-            driveMotor.set(setpoint);
+            driveMotor.set(desiredSpeed);
         }
         else{
             if (isTank){
-                setpoint *= inchesPerSecondMaxTank * maxWheelSpeed;
+                desiredSpeed *= inchesPerSecondMaxTank * maxWheelSpeed;
             }
-            else setpoint *= inchesPerSecondMaxMecanum * maxWheelSpeed;
+            else desiredSpeed *= inchesPerSecondMaxMecanum * maxWheelSpeed;
 
-            if (setpoint == 0){
+            if (desiredSpeed == 0){
                 pidControl.disable();
                 pidControl.setSetpoint(0);
             }
@@ -165,15 +163,19 @@ public class OctonumModule implements PIDOutput{
                     resetPID();
                     pidControl.enable();
                 }
-                pidControl.setSetpoint(setpoint);
+                if (velocityControl){
+                    pidControl.setSetpoint(desiredSpeed);
+                }
+                else {
+                    pidControl.setSetpoint(desiredPosition);
+                }
             }
         }
-        
     }
 
     public void enableTank(){
         if (encoder != null){
-            pidControl.setPID(pTank, iTank, dTank, fTank);
+            pidControl.setPIDValues(tankAccelPIDValues, tankDecelPIDValues);
             encoder.setDistancePerPulse(pulsesPerInchTank);
         }
         isTank = true;
@@ -181,7 +183,7 @@ public class OctonumModule implements PIDOutput{
     
     public void enableMecanum(){
         if (encoder != null){
-            pidControl.setPID(pMecanum, iMecanum, dMecanum, fMecanum);
+            pidControl.setPIDValues(mecanumAccelPIDValues, mecanumDecelPIDValues);
             encoder.setDistancePerPulse(pulsesPerInchMecanum);
         }
         isTank = false;
@@ -209,11 +211,18 @@ public class OctonumModule implements PIDOutput{
 
 
 
-    public void stopMoving(){
+    public void freezeInPlace(){
         if (encoder != null && !ignoreEncoders){
-            resetPID();
-            pidControl.enable();
+            encoder.setPIDSourceParameter(PIDSourceParameter.kDistance);
             pidControl.setSetpoint(0);
+            velocityControl = false;
+        }
+    }
+
+    public void normalMovement(){
+        if (encoder != null && !ignoreEncoders){
+            encoder.setPIDSourceParameter(PIDSourceParameter.kRate);
+            velocityControl = true;
         }
     }
 
@@ -225,7 +234,6 @@ public class OctonumModule implements PIDOutput{
         if (encoder != null){
             pidControl.reset();
         }
-        totalError = 0;
     }
 
     public boolean areEncodersEnabled(){
@@ -234,16 +242,8 @@ public class OctonumModule implements PIDOutput{
 
     public void pidWrite(double pidOutput) {
 
-        // Keep track of total error for tuning because the PIDController does not return total error
-        totalError += pidControl.getError() * pidControl.getI();
-        if (totalError > 1){
-            totalError = 1;
-        }
-        else if (totalError < -1){
-            totalError = -1;
-        }
         if (debug && encoder.getRate() != 0){
-            System.out.println(wheelName + " totalError: " + String.valueOf((float) totalError) + 
+            System.out.println(wheelName + " totalError: " + String.valueOf((float) pidControl.getTotalError()) +
                 " PIDOutput: " + String.valueOf((float) pidOutput) +
                 " Encoder: " + String.valueOf((float) encoder.getRate()) +
                 " Setpoint: " + String.valueOf((float) pidControl.getSetpoint()));
@@ -259,4 +259,8 @@ public class OctonumModule implements PIDOutput{
     public void disableTestMode(){
         testMode = false;
     }
+
+    /*public void breaking(double breakingPower){
+
+    }*/
 }

@@ -82,7 +82,7 @@ public class DriveTrain{
             strafe = maxStrafe;
         }
         if (gyroEnabled){
-            adjustedRotation = robotAngleGyro.getDesiredRotation(rot, drive + strafe);
+            adjustedRotation = robotAngleGyro.getDesiredRotationVelocity(rot, drive + strafe);
         }
         else {
             adjustedRotation = rot;
@@ -100,18 +100,6 @@ public class DriveTrain{
         }
     }
 
-    /*public boolean breaking(double breakingPower){
-        for (int i = 0; i < 4; i++) {
-            driveTrainWheels[i].breaking(breakingPower);
-            return true;
-        }
-        return false;
-    }*/
-
-        /**
-     * enable TankMode by enabling Piston
-     */
-
     public void enableTank(){
         if (!noSolenoids){
             if (doubleSolenoid){
@@ -124,6 +112,8 @@ public class DriveTrain{
                 driveTrainWheels[i].enableTank();
             }
         }
+
+        robotAngleGyro.setTank();
     }
 
     public void enableMecanum(){
@@ -138,6 +128,8 @@ public class DriveTrain{
         for (int i = 0; i < 4; i++) {
             driveTrainWheels[i].enableMecanum();
         }
+
+        robotAngleGyro.setMecanum();
     }
 
     public void togglePIDControl(){
@@ -171,16 +163,34 @@ public class DriveTrain{
 
     public void minimizeMovement(){
         for (int i = 0; i < 4; i++){
-            driveTrainWheels[i].stopMoving();
+            driveTrainWheels[i].freezeInPlace();
             enableTank();
         }
     }
 
-    public void enableTestMode(int wheelNum){
-        driveTrainWheels[wheelNum].enableTestMode();
+    public void normalMovement(){
+        for (int i = 0; i < 4; i++){
+            driveTrainWheels[i].normalMovement();
+        }
+    }
+
+    public void enableTestMode(){
     }
 
     public void disableTestMode(int wheelNum){
         driveTrainWheels[wheelNum].disableTestMode();
     }
+
+
+    /*public boolean breaking(double breakingPower){
+        for (int i = 0; i < 4; i++) {
+            driveTrainWheels[i].breaking(breakingPower);
+            return true;
+        }
+        return false;
+    }*/
+
+    /**
+     * enable TankMode by enabling Piston
+     */
 }

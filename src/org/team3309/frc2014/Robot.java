@@ -37,14 +37,20 @@ public class Robot extends IterativeRobot {
     private Toggle intakeRetractedToggle;
     private Toggle drivePIDControllerToggle;
     private Toggle gyroToggle;
+    private Toggle pocketPistonToggle;
     private Timer launchTimer;
     private Timer autoDriveTimer;
     private Timer intakeTimer;
     private Timer hotGoalTimer;
     private Timer autoRotateTimer;
+    private Timer autoWaitTimer;
     private DigitalInput hotGoalSensor;
     private double deadband;
     private double launchTime;
+    private double waitTime;
+    private double driveTime;
+    private double intakeTime;
+    private double resetLauncherTime;
     private boolean robotInitialized;
     private boolean constantIntakeSpeed;
     private boolean breaking = false;
@@ -52,22 +58,23 @@ public class Robot extends IterativeRobot {
     private boolean shouldLaunch;
     private boolean autoDebug;
     private boolean notFirstTime;
+    private boolean pocketPistonExtended;
     private String autonomousPosition;
     private int autonomousNumberOfBalls;
     private int autoStatus;
     private static final int choosingStatus = 1;
     private static final int noBall = 2;
-    private static final int oneBallLeft = 3;
-    private static final int oneBallMiddle = 4;
-    private static final int oneBallRight = 5;
-    private static final int twoBallLeft = 6;
-    private static final int twoBallMiddle = 7;
-    private static final int twoBallRight = 8;
-    private static final int threeBallLeft = 9;
-    private static final int threeBallMiddle = 10;
-    private static final int threeBallRight = 11;
-    private static final int movingForward = 12;
-    private static final int rotatingRight = 13;
+    private static final int oneBall = 3;
+    private static final int twoBallLeft = 4;
+    private static final int twoBallMiddle = 5;
+    private static final int twoBallRight = 6;
+    private static final int threeBallLeft = 7;
+    private static final int threeBallMiddle = 8;
+    private static final int threeBallRight = 9;
+    private static final int movingForward = 10;
+    private static final int rotatingRight = 11;
+    private static final int rotatingLeft = 12;
+    private static final int pullIn = 13;
     private int testSelection;
     private int testDrive = 0;
     private int testIntake = 1;
@@ -94,6 +101,7 @@ public class Robot extends IterativeRobot {
         gyroToggle = new Toggle();
         drivePIDControllerToggle = new Toggle();
         intakeRetractedToggle = new Toggle();
+        pocketPistonToggle = new Toggle();
         
         Compressor compressor = new Compressor((int) pressureSwitch[0], (int) pressureSwitch[1], (int) compressorRelay[0], (int) compressorRelay[1]);
         compressor.start();
@@ -129,15 +137,24 @@ public class Robot extends IterativeRobot {
     
     public void autonomousInit() {
         robotEnable();
+        intake.extendIntake();
         autonomousNumberOfBalls = ((Integer) ConstantTable.getConstantTable().getValue("Autonomous.numberOfBalls")).intValue();
         //autonomousPosition = ((String) ConstantTable.getConstantTable().getValue("Autonomous.position"));
         autoDebug = ((Boolean) ConstantTable.getConstantTable().getValue("Autonomous.debug")).booleanValue();
-        launchTime = ((Double) ConstantTable.getConstantTable().getValue("Launcher.launchTime")).doubleValue();
+        launchTime = ((Double) ConstantTable.getConstantTable().getValue("Autonomous.launchTime")).doubleValue();
+        resetLauncherTime = ((Double) ConstantTable.getConstantTable().getValue("Autonomous.resetLauncherTime")).doubleValue();
+        driveTime = ((Double) ConstantTable.getConstantTable().getValue("Autonomous.driveTime")).doubleValue();
+        waitTime = ((Double) ConstantTable.getConstantTable().getValue("Autonomous.waitTime")).doubleValue();
+        intakeTime = ((Double) ConstantTable.getConstantTable().getValue("Autonomous.intakeTime")).doubleValue();
         double[] hotGoalSensorArray = ((double[]) ConstantTable.getConstantTable().getValue("Autonomous.hotGoalSensor"));
 
         hotGoalSensor = new DigitalInput((int) hotGoalSensorArray[0],(int) hotGoalSensorArray[1]);
         hotGoalTimer = new Timer();
         autoRotateTimer = new Timer();
+        autoDriveTimer = new Timer();
+        launchTimer = new Timer();
+        intakeTimer = new Timer();
+        autoWaitTimer= new Timer();
     }
 
     /**
@@ -190,6 +207,8 @@ public class Robot extends IterativeRobot {
                 driveTrain.minimizeMovement();
             }
             else {
+                driveTrain.normalMovement();
+
                 if (driverRightBumper){
                     driveTrain.enableTank();
                 }
@@ -212,11 +231,14 @@ public class Robot extends IterativeRobot {
 
         OperatorLeftY = applyDeadband(OperatorLeftY);
 
-        if (OperatorRightBumper) {
-            launcher.enablePocketPiston();
-        }
-        else {
-            launcher.disengagePocketPiston();
+        if (pocketPistonToggle.toggle(OperatorRightBumper)) {
+            pocketPistonExtended = !pocketPistonExtended;
+            if (pocketPistonExtended){
+                launcher.enablePocketPiston();
+            }
+            else {
+                launcher.disengagePocketPiston();
+            }
         }
 
         // Swaps controls between constant speed or adjusted speed
@@ -272,7 +294,7 @@ public class Robot extends IterativeRobot {
         boolean driverLeftPad = driveXbox.getDPadLeft();
 
         //Disables and renables each wheel accordingly
-        if (driverDownPad) driveTrain.enableTestMode(0);
+        /*if (driverDownPad) driveTrain.enableTestMode(0);
         else driveTrain.disableTestMode(0);
 
         if (driverUpPad) driveTrain.enableTestMode(1);
@@ -283,6 +305,7 @@ public class Robot extends IterativeRobot {
 
         if (driverRightPad) driveTrain.enableTestMode(3);
         else driveTrain.disableTestMode(3);
+        */
 
         boolean driverXButton = driveXbox.getXButton();        
         boolean driverYButton = driveXbox.getYButton();
@@ -417,24 +440,10 @@ public class Robot extends IterativeRobot {
         if (autoStatus == choosingStatus){
 
             if (autonomousNumberOfBalls == 1){
-                if (autonomousPosition.equals("left")){
-                    if (autoDebug){
-                        System.out.println("One ball left");
-                    }
-                    autoStatus = oneBallLeft;
+                if (autoDebug){
+                    System.out.println("One ball");
                 }
-                else if (autonomousPosition.equals("middle")){
-                    if (autoDebug){
-                        System.out.println("One ball middle");
-                    }
-                    autoStatus = oneBallMiddle;
-                }
-                else {
-                    if (autoDebug){
-                        System.out.println("One ball right");
-                    }
-                    autoStatus = oneBallRight;
-                }
+                autoStatus = oneBall;
             }
             else if (autonomousNumberOfBalls == 2){
                 if (autonomousPosition.equals("left")){
@@ -495,29 +504,151 @@ public class Robot extends IterativeRobot {
         }
         
         if (autoStatus == noBall){
-            autoDriveTimer.setTimer(1.4);
+            autoDriveTimer.setTimer(driveTime);
             autoStatus = movingForward;
         }
 
-        if (autoStatus == oneBallLeft){
+        if (autoStatus == oneBall){
 
+            //Checks to see if the hot goal has dropped
             if (hotGoalTimer.isExpired()){
                 hotGoalTimer.disableTimer();
+                //Checks to see if goal is hot
                 if (hotGoalSensor.get()){
                     shouldLaunch = true;
                     launchTimer.setTimer(launchTime);
                 }
                 else {
-                    autoRotateTimer.setTimer(.5);
-                    autoStatus = rotatingRight;
-
+                    //Goal is not hot so waits 5 seconds
+                    autoWaitTimer.setTimer(waitTime);
                 }
             }
+            //Checks to see if the robot had to wait then launches if time has passed
+            else if (autoWaitTimer.isExpired()){
+                shouldLaunch = true;
+                autoWaitTimer.disableTimer();
+                launchTimer.setTimer(launchTime);
+            }
+            //Checks to see if launched
             else if (launchTimer.isExpired()){
-                autoDriveTimer.setTimer(1.4);
+                shouldLaunch = false;
+                autoDriveTimer.setTimer(driveTime);
                 autoStatus = movingForward;
             }
 
+        }
+
+        if (autoStatus == twoBallLeft){
+            //Checks to see if the hot goal has dropped
+            if (hotGoalTimer.isExpired()){
+                hotGoalTimer.disableTimer();
+                //Checks to see if goal is hot
+                if (hotGoalSensor.get()){
+                    shouldLaunch = true;
+                    launchTimer.setTimer(launchTime);
+                }
+                else {
+                    //Goal is not hot so waits 5 seconds
+                    autoWaitTimer.setTimer(waitTime);
+                }
+            }
+            //Checks to see if the robot had to wait then launches if time has passed
+            else if (autoWaitTimer.isExpired()){
+                shouldLaunch = true;
+                autoWaitTimer.disableTimer();
+                launchTimer.setTimer(launchTime);
+            }
+            //Checks to see if finished launching
+            else if (launchTimer.isExpired()){
+                //Pulls ball in
+                launchTimer.disableTimer();
+                shouldLaunch = false;
+                intakeTimer.setTimer(intakeTime);
+                autoStatus = pullIn;
+            }
+            else if (intakeTimer.isExpired()){
+                intakeTimer.disableTimer();
+                shouldLaunch = true;
+                autoStatus = movingForward;
+            }
+        }
+
+        if (autoStatus == twoBallMiddle){
+            //Checks to see if the hot goal has dropped
+            if (hotGoalTimer.isExpired()){
+                hotGoalTimer.disableTimer();
+                //Checks to see if goal is hot
+                if (hotGoalSensor.get()){
+                    shouldLaunch = true;
+                    launchTimer.setTimer(launchTime);
+                }
+                else {
+                    //Goal is not hot so waits 5 seconds
+                    autoWaitTimer.setTimer(waitTime);
+                }
+            }
+            //Checks to see if the robot had to wait then launches if time has passed
+            else if (autoWaitTimer.isExpired()){
+                shouldLaunch = true;
+                autoWaitTimer.disableTimer();
+                launchTimer.setTimer(launchTime);
+            }
+            //Checks to see if finished launching
+            else if (launchTimer.isExpired()){
+                //Pulls ball in
+                launchTimer.disableTimer();
+                shouldLaunch = false;
+                intakeTimer.setTimer(intakeTime);
+                autoStatus = pullIn;
+            }
+            else if (intakeTimer.isExpired()){
+                intakeTimer.disableTimer();
+                shouldLaunch = true;
+                autoStatus = movingForward;
+            }
+        }
+
+        if (autoStatus == twoBallRight){
+            //Checks to see if the hot goal has dropped
+            if (hotGoalTimer.isExpired()){
+                hotGoalTimer.disableTimer();
+                //Checks to see if goal is hot
+                if (hotGoalSensor.get()){
+                    shouldLaunch = true;
+                    launchTimer.setTimer(launchTime);
+                }
+                else {
+                    //Goal is not hot so waits 5 seconds
+                    autoWaitTimer.setTimer(waitTime);
+                }
+            }
+            //Checks to see if the robot had to wait then launches if time has passed
+            else if (autoWaitTimer.isExpired()){
+                shouldLaunch = true;
+                autoWaitTimer.disableTimer();
+                launchTimer.setTimer(launchTime);
+            }
+            //Checks to see if finished launching
+            else if (launchTimer.isExpired()){
+                //Pulls ball in
+                launchTimer.disableTimer();
+                shouldLaunch = false;
+                intakeTimer.setTimer(intakeTime);
+                autoStatus = pullIn;
+            }
+            else if (intakeTimer.isExpired()){
+                intakeTimer.disableTimer();
+                shouldLaunch = true;
+                autoStatus = movingForward;
+            }
+        }
+
+        if (autoStatus == pullIn){
+            intake.pullIn();
+            if (intakeTimer.isExpired()){
+                intake.stopMotors();
+                autoStatus = choosingStatus;
+            }
         }
 
         if (autoStatus == rotatingRight){
@@ -525,6 +656,16 @@ public class Robot extends IterativeRobot {
             if (autoRotateTimer.isExpired()){
                 autoRotateTimer.disableTimer();
                 driveTrain.drive(0, 0, 0);
+                autoStatus = choosingStatus;
+            }
+        }
+
+        if (autoStatus == rotatingLeft){
+            driveTrain.drive(0, -0.75, 0);
+            if (autoRotateTimer.isExpired()){
+                autoRotateTimer.disableTimer();
+                driveTrain.drive(0, 0, 0);
+                autoStatus = choosingStatus;
             }
         }
 
@@ -536,6 +677,9 @@ public class Robot extends IterativeRobot {
             if (autoDriveTimer.isExpired()){
                 autoDriveTimer.disableTimer();
                 driveTrain.drive(0, 0, 0);
+                for (int i = 0; i == 0; i ++){
+                    System.out.println("End of autonomous");
+                }
             }
         }
 
@@ -545,6 +689,7 @@ public class Robot extends IterativeRobot {
         boolean renableLauncher = false;
         boolean[] launcherParameterArray = {shouldLaunch, manualLaunch, manualReset, intake.isExtended(), renableLauncher};
         launcher.stateMachine(launcherParameterArray);
+        shouldLaunch = false;
     }
 
 
@@ -563,9 +708,3 @@ public class Robot extends IterativeRobot {
         }
     }
 }
-
-    
-    
-    
-    
-    
