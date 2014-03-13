@@ -12,7 +12,6 @@ import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.PIDOutput;
 import edu.wpi.first.wpilibj.PIDSource.PIDSourceParameter;
 import edu.wpi.first.wpilibj.Victor;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import org.team3309.frc2014.constantmanager.ConstantTable;
 import org.team3309.friarlib.FriarPIDController;
 
@@ -37,7 +36,6 @@ public class OctonumModule implements PIDOutput{
     private double inchesPerSecondMaxTank;
     private double inchesPerSecondMaxMecanum;
     private double wheelSpeed;
-    private double maxWheelSpeed;
     private double lastTime;
     private double desiredPosition;
     private boolean isTank;
@@ -46,6 +44,7 @@ public class OctonumModule implements PIDOutput{
     private boolean front;
     private boolean testMode;
     private boolean velocityControl;
+    private int lineNum;
 
     public OctonumModule(String wheelName, boolean isFront){
         this.wheelName = wheelName;
@@ -54,7 +53,6 @@ public class OctonumModule implements PIDOutput{
         double[] encoderArrayA = ((double[]) ConstantTable.getConstantTable().getValue(wheelName + ".encoderA"));
         double[] encoderArrayB = ((double[]) ConstantTable.getConstantTable().getValue(wheelName + ".encoderB"));
         boolean isEncoderFlipped = ((Boolean) ConstantTable.getConstantTable().getValue(wheelName + ".flipped")).booleanValue();
-        maxWheelSpeed = ((Double) ConstantTable.getConstantTable().getValue("DriveTrain.maxWheelSpeed")).doubleValue();
         debug = ((Boolean) ConstantTable.getConstantTable().getValue(wheelName + ".debug")).booleanValue();
         multipliers = ((double[]) ConstantTable.getConstantTable().getValue(wheelName + ".multipliers"));     
         
@@ -86,6 +84,7 @@ public class OctonumModule implements PIDOutput{
             tankDecelPIDValues = ((double[]) ConstantTable.getConstantTable().getValue("Octonum.tankDecelPIDValues"));
 
             pidControl = new FriarPIDController(mecanumAccelPIDValues, mecanumDecelPIDValues, encoder, this);
+            pidControl.setMaxUnits(inchesPerSecondMaxMecanum);
             pidControl.enable();
         }
 
@@ -144,32 +143,24 @@ public class OctonumModule implements PIDOutput{
         if (testMode){
             driveMotor.set(0);
         }
+
         if (encoder == null || ignoreEncoders){
             driveMotor.set(desiredSpeed);
         }
         else{
-            if (isTank){
-                desiredSpeed *= inchesPerSecondMaxTank * maxWheelSpeed;
-            }
-            else desiredSpeed *= inchesPerSecondMaxMecanum * maxWheelSpeed;
 
-            if (desiredSpeed == 0){
-                pidControl.disable();
-                pidControl.setSetpoint(0);
+            if (!pidControl.isEnable()){
+                //clear the integral term
+                resetPID();
+                pidControl.enable();
+            }
+            if (velocityControl){
+                pidControl.setSetpoint(desiredSpeed);
             }
             else {
-                if (!pidControl.isEnable()){
-                    //clear the integral term
-                    resetPID();
-                    pidControl.enable();
-                }
-                if (velocityControl){
-                    pidControl.setSetpoint(desiredSpeed);
-                }
-                else {
-                    pidControl.setSetpoint(desiredPosition);
-                }
+                pidControl.setSetpoint(desiredPosition);
             }
+
         }
     }
 
@@ -177,6 +168,7 @@ public class OctonumModule implements PIDOutput{
         if (encoder != null){
             pidControl.setPIDValues(tankAccelPIDValues, tankDecelPIDValues);
             encoder.setDistancePerPulse(pulsesPerInchTank);
+            pidControl.setMaxUnits(inchesPerSecondMaxTank);
         }
         isTank = true;
     }
@@ -185,6 +177,7 @@ public class OctonumModule implements PIDOutput{
         if (encoder != null){
             pidControl.setPIDValues(mecanumAccelPIDValues, mecanumDecelPIDValues);
             encoder.setDistancePerPulse(pulsesPerInchMecanum);
+            pidControl.setMaxUnits(inchesPerSecondMaxMecanum);
         }
         isTank = false;
     }
@@ -195,15 +188,11 @@ public class OctonumModule implements PIDOutput{
 
         if (ignoreEncoders){
             if (encoder != null){
-                SmartDashboard.putString("No PID", " No PID");
-                System.out.println("No PID");
                 pidControl.reset();
             }
         }
         else {
             if (encoder != null){
-                SmartDashboard.putString("PID", " PID");
-                System.out.println("PID");
                 pidControl.enable();
             }
         }
@@ -242,11 +231,14 @@ public class OctonumModule implements PIDOutput{
 
     public void pidWrite(double pidOutput) {
 
-        if (debug && encoder.getRate() != 0){
+        double PIDInput = pidControl.getPIDInput();
+
+        if (debug && (PIDInput != 0 || pidOutput != 0)){
             System.out.println(wheelName + " totalError: " + String.valueOf((float) pidControl.getTotalError()) +
                 " PIDOutput: " + String.valueOf((float) pidOutput) +
-                " Encoder: " + String.valueOf((float) encoder.getRate()) +
-                " Setpoint: " + String.valueOf((float) pidControl.getSetpoint()));
+                " Encoder: " + String.valueOf((float) PIDInput) +
+                " Setpoint: " + String.valueOf((float) pidControl.getSetpoint()) + " Ln: " + String.valueOf(lineNum));
+            lineNum ++;
         }
 
         driveMotor.set(pidOutput);

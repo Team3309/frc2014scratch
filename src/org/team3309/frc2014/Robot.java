@@ -64,6 +64,7 @@ public class Robot extends IterativeRobot {
     private boolean driveTopRightEnabled;
     private boolean driveBottomLeftEnabled;
     private boolean driveBottomRightEnabled;
+    private boolean autoStart;
     private String autonomousPosition;
     private int autonomousNumberOfBalls;
     private int autoStatus;
@@ -124,6 +125,7 @@ public class Robot extends IterativeRobot {
     public void disabledInit(){
         //System.out.println("DisabledInit() called");
         if (robotInitialized){
+            launcher.closeLatch();
             robotInitialized = false;
             driveTrain.free();
             intake.free();
@@ -185,7 +187,7 @@ public class Robot extends IterativeRobot {
         //double driverRightTrigger = driveXbox.getRightTrigger();
         boolean driverXButton = driveXbox.getXButton();
         boolean driverYButton = driveXbox.getYButton();
-        boolean driverLeftBumper = driveXbox.getLeftBumper();
+        boolean driverLeftBumper = false;
         boolean driverRightBumper = driveXbox.getRightBumper();
         
         driverRightX = applyDeadband(driverRightX);
@@ -234,29 +236,28 @@ public class Robot extends IterativeRobot {
         OperatorLeftY = applyDeadband(OperatorLeftY);
 
         if (pocketPistonToggle.toggle(OperatorRightBumper)) {
-            pocketPistonExtended = !pocketPistonExtended;
-            if (pocketPistonExtended){
-                launcher.enablePocketPiston();
-            }
-            else {
-                launcher.disengagePocketPiston();
-            }
+            launcher.togglePocketPiston();
         }
 
-        // Swaps controls between constant speed or adjusted speed
-        if (!constantIntakeSpeed){
-            intake.moveBall(OperatorLeftY);
-        }
-        else {
-            if (OperatorLeftY < 0){
-                intake.pullIn();
-            }
-            else if (OperatorLeftY > 0){
-                intake.pushOut();
+        if (launcher.isCatapultInPos() && launcher.isCatapultLatched()){
+            // Swaps controls between constant speed or adjusted speed
+            if (!constantIntakeSpeed){
+                intake.moveBall(OperatorLeftY);
             }
             else {
-                intake.stopMotors();
+                if (OperatorLeftY < 0){
+                    intake.pullIn();
+                }
+                else if (OperatorLeftY > 0){
+                    intake.pushOut();
+                }
+                else {
+                    intake.stopMotors();
+                }
             }
+        }
+        else {
+            intake.stopMotors();
         }
 
 
@@ -432,7 +433,7 @@ public class Robot extends IterativeRobot {
             }
             
             if (driverRightBumper){
-                launcher.enablePocketPiston();
+                launcher.engagePocketPiston();
             }
             
             if (driverLeftBumper){
@@ -562,6 +563,7 @@ public class Robot extends IterativeRobot {
             if (!notFirstTime){
                 hotGoalTimer.setTimer(0.2);
                 notFirstTime = true;
+                autoStart = true;
             }
 
         }
@@ -637,16 +639,19 @@ public class Robot extends IterativeRobot {
         }
 
         if (autoStatus == twoBallMiddle){
-            //Checks to see if the hot goal has dropped
-            if (hotGoalTimer.isExpired()){
-                hotGoalTimer.disableTimer();
+            if (autoStart){
+                autoStatus = rotatingLeft;
+                autoStart = false;
+            }
+            if (autoRotateTimer.isExpired()){
+                autoRotateTimer.disableTimer();
                 //Checks to see if goal is hot
                 if (hotGoalSensor.get()){
                     shouldLaunch = true;
                     launchTimer.setTimer(launchTime);
                 }
                 else {
-                    //Goal is not hot so waits 5 seconds
+                    //Goal is not hot so waits
                     autoWaitTimer.setTimer(waitTime);
                 }
             }
@@ -710,6 +715,7 @@ public class Robot extends IterativeRobot {
             intake.pullIn();
             if (intakeTimer.isExpired()){
                 intake.stopMotors();
+                launcher.engagePocketPiston();
                 autoStatus = choosingStatus;
             }
         }
@@ -749,6 +755,7 @@ public class Robot extends IterativeRobot {
         boolean renableLauncher = false;
         boolean[] launcherParameterArray = {shouldLaunch, manualLaunch, manualReset, intake.isExtended(), renableLauncher};
         launcher.stateMachine(launcherParameterArray);
+        boolean shouldLaunch = false;
     }
 
 

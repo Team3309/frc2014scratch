@@ -41,7 +41,10 @@ public class FriarPIDController implements IUtility{
     private double m_setpoint = 0.0;
     private double m_error = 0.0;
     private double m_result = 0.0;
+    private double scaledPIDInput;
     private double m_period = kDefaultPeriod;
+    private double maxUnits = 1;
+    private double lastResult;
     PIDSource m_pidInput;
     PIDOutput m_pidOutput;
     java.util.Timer m_controlLoop;
@@ -51,10 +54,12 @@ public class FriarPIDController implements IUtility{
     private double accelerationKI;
     private double accelerationKD;
     private double accelerationKF;
+    private double accelerationSkid;
     private double decelerationKP;
     private double decelerationKI;
     private double decelerationKD;
     private double decelerationKF;
+    private double decelerationSkid;
 
     /**
      * Tolerance is the type of tolerance used to specify if the PID controller is on target.
@@ -133,10 +138,12 @@ public class FriarPIDController implements IUtility{
         accelerationKI = accelerationPID[1];
         accelerationKD = accelerationPID[2];
         accelerationKF = accelerationPID[3];
+        accelerationSkid = accelerationPID[4];
         decelerationKP = decelerationPID[0];
         decelerationKI = decelerationPID[1];
         decelerationKD = decelerationPID[2];
         decelerationKF = decelerationPID[3];
+        decelerationSkid = decelerationPID[4];
 
         if (source == null) {
             throw new NullPointerException("Null PIDSource was given");
@@ -195,44 +202,72 @@ public class FriarPIDController implements IUtility{
         }
 
         if (enabled) {
-            double input = pidInput.pidGet();
+            scaledPIDInput = (pidInput.pidGet() / maxUnits);
+
             double result;
             PIDOutput pidOutput;
 
+            if (scaledPIDInput == 0 && m_setpoint == 0){
+                // silence motor humming when stopped
+                m_totalError = 0;
+            }
+
             synchronized (this) {
-                m_error = m_setpoint - input;
-                if (m_continuous) {
-                    if (Math.abs(m_error)
-                            > (m_maximumInput - m_minimumInput) / 2) {
-                        if (m_error > 0) {
-                            m_error = m_error - m_maximumInput + m_minimumInput;
-                        } else {
-                            m_error = m_error
-                                    + m_maximumInput - m_minimumInput;
+
+                //If pidGet gives a NaN it jams total error and pidOutput as NaN
+                if (Double.isNaN(scaledPIDInput)){
+                    m_result = 0;
+                }
+
+                else {
+                    m_error = m_setpoint - scaledPIDInput;
+
+                    //Code from PIDController for continuous mode
+                    if (m_continuous) {
+                        if (Math.abs(m_error)
+                                > (m_maximumInput - m_minimumInput) / 2) {
+                            if (m_error > 0) {
+                                m_error = m_error - m_maximumInput + m_minimumInput;
+                            } else {
+                                m_error = m_error
+                                        + m_maximumInput - m_minimumInput;
+                            }
                         }
+                    }
+
+                    m_totalError += m_error * m_period;
+
+                    double kSkid;
+
+                    if (Math.abs(scaledPIDInput) - Math.abs(m_setpoint) < 0){
+                        m_result = calculatePID(accelerationKP, accelerationKI, accelerationKD, accelerationKF);
+                        kSkid = accelerationSkid * m_period;
+                    }
+                    else {
+                        m_result = calculatePID(decelerationKP, decelerationKI, decelerationKD, decelerationKF);
+                        kSkid = decelerationSkid * m_period;
+                    }
+
+                    if (m_result - lastResult > kSkid){
+                        m_result = lastResult + kSkid;
+                    }
+                    else if (lastResult - m_result > kSkid){
+                        m_result = lastResult - kSkid;
+                    }
+
+                    m_prevError = m_error;
+
+                    if (m_result > m_maximumOutput) {
+                        m_result = m_maximumOutput;
+                    } else if (m_result < m_minimumOutput) {
+                        m_result = m_minimumOutput;
                     }
                 }
 
-
-                m_totalError += m_error * m_period;
-
-                if (Math.abs(input) - Math.abs(m_setpoint) < 0){
-                    m_result = calculatePID(accelerationKP, accelerationKI, accelerationKD, accelerationKF);
-                }
-                else {
-                    m_result = calculatePID(decelerationKP, decelerationKI, decelerationKD, decelerationKF);
-                }
-                m_prevError = m_error;
-
-                if (m_result > m_maximumOutput) {
-                    m_result = m_maximumOutput;
-                } else if (m_result < m_minimumOutput) {
-                    m_result = m_minimumOutput;
-                }
+                lastResult = m_result;
                 pidOutput = m_pidOutput;
                 result = m_result;
             }
-
             pidOutput.pidWrite(result);
         }
     }
@@ -246,7 +281,7 @@ public class FriarPIDController implements IUtility{
         }
         else m_totalError = 0;
 
-        double P = kP * m_setpoint;
+        double P = kP * m_error;
         double I = (kI * m_totalError) + (kF * m_setpoint);
         double D = kD * (m_error - m_prevError) / m_period;
 
@@ -448,6 +483,14 @@ public class FriarPIDController implements IUtility{
     public String getSmartDashboardType(){
         return "PIDController";
     }
+
+    public synchronized void setMaxUnits(double units){
+        maxUnits = units;
+    }
+
+   public synchronized double getPIDInput(){
+       return scaledPIDInput;
+   }
 
     /**
      * {@inheritDoc}

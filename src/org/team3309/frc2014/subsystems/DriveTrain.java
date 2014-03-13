@@ -138,6 +138,12 @@ public class DriveTrain{
         for (int i = 0; i < 4; i++) {
             driveTrainWheels[i].togglePIDController();
         }
+        if (driveTrainWheels[0].areEncodersEnabled()){
+            System.out.println("Wheel encoders: enabled");
+        }
+        else {
+            System.out.println("Wheel encoders: disabled");
+        }
 
         setGyroMode();
     }
@@ -156,9 +162,11 @@ public class DriveTrain{
         if (!gyroEnabled){
             robotAngleGyro.reset();
             gyroEnabled = true;
+            System.out.println("Gyro Enabled");
         }
         else {
             gyroEnabled = false;
+            System.out.println("Gyro Disabled");
         }
     }
 
