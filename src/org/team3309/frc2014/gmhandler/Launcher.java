@@ -139,6 +139,8 @@ public class Launcher {
         //Status unknown
         if (catapultStatus == unknown){
 
+            System.out.println("Catapult status: unknown");
+
             if (launcherEnabled){
                 disengageDog();
                 autoReset = false;

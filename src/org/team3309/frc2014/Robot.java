@@ -39,53 +39,35 @@ public class Robot extends IterativeRobot {
     private Toggle gyroToggle;
     private Toggle pocketPistonToggle;
     private Toggle driveToggle;
-    private Timer launchTimer;
-    private Timer autoDriveTimer;
-    private Timer intakeTimer;
     private Timer hotGoalTimer;
-    private Timer autoRotateTimer;
-    private Timer autoWaitTimer;
+    private Timer stateTimer;
     private DigitalInput hotGoalSensor;
     private double deadband;
-    private double launchTime;
     private double waitTime;
-    private double driveTime;
-    private double intakeTime;
-    private double resetLauncherTime;
+    private double hotTime;
+    private double turnTime;
+    private double midTurnTime;
+    private double pullInTime;
+    private double fireTime;
+    private double moveTime;
+    private double endTime;
     private boolean robotInitialized;
     private boolean constantIntakeSpeed;
     private boolean breaking = false;
     private boolean intakeRetracted;
     private boolean autoDebug;
-    private boolean notFirstTime;
-    private boolean pocketPistonExtended;
     private boolean driveTopLeftEnabled;
     private boolean driveTopRightEnabled;
     private boolean driveBottomLeftEnabled;
     private boolean driveBottomRightEnabled;
     private boolean autoStart;
-    private boolean isRobotPosLeft;
     private boolean isSecondBall;
     private boolean isThirdBall;
-    private boolean hot;
     private boolean stateComplete;
     private int stateNum;
     private int autoMode;
-    private static final int noBall = 0;
-    private static final int oneBall = 1;
-    private static final int twoBall = 2;
-    private static final int threeBall = 3;
-
     private int autoState;
-    private static final int movingForward = 6;
-    private static final int rotatingRight = 7;
-    private static final int rotatingLeft = 8;
-    private static final int rotatingLeftFromMiddle = 9;
-    private static final int rotatingRightFromMiddle = 10;
-    private static final int pullIn = 11;
     private int testSelection;
-
-
     /**
      * This function is run when the robot is first started up and should be
      * used for any initialization code.
@@ -141,27 +123,31 @@ public class Robot extends IterativeRobot {
     }
     
     public void autonomousInit() {
+
+        final int noBall = 0;
+        final int oneBall = 1;
+        final int twoBall = 2;
+        final int threeBall = 3;
+
         robotEnable();
         intake.extendIntake();
         int autonomousNumberOfBalls = ((Integer) ConstantTable.getConstantTable().getValue("Autonomous.numberOfBalls")).intValue();
-        //autonomousPosition = ((String) ConstantTable.getConstantTable().getValue("Autonomous.position"));
         autoDebug = ((Boolean) ConstantTable.getConstantTable().getValue("Autonomous.debug")).booleanValue();
-        launchTime = ((Double) ConstantTable.getConstantTable().getValue("Autonomous.launchTime")).doubleValue();
-        resetLauncherTime = ((Double) ConstantTable.getConstantTable().getValue("Autonomous.resetLauncherTime")).doubleValue();
-        driveTime = ((Double) ConstantTable.getConstantTable().getValue("Autonomous.driveTime")).doubleValue();
         waitTime = ((Double) ConstantTable.getConstantTable().getValue("Autonomous.waitTime")).doubleValue();
-        intakeTime = ((Double) ConstantTable.getConstantTable().getValue("Autonomous.intakeTime")).doubleValue();
         double[] hotGoalSensorArray = ((double[]) ConstantTable.getConstantTable().getValue("Autonomous.hotGoalSensor"));
+        hotTime = ((Double) ConstantTable.getConstantTable().getValue("Autonomous.hotTime")).doubleValue();
+        turnTime = ((Double) ConstantTable.getConstantTable().getValue("Autonomous.turnTime")).doubleValue();
+        midTurnTime = ((Double) ConstantTable.getConstantTable().getValue("Autonomous.midTurnTime")).doubleValue();
+        pullInTime = ((Double) ConstantTable.getConstantTable().getValue("Autonomous.pullInTime")).doubleValue();
+        fireTime = ((Double) ConstantTable.getConstantTable().getValue("Autonomous.fireTime")).doubleValue();
+        moveTime = ((Double) ConstantTable.getConstantTable().getValue("Autonomous.moveTime")).doubleValue();
+        endTime = ((Double) ConstantTable.getConstantTable().getValue("Autonomous.endTime")).doubleValue();
 
         if (hotGoalSensorArray[0] != 0){
             hotGoalSensor = new DigitalInput((int) hotGoalSensorArray[0],(int) hotGoalSensorArray[1]);
         }
         hotGoalTimer = new Timer();
-        autoRotateTimer = new Timer();
-        autoDriveTimer = new Timer();
-        launchTimer = new Timer();
-        intakeTimer = new Timer();
-        autoWaitTimer= new Timer();
+        stateTimer = new Timer();
 
         if (autonomousNumberOfBalls == 1){
             if (autoDebug){
@@ -529,8 +515,11 @@ public class Robot extends IterativeRobot {
     }
     
     private void autonomousStateMachine(){
-/*
+
+        boolean shouldLaunch = false;
+
         double time;
+        int[][] steps = new int[0][];
         final int fire = 0;
         final int left = 1;
         final int right = 2;
@@ -549,7 +538,7 @@ public class Robot extends IterativeRobot {
         if (hotGoalTimer.isExpired()){
             hotGoalTimer.disableTimer();
             if (hotGoalSensor.get()){
-                int[][] stepArray = {{move, fire, fire, left},
+                steps = new int[][]{{move, fire, fire, left},
                                     {end, move, pullIn, fire},
                                     {end, end, fire, pullIn},
                                     {end, end, move, fire},
@@ -561,7 +550,7 @@ public class Robot extends IterativeRobot {
                                     {end, end, end, end}};
                 }
             else {
-                int[][] stepArray = {{move, wait, wait, right},
+                steps = new int[][]{{move, wait, wait, right},
                                     {end, fire, fire, fire},
                                     {end, move, pullIn, pullIn},
                                     {end, end, fire, fire},
@@ -576,53 +565,124 @@ public class Robot extends IterativeRobot {
 
         if (stateComplete){
             stateComplete = false;
-            autoState = stepArray[autoMode][stateNum];
+            autoState = steps[autoMode][stateNum];
             stateNum ++;
-            if (autoState == fire) time = fireTime;
-            else if (autoState == left) time = turnTime;
-            else if (autoState == right) time = turnTime;
-            else if (autoState == midToRight) time = midTurnTime;
-            else if (autoState == midToLeft) time = midTurnTime;
-            else if (autoState == wait) time = waitTime;
-            else if (autoState == move) time = moveTime;
-            else if (autoState == pullIn) time = pullInTime;
-            else time = endTime;
+            if (autoState == fire) {
+                if (autoDebug){
+                    System.out.println("Auto state: fire");
+                }
+                shouldLaunch = true;
+                time = fireTime;
+            }
+            else if (autoState == left) {
+                if (autoDebug){
+                    System.out.println("Auto state: left");
+                }
+                driveTrain.drive(0,-0.4, 0);
+                time = turnTime;
+            }
+            else if (autoState == right) {
+                if (autoDebug){
+                    System.out.println("Auto state: right");
+                }
+                driveTrain.drive(0,0.4, 0);
+                time = turnTime;
+            }
+            else if (autoState == midToRight) {
+                if (autoDebug){
+                    System.out.println("Auto state: mid to right");
+                }
+                driveTrain.drive(0, 0.2, 0);
+                time = midTurnTime;
+            }
+            else if (autoState == midToLeft) {
+                if (autoDebug){
+                    System.out.println("Auto state: mid to left");
+                }
+                driveTrain.drive(0, -0.2, 0);
+                time = midTurnTime;
+            }
+            else if (autoState == wait) {
+                if (autoDebug){
+                    System.out.println("Auto state: wait");
+                }
+                time = waitTime;
+            }
+            else if (autoState == move) {
+                if (autoDebug){
+                    System.out.println("Auto state: move");
+                }
+                driveTrain.drive(1, 0, 0);
+                time = moveTime;
+            }
+            else if (autoState == pullIn) {
+                if (autoDebug){
+                    System.out.println("Auto state: pull in");
+                }
+                intake.pullIn();
+                time = pullInTime;
+            }
+            else {
+                if (autoDebug){
+                    System.out.println("Auto state: end");
+                }
+                time = endTime;
+            }
 
             stateTimer.disableTimer();
             stateTimer.setTimer(time);
         }
 
         if (autoState == fire){
-            if (stateTimer.isExpired){
+            if (stateTimer.isExpired()){
                 stateComplete = true;
             }
-            else {
-                shouldLaunch = true;
+        }
+
+        if (autoState == left){
+            if (stateTimer.isExpired()){
+                driveTrain.drive(0,0,0);
+                stateComplete = true;
             }
         }
-        if (autoState == left){
-
-        }
+        
         if (autoState == right){
-
+            if (stateTimer.isExpired()){
+                driveTrain.drive(0,0,0);
+                stateComplete = true;
+            }
         }
         if (autoState == midToRight){
-
+            if (stateTimer.isExpired()){
+                driveTrain.drive(0,0,0);
+                stateComplete = true;
+            }
         }
         if (autoState == midToLeft){
-
+            if (stateTimer.isExpired()){
+                driveTrain.drive(0,0,0);
+                stateComplete = true;
+            }
         }
         if (autoState == wait){
-
+            if (stateTimer.isExpired()){
+                stateComplete = true;
+            }
         }
         if (autoState == move){
-
+            if (stateTimer.isExpired()){
+                driveTrain.drive(0, 0, 0);
+                stateComplete = true;
+            }
         }
         if (autoState == pullIn){
-
+            if (stateTimer.isExpired()){
+                launcher.engagePocketPiston();
+                stateComplete = true;
+            }
         }
         if (autoState == end){
-
+            System.out.println("Autonomous complete");
         }
 
         //Parameters pulled out to help with documentation
@@ -631,203 +691,7 @@ public class Robot extends IterativeRobot {
         boolean renableLauncher = false;
         boolean[] launcherParameterArray = {shouldLaunch, manualLaunch, manualReset, intake.isExtended(), renableLauncher};
         launcher.stateMachine(launcherParameterArray);
-        boolean shouldLaunch = false;
 
-        if (hotGoalSensor != null){
-
-            if (autoState == oneBall){
-
-                //Checks to see if the hot goal has dropped
-                if (hotGoalTimer.isExpired()){
-                    hotGoalTimer.disableTimer();
-                    //Checks to see if goal is hot
-                    if (hotGoalSensor.get()){
-                        shouldLaunch = true;
-                        launchTimer.setTimer(launchTime);
-                    }
-                    else {
-                        //Goal is not hot so waits 5 seconds
-                        autoWaitTimer.setTimer(waitTime);
-                    }
-                }
-                //Checks to see if the robot had to wait then launches if time has passed
-                else if (autoWaitTimer.isExpired()){
-                    shouldLaunch = true;
-                    autoWaitTimer.disableTimer();
-                    launchTimer.setTimer(launchTime);
-                }
-                //Checks to see if launched
-                else if (launchTimer.isExpired()){
-                    autoDriveTimer.setTimer(driveTime);
-                    autoState = movingForward;
-                }
-
-            }
-
-            if (autoState == twoBall){
-                if (autoStart){
-                    //Checks to see if goal is hot
-                    if (hotGoalSensor.get()){
-                        autoState = rotatingLeftFromMiddle;
-                    }
-                    else {
-                        //Goal is not hot so waits
-                        autoState = rotatingRightFromMiddle;
-                    }
-                }
-                //Checks to see if finished launching
-                else if (launchTimer.isExpired()){
-                    //Pulls ball in
-                    launchTimer.disableTimer();
-                    intakeTimer.setTimer(intakeTime);
-                    autoState = pullIn;
-                }
-
-                else if (intakeTimer.isExpired()){
-                    intakeTimer.disableTimer();
-                    shouldLaunch = true;
-                    autoState = movingForward;
-                }
-            }
-
-            if (autoState == threeBall){
-                //Checks to see if goal is hot
-                if (hotGoalTimer.isExpired()){
-                    hotGoalTimer.disableTimer();
-                    if (hotGoalSensor.get()){
-                        autoState = rotatingLeftFromMiddle;
-                    }
-                    else {
-                        autoState = rotatingRightFromMiddle;
-                    }
-                }
-                //Checks to see if finished launching
-                else if (launchTimer.isExpired()){
-                    //Pulls ball in
-                    launchTimer.disableTimer();
-                    shouldLaunch = false;
-                    intakeTimer.setTimer(intakeTime);
-                    autoState = pullIn;
-                }
-                else if (intakeTimer.isExpired()){
-                    if (isSecondBall){
-                        if (isRobotPosLeft){
-                            autoState = rotatingRight;
-                        }
-                        else {
-                            autoState = rotatingLeft;
-                        }
-                    }
-                    else {
-                        autoState = movingForward;
-                    }
-                }
-            }
-        }
-        else {
-            if (autoState == oneBall){
-                if (autoStart){
-                    shouldLaunch = true;
-                    launchTimer.setTimer(launchTime);
-                    autoStart = false;
-                }
-                else if (launchTimer.isExpired()){
-                    shouldLaunch = false;
-                    launchTimer.disableTimer();
-                    autoDriveTimer.setTimer(driveTime);
-                    autoState = movingForward;
-                }
-            }
-
-            if (autoState == twoBall){
-                if (autoStart){
-                    shouldLaunch = true;
-                    launchTimer.setTimer(launchTime);
-                    autoStart = false;
-                }
-                else if (launchTimer.isExpired()){
-                    shouldLaunch = false;
-                    launchTimer.disableTimer();
-                    autoState = pullIn;
-                    intakeTimer.setTimer(intakeTime);
-                }
-                else if (intakeTimer.isExpired()){
-                    shouldLaunch = true;
-                    autoDriveTimer.setTimer(driveTime);
-                    autoState = movingForward;
-                }
-            }
-
-            if (autoState == threeBall){
-                if (autoStart){
-                    autoState = rotatingLeftFromMiddle;
-                    autoStart = false;
-                    isSecondBall = true;
-                }
-                else if (autoRotateTimer.isExpired()){
-                    autoRotateTimer.disableTimer();
-                    intakeTimer.setTimer(intakeTime);
-                    autoState = pullIn;
-                }
-                else if (intakeTimer.isExpired() && isSecondBall){
-                    intakeTimer.disableTimer();
-                    shouldLaunch = true;
-                    launchTimer.setTimer(launchTime);
-                    autoState = rotatingRight;
-                    isSecondBall = false;
-                    isThirdBall = true;
-                }
-                else if (launchTimer.isExpired()){
-                    launchTimer.disableTimer();
-                    intakeTimer.setTimer(intakeTime);
-                    autoState = pullIn;
-                }
-                else if (intakeTimer.isExpired() && isThirdBall){
-                    intakeTimer.disableTimer();
-                    shouldLaunch = true;
-                    autoDriveTimer.setTimer(driveTime);
-                    autoState = movingForward;
-                }
-            }
-        }
-
-        if (autoState == rotatingRight){
-            driveTrain.drive(0, 0.75, 0);
-            if (autoRotateTimer.isExpired()){
-                autoRotateTimer.disableTimer();
-                driveTrain.drive(0, 0, 0);
-                autoState = choosingStatus;
-            }
-        }
-
-        if (autoState == rotatingLeft){
-            driveTrain.drive(0, -0.75, 0);
-            if (autoRotateTimer.isExpired()){
-                autoRotateTimer.disableTimer();
-                driveTrain.drive(0, 0, 0);
-                autoState = choosingStatus;
-            }
-        }
-
-        if (autoState == rotatingLeftFromMiddle){
-
-        }
-
-        if (autoState == rotatingRightFromMiddle){
-
-        }
-
-        if (autoState == movingForward){
-            if (autoDebug){
-                System.out.println("Moving Forward");
-            }
-            driveTrain.drive(1, 0, 0);
-            if (autoDriveTimer.isExpired()){
-                autoDriveTimer.disableTimer();
-                driveTrain.drive(0, 0, 0);
-            }
-        }
-*/
     }
 
 

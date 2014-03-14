@@ -242,8 +242,15 @@ public class FriarPIDController implements IUtility{
 
                         // bot is decelerating
                         m_result = calculatePID(decelerationKP, decelerationKI, decelerationKD, decelerationKF);
-                        // allow output to drop to zero + limit amount of reverse power to control skidding
-                        kSkid = Math.abs(lastResult) + decelerationSkid * m_period;
+
+                        if ((m_result > 0 && m_setpoint < 0) ||
+                                (m_result < 0 && m_setpoint > 0)){
+                            kSkid = Math.abs(lastResult) + Math.max(decelerationSkid, 0.05);
+                        }
+                        else {
+                            // allow output to drop to zero + limit amount of reverse power to control skidding
+                            kSkid = Math.abs(lastResult) + decelerationSkid * m_period;
+                        }
                     }
 
                     if (m_result - lastResult > kSkid){
