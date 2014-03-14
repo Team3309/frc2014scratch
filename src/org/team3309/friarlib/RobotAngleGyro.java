@@ -144,8 +144,12 @@ public class RobotAngleGyro implements PIDOutput{
     }
 
     public void pidWrite(double d) {
-        // Stopping rotation when error is 0
-        if (voltageControl){
+
+        if (Math.abs(d) <= .01){
+            pidOutput = 0;
+        }
+        // Stop rotation when error is 0
+        else if (voltageControl){
             if (d > 0 && movement == 0){
                 pidOutput = voltagePIDOutputRange[0] + d * (voltagePIDOutputRange[1] - voltagePIDOutputRange[0]);
             }

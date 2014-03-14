@@ -299,6 +299,9 @@ public class Launcher {
                 }
                 else {
                     catapultStatus = errorResetting;
+                    if (launcherDebug){
+                        System.out.println("Catapult status: error Resetting");
+                    }
                 }
             }
         }
@@ -333,6 +336,7 @@ public class Launcher {
             dogTimer.disableTimer();
             winchTimer.disableTimer();
             pocketPistonTimer.disableTimer();
+            overrideOperatorPocketPiston = false;
             safeToRetractIntake = true;
             launcherEnabled = false;
             startup = false;

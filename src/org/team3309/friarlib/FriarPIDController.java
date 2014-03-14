@@ -134,16 +134,7 @@ public class FriarPIDController implements IUtility{
                               PIDSource source, PIDOutput output,
                               double period){
 
-        accelerationKP = accelerationPID[0];
-        accelerationKI = accelerationPID[1];
-        accelerationKD = accelerationPID[2];
-        accelerationKF = accelerationPID[3];
-        accelerationSkid = accelerationPID[4];
-        decelerationKP = decelerationPID[0];
-        decelerationKI = decelerationPID[1];
-        decelerationKD = decelerationPID[2];
-        decelerationKF = decelerationPID[3];
-        decelerationSkid = decelerationPID[4];
+        setPIDValues(accelerationPID, decelerationPID);
 
         if (source == null) {
             throw new NullPointerException("Null PIDSource was given");
@@ -207,7 +198,7 @@ public class FriarPIDController implements IUtility{
             double result;
             PIDOutput pidOutput;
 
-            if (scaledPIDInput == 0 && m_setpoint == 0){
+            if (Math.abs(scaledPIDInput) <= 0.01 && m_setpoint == 0){
                 // silence motor humming when stopped
                 m_totalError = 0;
             }
@@ -239,13 +230,20 @@ public class FriarPIDController implements IUtility{
 
                     double kSkid;
 
-                    if (Math.abs(scaledPIDInput) - Math.abs(m_setpoint) < 0){
+                    if ((scaledPIDInput >= 0 && scaledPIDInput <= m_setpoint) ||
+                        (scaledPIDInput <= 0 && scaledPIDInput >= m_setpoint)) {
+
+                        // bot is accelerating
                         m_result = calculatePID(accelerationKP, accelerationKI, accelerationKD, accelerationKF);
+                        // limit amount of forward power to prevent wheel spin
                         kSkid = accelerationSkid * m_period;
                     }
                     else {
+
+                        // bot is decelerating
                         m_result = calculatePID(decelerationKP, decelerationKI, decelerationKD, decelerationKF);
-                        kSkid = decelerationSkid * m_period;
+                        // allow output to drop to zero + limit amount of reverse power to control skidding
+                        kSkid = Math.abs(lastResult) + decelerationSkid * m_period;
                     }
 
                     if (m_result - lastResult > kSkid){
@@ -298,10 +296,12 @@ public class FriarPIDController implements IUtility{
         accelerationKI = accelerationPID[1];
         accelerationKD = accelerationPID[2];
         accelerationKF = accelerationPID[3];
+        accelerationSkid = accelerationPID[4];
         decelerationKP = decelerationPID[0];
         decelerationKI = decelerationPID[1];
         decelerationKD = decelerationPID[2];
         decelerationKF = decelerationPID[3];
+        decelerationSkid = decelerationPID[4];
 
     }
 

@@ -67,30 +67,36 @@ public class ConstantTable {
                 }
                 String key = line.substring(0, line.indexOf("=")).trim();
                 String value = line.substring(line.indexOf("=") + 1);
-                if (Util.contains(value, ",")){
-                    String[] arrayValues = split(value, ",");
-                    double[] arrayParsed = new double[arrayValues.length];
-                    for (int j = 0 ; j < arrayParsed.length ; j++){
-                        arrayParsed[j] = Double.parseDouble(arrayValues[j]);
+
+                try{
+                    if (Util.contains(value, ",")){
+                        String[] arrayValues = split(value, ",");
+                        double[] arrayParsed = new double[arrayValues.length];
+                        for (int j = 0 ; j < arrayParsed.length ; j++){
+                            arrayParsed[j] = Double.parseDouble(arrayValues[j]);
+                        }
+                        box.put(key, arrayParsed);
                     }
-                    box.put(key, arrayParsed);
+                    else if (Util.contains(value, ".")){
+                        box.put(key, Double.valueOf(value));
+                    }
+                    else if ("true".equals(value)){
+                        box.put(key, Boolean.valueOf(true));
+                    }
+                    else if ("false".equals(value)){
+                        box.put(key, Boolean.valueOf(false));
+                    }
+                    else if (Util.contains(value, "\"")){
+                        box.put(key, value);
+                    }
+                    else {
+                        box.put(key, Integer.valueOf(value));
+                    }
+
                 }
-                else if (Util.contains(value, ".")){
-                    box.put(key, Double.valueOf(value));
+                catch (Exception e){
+                    System.out.println("Error in Constants.txt: " + line);
                 }
-                else if ("true".equals(value)){
-                    box.put(key, Boolean.valueOf(true));
-                }
-                else if ("false".equals(value)){
-                    box.put(key, Boolean.valueOf(false));
-                }
-                else if (Util.contains(value, "\"")){
-                    box.put(key, value);
-                }
-                else {
-                    box.put(key, Integer.valueOf(value));
-                }
-                
             }      
             
             

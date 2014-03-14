@@ -38,6 +38,7 @@ public class OctonumModule implements PIDOutput{
     private double wheelSpeed;
     private double lastTime;
     private double desiredPosition;
+    private double arcFactor;
     private boolean isTank;
     private boolean ignoreEncoders;
     private boolean debug;
@@ -54,7 +55,8 @@ public class OctonumModule implements PIDOutput{
         double[] encoderArrayB = ((double[]) ConstantTable.getConstantTable().getValue(wheelName + ".encoderB"));
         boolean isEncoderFlipped = ((Boolean) ConstantTable.getConstantTable().getValue(wheelName + ".flipped")).booleanValue();
         debug = ((Boolean) ConstantTable.getConstantTable().getValue(wheelName + ".debug")).booleanValue();
-        multipliers = ((double[]) ConstantTable.getConstantTable().getValue(wheelName + ".multipliers"));     
+        multipliers = ((double[]) ConstantTable.getConstantTable().getValue(wheelName + ".multipliers"));
+        arcFactor = ((Double) ConstantTable.getConstantTable().getValue("Octonum.arcFactor")).doubleValue();
         
         driveMotor = new Victor ((int) driveMotorArray[0],(int) driveMotorArray[1]);
 
@@ -116,10 +118,10 @@ public class OctonumModule implements PIDOutput{
         // the bot is driving at. Amount of reduction is proportional to the drive speed.
 
         if (!front && drive > 0){
-            rotModified = rotModified * (1 - drive);
+            rotModified = rotModified * (1 - (arcFactor * drive));
         }
         if (front && drive < 0) {
-            rotModified = rotModified * (1 + drive);
+            rotModified = rotModified * (1 + (arcFactor * drive));
         }
 
         wheelSpeed = driveModified + rotModified;
