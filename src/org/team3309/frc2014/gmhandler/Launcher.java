@@ -141,8 +141,6 @@ public class Launcher {
 
             if (launcherEnabled){
 
-                System.out.println("Catapult status: unknown");
-
                 disengageDog();
                 autoReset = false;
                 startup = true;
@@ -216,7 +214,6 @@ public class Launcher {
                 //check for good launch
                 if (!isCatapultInPos() && (!isCatapultLatched() || startup)){
 
-                    System.out.println("Auto reset: " + String.valueOf(autoReset));
                     //Check to see if time to reset
                     if (autoReset || manualReset){
                         catapultTimer.disableTimer();

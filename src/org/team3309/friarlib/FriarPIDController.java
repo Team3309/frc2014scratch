@@ -245,7 +245,7 @@ public class FriarPIDController implements IUtility{
 
                         if ((m_result > 0 && m_setpoint < 0) ||
                                 (m_result < 0 && m_setpoint > 0)){
-                            kSkid = Math.abs(lastResult) + Math.max(decelerationSkid, 0.05);
+                            kSkid = Math.abs(lastResult) + (Math.max(decelerationSkid, 0.05) * m_period);
                         }
                         else {
                             // allow output to drop to zero + limit amount of reverse power to control skidding

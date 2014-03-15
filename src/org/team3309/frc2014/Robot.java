@@ -53,7 +53,7 @@ public class Robot extends IterativeRobot {
     private double endTime;
     private boolean robotInitialized;
     private boolean constantIntakeSpeed;
-    private boolean breaking = false;
+    private boolean braking = false;
     private boolean intakeRetracted;
     private boolean autoDebug;
     private boolean driveTopLeftEnabled;
@@ -61,8 +61,6 @@ public class Robot extends IterativeRobot {
     private boolean driveBottomLeftEnabled;
     private boolean driveBottomRightEnabled;
     private boolean autoStart;
-    private boolean isSecondBall;
-    private boolean isThirdBall;
     private boolean stateComplete;
     private int stateNum = 0;
     private int autoMode;
@@ -227,7 +225,7 @@ public class Robot extends IterativeRobot {
         }
 
         //breaking = driveTrain.breaking(driverRightTrigger);
-        if (!breaking){
+        if (!braking){
             if (driverLeftBumper){
                 driveTrain.minimizeMovement();
             }
@@ -526,16 +524,15 @@ public class Robot extends IterativeRobot {
         boolean shouldLaunch = false;
 
         double time;
-        int[][] steps = new int[numberOfAutoModes][numberOfSteps];
-        final int fire = 0;
-        final int left = 1;
-        final int right = 2;
-        final int midToRight = 3;
-        final int midToLeft = 4;
-        final int wait = 5;
-        final int move = 6;
-        final int pullIn = 7;
-        final int end = 8;
+        int[][] steps = new int[autoMode][];
+        final int fire = 1;
+        final int left = 2;
+        final int right = 3;
+        final int midToRight = 4;
+        final int midToLeft = 5;
+        final int wait = 6;
+        final int move = 7;
+        final int pullIn = 8;
 
         if (autoStart){
             autoStart = false;
@@ -544,35 +541,28 @@ public class Robot extends IterativeRobot {
             hotGoalTimer.setTimer(hotTime);
         }
 
+        //Determining autonomous plan
         if (hotGoalTimer.isExpired()){
             hotGoalTimer.disableTimer();
 
-            if (hotGoalSensor != null){
-                if (hotGoalSensor.get()){
-                    steps[noBall] = new int[]{move, end};
-                    steps[oneBall] = new int[]{fire, move, end};
-                    steps[twoBall] = new int[]{fire, pullIn, fire, move, end};
-                    steps[threeBall] = new int[]{left, fire, pullIn, fire, right, pullIn, fire, move, end};
-                }
-                else {
-                    steps[noBall] = new int[]{move, end};
-                    steps[oneBall] = new int[]{wait, fire, move, end};
-                    steps[twoBall] = new int[]{wait, fire, pullIn, fire, move, end};
-                    steps[threeBall] = new int[]{right, fire, pullIn, fire, left, pullIn, fire, move, end};
-                }
+            if (hotGoalSensor == null || hotGoalSensor.get()){
+                    steps[noBall] = new int[]{move};
+                    steps[oneBall] = new int[]{fire, move};
+                    steps[twoBall] = new int[]{fire, pullIn, fire, move};
+                    steps[threeBall] = new int[]{left, fire, pullIn, fire, right, pullIn, fire, move};
             }
             else {
-                steps[noBall] = new int[]{move, end};
-                steps[oneBall] = new int[]{fire, move, end};
-                steps[twoBall] = new int[]{fire, pullIn, fire, move, end};
-                steps[threeBall] = new int[]{left, fire, pullIn, fire, right, pullIn, fire, move, end};
+                steps[noBall] = new int[]{move};
+                steps[oneBall] = new int[]{wait, fire, move};
+                steps[twoBall] = new int[]{wait, fire, pullIn, fire, move};
+                steps[threeBall] = new int[]{right, fire, pullIn, fire, left, pullIn, fire, move};
             }
         }
 
+        //Going to next step
         if (stateComplete){
             stateComplete = false;
-            autoState = steps[autoMode][stateNum];
-            stateNum ++;
+            autoState = steps[autoMode][stateNum++];
 
             if (autoState == fire) {
                 if (autoDebug){
@@ -636,60 +626,25 @@ public class Robot extends IterativeRobot {
                 time = endTime;
             }
 
-            stateTimer.disableTimer();
             stateTimer.setTimer(time);
         }
 
-        if (autoState == fire){
-            if (stateTimer.isExpired()){
-                stateComplete = true;
-            }
-        }
+        if (stateTimer.isExpired()){
 
-        if (autoState == left){
-            if (stateTimer.isExpired()){
+            stateComplete = true;
+
+            if (autoState == left || autoState == right ||autoState ==  midToLeft || autoState == midToRight || autoState == move){
                 driveTrain.drive(0,0,0);
-                stateComplete = true;
             }
-        }
-        
-        if (autoState == right){
-            if (stateTimer.isExpired()){
-                driveTrain.drive(0,0,0);
-                stateComplete = true;
-            }
-        }
-        if (autoState == midToRight){
-            if (stateTimer.isExpired()){
-                driveTrain.drive(0,0,0);
-                stateComplete = true;
-            }
-        }
-        if (autoState == midToLeft){
-            if (stateTimer.isExpired()){
-                driveTrain.drive(0,0,0);
-                stateComplete = true;
-            }
-        }
-        if (autoState == wait){
-            if (stateTimer.isExpired()){
-                stateComplete = true;
-            }
-        }
-        if (autoState == move){
-            if (stateTimer.isExpired()){
-                driveTrain.drive(0, 0, 0);
-                stateComplete = true;
-            }
-        }
-        if (autoState == pullIn){
-            if (stateTimer.isExpired()){
+            if (autoState == pullIn){
+                intake.stopMotors();
                 launcher.engagePocketPiston();
-                stateComplete = true;
             }
-        }
-        if (autoState == end){
-            System.out.println("Autonomous complete");
+            if (steps[autoMode].length == stateNum){
+                System.out.println("Autonomous complete");
+                stateComplete = false;
+                stateTimer.disableTimer();
+            }
         }
 
         //Parameters pulled out to help with documentation
