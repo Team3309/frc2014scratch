@@ -26,6 +26,7 @@ public class DriveTrain{
     private boolean gyroEnabled;
     private double maxStrafe;
     private boolean doubleSolenoid;
+    private boolean positionControl;
     private int wheelNum;
 
     public DriveTrain(Gyro gyro) {
@@ -83,7 +84,12 @@ public class DriveTrain{
             strafe = maxStrafe;
         }
         if (gyroEnabled){
-            adjustedRotation = robotAngleGyro.getDesiredRotationVelocity(rot, drive + strafe);
+            if (positionControl){
+                adjustedRotation = robotAngleGyro.rotateToAngle(rot);
+            }
+            else {
+                adjustedRotation = robotAngleGyro.getDesiredRotationVelocity(rot, drive + strafe);
+            }
         }
         else {
             adjustedRotation = rot;
@@ -222,6 +228,16 @@ public class DriveTrain{
         }
         
         driveTrainWheels[wheelNum].disableTestMode();
+    }
+
+    public void setPositionControl(){
+        positionControl = true;
+        robotAngleGyro.enablePositionMode();
+    }
+
+    public void setVelocityControl(){
+        positionControl = false;
+        robotAngleGyro.enableVelocityMode();
     }
 
 

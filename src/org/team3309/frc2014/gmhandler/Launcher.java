@@ -123,7 +123,7 @@ public class Launcher {
     public boolean isCatapultLatched() {
         return !latchSensor.get();
     }
-    public void stateMachine(boolean[] launcherParameterArray) {
+    public void stateMachine(boolean[] launcherParameterArray, Compressor compressor) {
 
         boolean launchAndReset = launcherParameterArray[0];
         boolean manualLaunch = launcherParameterArray[1];
@@ -142,8 +142,10 @@ public class Launcher {
             if (launcherEnabled){
 
                 disengageDog();
-                autoReset = false;
                 startup = true;
+                if (autoReset){
+                    autoReset = false;
+                }
 
                 if (isCatapultInPos() && isCatapultLatched()){
                     catapultStatus = readyToLaunch;
@@ -183,12 +185,11 @@ public class Launcher {
                     }
 
                     //Determines if the launcher should use old or new reset value
-                    if (launchNow != catapultStatus){
-                        autoReset = launchAndReset;
+                    if (launchAndReset){
+                        autoReset = true;
                     }
                 }
                 else {
-
                     //Disengaging pocket piston before launch
                     pocketPistonTimer.setTimer(0.2);
                     overrideOperatorPocketPiston = true;
@@ -249,6 +250,7 @@ public class Launcher {
         if (catapultStatus == engagingDog){
             if (dogTimer.isExpired()){
                 loweringLauncher();
+                compressor.stop();
                 winchTimer.setTimer(winchTime);
                 catapultStatus = winching;
                 if (launcherDebug){
@@ -261,6 +263,7 @@ public class Launcher {
         if (catapultStatus == winching){
             if (isCatapultInPos() && isCatapultLatched()) {
                 stoppingLowering();
+                compressor.start();
                 stoppingMotorTimer.setTimer(stoppingMotorTime);
                 catapultStatus = stoppingMotors;
                 if (launcherDebug){

@@ -30,6 +30,7 @@ public class Robot extends IterativeRobot {
 
     private XboxController driveXbox;
     private XboxController operatorXbox;
+    private Compressor compressor;
     private Intake intake;
     private DriveTrain driveTrain;
     private Launcher launcher;
@@ -43,7 +44,7 @@ public class Robot extends IterativeRobot {
     private Timer stateTimer;
     private DigitalInput hotGoalSensor;
     private double deadband;
-    private double waitTime;
+    private double waitTime; // Autonomous variables
     private double hotTime;
     private double turnTime;
     private double midTurnTime;
@@ -51,6 +52,12 @@ public class Robot extends IterativeRobot {
     private double fireTime;
     private double moveTime;
     private double endTime;
+    private double rotation;
+    private double midRotation;
+    private double driveSpeed;
+    private double drive = 0;
+    private double angle = 0;
+    private double strafe = 0; //
     private boolean robotInitialized;
     private boolean constantIntakeSpeed;
     private boolean braking = false;
@@ -67,13 +74,12 @@ public class Robot extends IterativeRobot {
     private int autoState;
     private int testSelection;
     private int numberOfAutoModes;
-    private int numberOfSteps;
     private final int noBall = 0;
     private final int oneBall = 1;
     private final int twoBall = 2;
     private final int threeBall = 3;
 
-    /**
+    /*
      * This function is run when the robot is first started up and should be
      * used for any initialization code.
      */
@@ -94,7 +100,7 @@ public class Robot extends IterativeRobot {
         intakeRetractedToggle = new Toggle();
         pocketPistonToggle = new Toggle();
         
-        Compressor compressor = new Compressor((int) pressureSwitch[0], (int) pressureSwitch[1], (int) compressorRelay[0], (int) compressorRelay[1]);
+        compressor = new Compressor((int) pressureSwitch[0], (int) pressureSwitch[1], (int) compressorRelay[0], (int) compressorRelay[1]);
         compressor.start();
         System.out.println("Robot ready");
     }
@@ -130,6 +136,7 @@ public class Robot extends IterativeRobot {
     public void autonomousInit() {
 
         robotEnable();
+        driveTrain.setPositionControl();
         intake.extendIntake();
         int autonomousNumberOfBalls = ((Integer) ConstantTable.getConstantTable().getValue("Autonomous.numberOfBalls")).intValue();
         autoDebug = ((Boolean) ConstantTable.getConstantTable().getValue("Autonomous.debug")).booleanValue();
@@ -142,8 +149,10 @@ public class Robot extends IterativeRobot {
         fireTime = ((Double) ConstantTable.getConstantTable().getValue("Autonomous.fireTime")).doubleValue();
         moveTime = ((Double) ConstantTable.getConstantTable().getValue("Autonomous.moveTime")).doubleValue();
         endTime = ((Double) ConstantTable.getConstantTable().getValue("Autonomous.endTime")).doubleValue();
+        rotation = ((Double) ConstantTable.getConstantTable().getValue("Autonomous.rotation")).doubleValue();
+        midRotation = ((Double) ConstantTable.getConstantTable().getValue("Autonomous.midRotation")).doubleValue();
+        driveSpeed = ((Double) ConstantTable.getConstantTable().getValue("Autonomous.driveSpeed")).doubleValue();
         numberOfAutoModes = ((Integer) ConstantTable.getConstantTable().getValue("Autonomous.numberOfAutoModes")).intValue();
-        numberOfSteps = ((Integer) ConstantTable.getConstantTable().getValue("Autonomous.numberOfSteps")).intValue();
 
         if (hotGoalSensorArray[0] != 0){
             hotGoalSensor = new DigitalInput((int) hotGoalSensorArray[0],(int) hotGoalSensorArray[1]);
@@ -185,12 +194,12 @@ public class Robot extends IterativeRobot {
     public void autonomousPeriodic() {
         Scheduler.getInstance().run();
 
-
-        //autonomousStateMachine();
+        autonomousStateMachine();
     }
 
     public void teleopInit() {
         robotEnable();
+        driveTrain.setVelocityControl();
     }
 
     /**
@@ -298,7 +307,7 @@ public class Robot extends IterativeRobot {
         // Launcher is checking to see if the intake is physically in place
         // because the launcher takes time to extend
         boolean[] launcherParameterArray = {OperatorLeftBumper, OperatorAButton, OperatorYButton, intake.isExtended(), OperatorXButton};
-        launcher.stateMachine(launcherParameterArray);
+        launcher.stateMachine(launcherParameterArray, compressor);
     }
     
     public void testInit(){
@@ -524,7 +533,7 @@ public class Robot extends IterativeRobot {
         boolean shouldLaunch = false;
 
         double time;
-        int[][] steps = new int[autoMode][];
+        int[][] steps = new int[numberOfAutoModes][];
         final int fire = 1;
         final int left = 2;
         final int right = 3;
@@ -536,7 +545,6 @@ public class Robot extends IterativeRobot {
 
         if (autoStart){
             autoStart = false;
-            stateComplete = true;
             stateNum = 0;
             hotGoalTimer.setTimer(hotTime);
         }
@@ -557,8 +565,9 @@ public class Robot extends IterativeRobot {
                 steps[twoBall] = new int[]{wait, fire, pullIn, fire, move};
                 steps[threeBall] = new int[]{right, fire, pullIn, fire, left, pullIn, fire, move};
             }
-        }
 
+            stateComplete = true;
+        }
         //Going to next step
         if (stateComplete){
             stateComplete = false;
@@ -575,28 +584,28 @@ public class Robot extends IterativeRobot {
                 if (autoDebug){
                     System.out.println("Auto state: left");
                 }
-                driveTrain.drive(0,-0.4, 0);
+                angle += -rotation;
                 time = turnTime;
             }
             else if (autoState == right) {
                 if (autoDebug){
                     System.out.println("Auto state: right");
                 }
-                driveTrain.drive(0,0.4, 0);
+                angle += rotation;
                 time = turnTime;
             }
             else if (autoState == midToRight) {
                 if (autoDebug){
                     System.out.println("Auto state: mid to right");
                 }
-                driveTrain.drive(0, 0.2, 0);
+                angle += midRotation;
                 time = midTurnTime;
             }
             else if (autoState == midToLeft) {
                 if (autoDebug){
                     System.out.println("Auto state: mid to left");
                 }
-                driveTrain.drive(0, -0.2, 0);
+                angle += -midRotation;
                 time = midTurnTime;
             }
             else if (autoState == wait) {
@@ -609,7 +618,7 @@ public class Robot extends IterativeRobot {
                 if (autoDebug){
                     System.out.println("Auto state: move");
                 }
-                driveTrain.drive(1, 0, 0);
+                drive = driveSpeed;
                 time = moveTime;
             }
             else if (autoState == pullIn) {
@@ -633,8 +642,8 @@ public class Robot extends IterativeRobot {
 
             stateComplete = true;
 
-            if (autoState == left || autoState == right ||autoState ==  midToLeft || autoState == midToRight || autoState == move){
-                driveTrain.drive(0,0,0);
+            if (autoState == move){
+                drive = 0;
             }
             if (autoState == pullIn){
                 intake.stopMotors();
@@ -647,12 +656,17 @@ public class Robot extends IterativeRobot {
             }
         }
 
+        System.out.println("drive: " + String.valueOf(drive));
+        System.out.println("angle: " + String.valueOf(angle));
+        System.out.println("strafe: " + String.valueOf(strafe));
+        driveTrain.drive(drive, angle, strafe);
+
         //Parameters pulled out to help with documentation
         boolean manualLaunch = false;
         boolean manualReset = false;
         boolean renableLauncher = false;
         boolean[] launcherParameterArray = {shouldLaunch, manualLaunch, manualReset, intake.isExtended(), renableLauncher};
-        launcher.stateMachine(launcherParameterArray);
+        launcher.stateMachine(launcherParameterArray, compressor);
 
     }
 

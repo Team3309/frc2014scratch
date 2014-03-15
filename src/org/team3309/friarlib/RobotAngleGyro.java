@@ -72,7 +72,7 @@ public class RobotAngleGyro implements PIDOutput{
     }
 
     //Saved for use in freeze in place button to maintain current angle position
-    public double getDesiredRotationPosition(double joystickRotation, double movement){
+    /*public double getDesiredRotationPosition(double joystickRotation, double movement){
 
         if (isTank){
             gyroPIDController.setPIDValues(gyroPIDArrayTank, gyroPIDArrayTank);
@@ -104,6 +104,14 @@ public class RobotAngleGyro implements PIDOutput{
         }
 
         return pidOutput;
+    }*/
+
+    public double rotateToAngle(double angle){
+
+        gyroPIDController.setPIDValues(gyroPIDArrayMecanum, gyroPIDArrayMecanum);
+
+        gyroPIDController.setSetpoint(angle);
+        return  pidOutput;
     }
 
     public void enablePositionMode(){
