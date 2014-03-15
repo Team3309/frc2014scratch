@@ -139,9 +139,10 @@ public class Launcher {
         //Status unknown
         if (catapultStatus == unknown){
 
-            System.out.println("Catapult status: unknown");
-
             if (launcherEnabled){
+
+                System.out.println("Catapult status: unknown");
+
                 disengageDog();
                 autoReset = false;
                 startup = true;
@@ -184,7 +185,7 @@ public class Launcher {
                     }
 
                     //Determines if the launcher should use old or new reset value
-                    if (catapultStatus != launchNow){
+                    if (launchNow != catapultStatus){
                         autoReset = launchAndReset;
                     }
                 }
@@ -215,6 +216,7 @@ public class Launcher {
                 //check for good launch
                 if (!isCatapultInPos() && (!isCatapultLatched() || startup)){
 
+                    System.out.println("Auto reset: " + String.valueOf(autoReset));
                     //Check to see if time to reset
                     if (autoReset || manualReset){
                         catapultTimer.disableTimer();
@@ -235,10 +237,7 @@ public class Launcher {
                     //Launcher error
                     launchErrorCount++;
 
-                    //Makes sure to print error launch only once and not again on second time through
-                    if (launchErrorCount == 0){
-                        System.out.println("Catapult status: error launch");
-                    }
+                    System.out.println("Catapult status: error launch");
 
                     //Disables Launcher if count gets to 2
                     if (launchErrorCount >= 2) {
@@ -315,6 +314,9 @@ public class Launcher {
             disengagePocketPiston();
             if (pocketPistonTimer.isExpired()){
                 pocketPistonTimer.disableTimer();
+                if (launcherDebug){
+                    System.out.println("Catapult status: launch now");
+                }
                 catapultStatus = launchNow;
             }
         }

@@ -64,10 +64,17 @@ public class Robot extends IterativeRobot {
     private boolean isSecondBall;
     private boolean isThirdBall;
     private boolean stateComplete;
-    private int stateNum;
+    private int stateNum = 0;
     private int autoMode;
     private int autoState;
     private int testSelection;
+    private int numberOfAutoModes;
+    private int numberOfSteps;
+    private final int noBall = 0;
+    private final int oneBall = 1;
+    private final int twoBall = 2;
+    private final int threeBall = 3;
+
     /**
      * This function is run when the robot is first started up and should be
      * used for any initialization code.
@@ -124,11 +131,6 @@ public class Robot extends IterativeRobot {
     
     public void autonomousInit() {
 
-        final int noBall = 0;
-        final int oneBall = 1;
-        final int twoBall = 2;
-        final int threeBall = 3;
-
         robotEnable();
         intake.extendIntake();
         int autonomousNumberOfBalls = ((Integer) ConstantTable.getConstantTable().getValue("Autonomous.numberOfBalls")).intValue();
@@ -142,6 +144,8 @@ public class Robot extends IterativeRobot {
         fireTime = ((Double) ConstantTable.getConstantTable().getValue("Autonomous.fireTime")).doubleValue();
         moveTime = ((Double) ConstantTable.getConstantTable().getValue("Autonomous.moveTime")).doubleValue();
         endTime = ((Double) ConstantTable.getConstantTable().getValue("Autonomous.endTime")).doubleValue();
+        numberOfAutoModes = ((Integer) ConstantTable.getConstantTable().getValue("Autonomous.numberOfAutoModes")).intValue();
+        numberOfSteps = ((Integer) ConstantTable.getConstantTable().getValue("Autonomous.numberOfSteps")).intValue();
 
         if (hotGoalSensorArray[0] != 0){
             hotGoalSensor = new DigitalInput((int) hotGoalSensorArray[0],(int) hotGoalSensorArray[1]);
@@ -173,6 +177,8 @@ public class Robot extends IterativeRobot {
             }
             autoMode = noBall;
         }
+
+        autoStart = true;
     }
 
     /**
@@ -181,7 +187,8 @@ public class Robot extends IterativeRobot {
     public void autonomousPeriodic() {
         Scheduler.getInstance().run();
 
-        autonomousStateMachine();
+
+        //autonomousStateMachine();
     }
 
     public void teleopInit() {
@@ -519,7 +526,7 @@ public class Robot extends IterativeRobot {
         boolean shouldLaunch = false;
 
         double time;
-        int[][] steps = new int[0][];
+        int[][] steps = new int[numberOfAutoModes][numberOfSteps];
         final int fire = 0;
         final int left = 1;
         final int right = 2;
@@ -532,34 +539,33 @@ public class Robot extends IterativeRobot {
 
         if (autoStart){
             autoStart = false;
+            stateComplete = true;
+            stateNum = 0;
             hotGoalTimer.setTimer(hotTime);
         }
 
         if (hotGoalTimer.isExpired()){
             hotGoalTimer.disableTimer();
-            if (hotGoalSensor.get()){
-                steps = new int[][]{{move, fire, fire, left},
-                                    {end, move, pullIn, fire},
-                                    {end, end, fire, pullIn},
-                                    {end, end, move, fire},
-                                    {end, end, end, right},
-                                    {end, end, end, pullIn},
-                                    {end, end, end, fire},
-                                    {end, end, end, move},
-                                    {end, end, end, end},
-                                    {end, end, end, end}};
+
+            if (hotGoalSensor != null){
+                if (hotGoalSensor.get()){
+                    steps[noBall] = new int[]{move, end};
+                    steps[oneBall] = new int[]{fire, move, end};
+                    steps[twoBall] = new int[]{fire, pullIn, fire, move, end};
+                    steps[threeBall] = new int[]{left, fire, pullIn, fire, right, pullIn, fire, move, end};
                 }
+                else {
+                    steps[noBall] = new int[]{move, end};
+                    steps[oneBall] = new int[]{wait, fire, move, end};
+                    steps[twoBall] = new int[]{wait, fire, pullIn, fire, move, end};
+                    steps[threeBall] = new int[]{right, fire, pullIn, fire, left, pullIn, fire, move, end};
+                }
+            }
             else {
-                steps = new int[][]{{move, wait, wait, right},
-                                    {end, fire, fire, fire},
-                                    {end, move, pullIn, pullIn},
-                                    {end, end, fire, fire},
-                                    {end, end, move, left},
-                                    {end, end, end, pullIn},
-                                    {end, end, end, fire},
-                                    {end, end, end, move},
-                                    {end, end, end, end},
-                                    {end, end, end, end}};
+                steps[noBall] = new int[]{move, end};
+                steps[oneBall] = new int[]{fire, move, end};
+                steps[twoBall] = new int[]{fire, pullIn, fire, move, end};
+                steps[threeBall] = new int[]{left, fire, pullIn, fire, right, pullIn, fire, move, end};
             }
         }
 
@@ -567,6 +573,7 @@ public class Robot extends IterativeRobot {
             stateComplete = false;
             autoState = steps[autoMode][stateNum];
             stateNum ++;
+
             if (autoState == fire) {
                 if (autoDebug){
                     System.out.println("Auto state: fire");
