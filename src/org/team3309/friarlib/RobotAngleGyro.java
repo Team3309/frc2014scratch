@@ -25,6 +25,7 @@ public class RobotAngleGyro implements PIDOutput{
     private double pidOutput;
     private double lastDebugMillis;
     private double movement;
+    private double[] autoGyroPIDArrayMecanum;
     private double[] voltagePIDOutputRange;
     private double[] gyroPIDArrayMecanum;
     private double[] gyroPIDArrayTank;
@@ -33,6 +34,7 @@ public class RobotAngleGyro implements PIDOutput{
 
         gyroPIDArrayMecanum = ((double[]) ConstantTable.getConstantTable().getValue("Gyro.pidValuesMecanum"));
         gyroPIDArrayTank = ((double[]) ConstantTable.getConstantTable().getValue("Gyro.pidValuesTank"));
+        autoGyroPIDArrayMecanum = ((double[]) ConstantTable.getConstantTable().getValue("Gyro.autoPIDValues"));
         debug = ((Boolean) ConstantTable.getConstantTable().getValue("Gyro.debug")).booleanValue();
         maxRotation = ((Double)ConstantTable.getConstantTable().getValue("Gyro.maxRotation")).doubleValue();
         voltagePIDOutputRange = ((double []) ConstantTable.getConstantTable().getValue("Gyro.voltagePIDOutputRange"));
@@ -106,9 +108,11 @@ public class RobotAngleGyro implements PIDOutput{
         return pidOutput;
     }*/
 
-    public double rotateToAngle(double angle){
+    public double rotateToAngle(double angle, double movement){
 
-        gyroPIDController.setPIDValues(gyroPIDArrayMecanum, gyroPIDArrayMecanum);
+        gyroPIDController.setPIDValues(autoGyroPIDArrayMecanum, autoGyroPIDArrayMecanum);
+
+        this.movement = movement;
 
         gyroPIDController.setSetpoint(angle);
         return  pidOutput;

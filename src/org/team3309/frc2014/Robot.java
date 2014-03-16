@@ -52,6 +52,7 @@ public class Robot extends IterativeRobot {
     private double fireTime;
     private double moveTime;
     private double endTime;
+    private double pocketTime;
     private double rotation;
     private double midRotation;
     private double driveSpeed;
@@ -63,21 +64,17 @@ public class Robot extends IterativeRobot {
     private boolean braking = false;
     private boolean intakeRetracted;
     private boolean autoDebug;
-    private boolean driveTopLeftEnabled;
-    private boolean driveTopRightEnabled;
-    private boolean driveBottomLeftEnabled;
-    private boolean driveBottomRightEnabled;
     private boolean autoStart;
     private boolean stateComplete;
     private int stateNum = 0;
     private int autoMode;
     private int autoState;
-    private int testSelection;
     private int numberOfAutoModes;
     private final int noBall = 0;
     private final int oneBall = 1;
     private final int twoBall = 2;
     private final int threeBall = 3;
+    private int[][] steps;
 
     /*
      * This function is run when the robot is first started up and should be
@@ -108,7 +105,7 @@ public class Robot extends IterativeRobot {
     public void robotEnable(){
         if (!robotInitialized){
             driveTrain = new DriveTrain(gyro);
-            launcher = new Launcher();
+            launcher = new Launcher(compressor);
             intake = new Intake();
             intake.extendIntake();
             robotInitialized = true;
@@ -151,6 +148,7 @@ public class Robot extends IterativeRobot {
         endTime = ((Double) ConstantTable.getConstantTable().getValue("Autonomous.endTime")).doubleValue();
         rotation = ((Double) ConstantTable.getConstantTable().getValue("Autonomous.rotation")).doubleValue();
         midRotation = ((Double) ConstantTable.getConstantTable().getValue("Autonomous.midRotation")).doubleValue();
+        pocketTime = ((Double) ConstantTable.getConstantTable().getValue("Autonomous.pocketTime")).doubleValue();
         driveSpeed = ((Double) ConstantTable.getConstantTable().getValue("Autonomous.driveSpeed")).doubleValue();
         numberOfAutoModes = ((Integer) ConstantTable.getConstantTable().getValue("Autonomous.numberOfAutoModes")).intValue();
 
@@ -216,7 +214,7 @@ public class Robot extends IterativeRobot {
         //double driverRightTrigger = driveXbox.getRightTrigger();
         boolean driverXButton = driveXbox.getXButton();
         boolean driverYButton = driveXbox.getYButton();
-        boolean driverLeftBumper = false;
+        boolean driverLeftBumper = driveXbox.getLeftBumper();
         boolean driverRightBumper = driveXbox.getRightBumper();
         
         driverRightX = applyDeadband(driverRightX);
@@ -235,20 +233,14 @@ public class Robot extends IterativeRobot {
 
         //breaking = driveTrain.breaking(driverRightTrigger);
         if (!braking){
-            if (driverLeftBumper){
-                driveTrain.minimizeMovement();
+
+            if (driverRightBumper && !driverLeftBumper){
+                driveTrain.enableTank();
             }
             else {
-                driveTrain.normalMovement();
-
-                if (driverRightBumper){
-                    driveTrain.enableTank();
-                }
-                else {
-                    driveTrain.enableMecanum();
-                }
-                driveTrain.drive(driverLeftY, driverRightX, driverLeftX);
+                driveTrain.enableMecanum();
             }
+            driveTrain.drive(driverLeftY, driverRightX, driverLeftX, driverLeftBumper);
         }
 
         /*OPERATOR BUTTONS*/
@@ -295,6 +287,7 @@ public class Robot extends IterativeRobot {
             if (intakeRetractedToggle.toggle(OperatorBButton)){
                 intakeRetracted = !intakeRetracted;
                 if (intakeRetracted){
+                    launcher.disengagePocketPiston();
                     intake.retractIntake();
                 }
                 else {
@@ -307,7 +300,7 @@ public class Robot extends IterativeRobot {
         // Launcher is checking to see if the intake is physically in place
         // because the launcher takes time to extend
         boolean[] launcherParameterArray = {OperatorLeftBumper, OperatorAButton, OperatorYButton, intake.isExtended(), OperatorXButton};
-        launcher.stateMachine(launcherParameterArray, compressor);
+        launcher.stateMachine(launcherParameterArray);
     }
     
     public void testInit(){
@@ -319,190 +312,10 @@ public class Robot extends IterativeRobot {
 
     public void testPeriodic() {
         robotEnable();
-        // LiveWindow.run();
 
-        final int testDrive = 0;
-        final int testIntake = 1;
-        final int testShooting = 2;
-        final int testSensor = 3;
-
-        boolean driverDownPad = driveXbox.getDPadDown();
-        boolean driverUpPad = driveXbox.getDPadUp();
-        boolean driverRightPad = driveXbox.getDPadRight();
-        boolean driverLeftPad = driveXbox.getDPadLeft();
-
-        //Disables and renables each wheel accordingly
-        if (driverDownPad) driveTrain.enableTestMode("topLeft");
-        else driveTrain.disableTestMode("topLeft");
-
-        if (driverUpPad) driveTrain.enableTestMode("topRight");
-        else driveTrain.disableTestMode("topRight");
-
-        if (driverLeftPad) driveTrain.enableTestMode("bottomLeft");
-        else driveTrain.disableTestMode("bottomLeft");
-
-        if (driverRightPad) driveTrain.enableTestMode("bottomRight");
-        else driveTrain.disableTestMode("bottomRight");
-
-        // LiveWindow.run();        
-        //Disables and renables each wheel accordingly
-        
         boolean driverXButton = driveXbox.getXButton();        
         boolean driverYButton = driveXbox.getYButton();
         boolean driverAButton = driveXbox.getAButton();
-        boolean driverBButton = driveXbox.getBButton();
-        boolean driverRightBumper = driveXbox.getRightBumper();
-        boolean driverLeftBumper = driveXbox.getLeftBumper();
-        boolean driverDup = driveXbox.getDPadUp();
-        boolean driverDleft = driveXbox.getDPadLeft();
-        boolean driverDright = driveXbox.getDPadRight();
-        boolean driverDdown = driveXbox.getDPadDown();
-        double driverLeftJoystick = driveXbox.getLeftY();
-        
-        
-        
-        
-        if (testSelection == testDrive){
-            
-            if (driveToggle.toggle(driverDup)) {
-                driveTopLeftEnabled = !driveTopLeftEnabled;
-                
-                if (driveTopLeftEnabled){
-                    driveTrain.enableTestMode("topLeft");
-                    
-                } 
-                else {
-                    driveTrain.disableTestMode("topLeft");
-                }
-                
-            }
-        
-
-        if (driveToggle.toggle(driverDright)) {
-                driveTopRightEnabled = !driveTopRightEnabled;
-                
-                if (driveTopRightEnabled){
-                    driveTrain.enableTestMode("topRight");
-                    
-                } 
-                else {
-                    driveTrain.disableTestMode("topRight");
-                }
-                
-            }
-        
-        if (driveToggle.toggle(driverDdown)) {
-                driveBottomLeftEnabled = !driveBottomLeftEnabled;
-                
-                if (driveBottomLeftEnabled){
-                    driveTrain.enableTestMode("bottomLeft");
-                    
-                } 
-                else {
-                    driveTrain.disableTestMode("bottomLeft");
-                }
-                
-            }
-        
-        if (driveToggle.toggle(driverDright)) {
-                driveBottomRightEnabled = !driveBottomRightEnabled;
-                
-                if (driveBottomRightEnabled){
-                    driveTrain.enableTestMode("bottomRight");
-                    
-                } 
-                else {
-                    driveTrain.disableTestMode("bottomRight");
-                }
-                
-            }
-            
-        }
-        
-        else if (testSelection == testIntake){
-        
-            if (driverXButton){
-               intake.extendIntake();
-            }
-            
-            if (driverYButton){
-                intake.retractIntake();
-            }
-            
-            if (driverAButton){
-                intake.pullIn();
-            }
-            
-            if (driverBButton){
-                intake.pushOut();
-            }
-            
-            if (driverRightBumper){
-                intake.stopMotors();
-            }
-            
-        } 
-        
-        else if (testSelection == testShooting){
-            
-            if (driverXButton){
-            launcher.openLatch();
-            }
-            
-            if (driverYButton){
-            launcher.closeLatch();
-            }
-            
-            if (driverAButton){
-            launcher.engageDog();
-            }
-            
-            if (driverBButton){
-            launcher.disengageDog();
-            }
-            
-            if (driverRightBumper){
-                launcher.engagePocketPiston();
-            }
-            
-            if (driverLeftBumper){
-                launcher.disengagePocketPiston();
-            }
-            
-            if (driverLeftJoystick > 0){
-                launcher.loweringLauncher();
-            }
-            
-            if (driverLeftJoystick < 0){
-                launcher.stoppingLowering();
-            }
-        }
-            
-        else if(testSelection == testSensor){
-            
-        }
-        
-        
-    
-        if (driverDup){
-            testSelection = testDrive;
-            
-        }
-        
-        if (driverDleft){
-            testSelection = testIntake;
-            
-        }
-       
-        if (driverDright){
-            testSelection = testShooting;
-           
-        }
-        
-        if (driverDdown){
-            testSelection = testSensor;
-        }
-
         
     }
 
@@ -533,7 +346,6 @@ public class Robot extends IterativeRobot {
         boolean shouldLaunch = false;
 
         double time;
-        int[][] steps = new int[numberOfAutoModes][];
         final int fire = 1;
         final int left = 2;
         final int right = 3;
@@ -542,11 +354,14 @@ public class Robot extends IterativeRobot {
         final int wait = 6;
         final int move = 7;
         final int pullIn = 8;
+        final int end = 9;
+        final int pocket = 10;
 
         if (autoStart){
             autoStart = false;
             stateNum = 0;
             hotGoalTimer.setTimer(hotTime);
+            steps = new int[numberOfAutoModes][];
         }
 
         //Determining autonomous plan
@@ -554,16 +369,16 @@ public class Robot extends IterativeRobot {
             hotGoalTimer.disableTimer();
 
             if (hotGoalSensor == null || hotGoalSensor.get()){
-                    steps[noBall] = new int[]{move};
-                    steps[oneBall] = new int[]{fire, move};
-                    steps[twoBall] = new int[]{fire, pullIn, fire, move};
-                    steps[threeBall] = new int[]{left, fire, pullIn, fire, right, pullIn, fire, move};
+                    steps[noBall] = new int[]{move, end};
+                    steps[oneBall] = new int[]{pocket, fire, move, end};
+                    steps[twoBall] = new int[]{pocket, fire, pullIn, pocket, fire, move, end};
+                    steps[threeBall] = new int[]{left, pocket, fire, pullIn, pocket, fire, right, pullIn, pocket, fire, move, end};
             }
             else {
-                steps[noBall] = new int[]{move};
-                steps[oneBall] = new int[]{wait, fire, move};
-                steps[twoBall] = new int[]{wait, fire, pullIn, fire, move};
-                steps[threeBall] = new int[]{right, fire, pullIn, fire, left, pullIn, fire, move};
+                steps[noBall] = new int[]{move, end};
+                steps[oneBall] = new int[]{wait, fire, move, end};
+                steps[twoBall] = new int[]{wait, fire, pullIn, fire, move, end};
+                steps[threeBall] = new int[]{right, fire, pullIn, fire, left, pullIn, fire, move, end};
             }
 
             stateComplete = true;
@@ -628,6 +443,13 @@ public class Robot extends IterativeRobot {
                 intake.pullIn();
                 time = pullInTime;
             }
+            else if(autoState == pocket) {
+                if (autoDebug){
+                    System.out.println("Auto state: pocket");
+                }
+                launcher.engagePocketPiston();
+                time = pocketTime;
+            }
             else {
                 if (autoDebug){
                     System.out.println("Auto state: end");
@@ -649,24 +471,21 @@ public class Robot extends IterativeRobot {
                 intake.stopMotors();
                 launcher.engagePocketPiston();
             }
-            if (steps[autoMode].length == stateNum){
+            if (autoState == end){
                 System.out.println("Autonomous complete");
                 stateComplete = false;
                 stateTimer.disableTimer();
             }
         }
 
-        System.out.println("drive: " + String.valueOf(drive));
-        System.out.println("angle: " + String.valueOf(angle));
-        System.out.println("strafe: " + String.valueOf(strafe));
-        driveTrain.drive(drive, angle, strafe);
+        driveTrain.drive(drive, angle, strafe, false);
 
         //Parameters pulled out to help with documentation
         boolean manualLaunch = false;
         boolean manualReset = false;
         boolean renableLauncher = false;
         boolean[] launcherParameterArray = {shouldLaunch, manualLaunch, manualReset, intake.isExtended(), renableLauncher};
-        launcher.stateMachine(launcherParameterArray, compressor);
+        launcher.stateMachine(launcherParameterArray);
 
     }
 

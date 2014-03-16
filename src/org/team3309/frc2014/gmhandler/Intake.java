@@ -99,21 +99,21 @@ public class Intake {
             topRightMotor.set(-correctTopMotorSpeed);
         }
         if (sideLeftMotor != null){
-            sideLeftMotor.set(correctSideMotorSpeed);
+            sideLeftMotor.set(-correctSideMotorSpeed);
         }
         if (sideRightMotor != null){
-            sideRightMotor.set(-correctSideMotorSpeed);
+            sideRightMotor.set(correctSideMotorSpeed);
         }
     }
 
     public void pullIn(){
         //pulls in ball
-        setMotorSpeed(1);
+        setMotorSpeed(-1);
     }
 
     public void pushOut(){
         //pushes out ball
-        setMotorSpeed(-1);
+        setMotorSpeed(1);
     }
 
     public void stopMotors(){

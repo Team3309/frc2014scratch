@@ -90,6 +90,7 @@ public class OctonumModule implements PIDOutput{
             pidControl.enable();
         }
 
+        ignoreEncoders = ((Boolean) ConstantTable.getConstantTable().getValue("Octonum.ignoreEncoders")).booleanValue();
     }
     
     public void free(){
@@ -125,6 +126,7 @@ public class OctonumModule implements PIDOutput{
         }
 
         wheelSpeed = driveModified + rotModified;
+
 
         if (!isTank){
             wheelSpeed += strafeModified;

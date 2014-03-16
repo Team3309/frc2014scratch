@@ -60,6 +60,7 @@ public class DriveTrain{
 
         setGyroMode();
         enableMecanum();
+
     }
 
     public void free(){
@@ -71,7 +72,15 @@ public class DriveTrain{
 
     }
 
-    public void drive(double drive, double rot, double strafe) {
+    public void drive(double drive, double rot, double strafe, boolean shouldFreeze) {
+
+        if (shouldFreeze){
+            setPositionControl();
+            drive = 0;
+            rot = 0;
+            strafe = 0;
+        }
+        else setVelocityControl();
 
         double highestWheelSpeed = 1.0;
         double wheelSpeed;
@@ -85,7 +94,8 @@ public class DriveTrain{
         }
         if (gyroEnabled){
             if (positionControl){
-                adjustedRotation = robotAngleGyro.rotateToAngle(rot);
+                adjustedRotation = robotAngleGyro.rotateToAngle(rot, drive + strafe);
+                System.out.println("Adjusted rotation: " + String.valueOf(adjustedRotation));
             }
             else {
                 adjustedRotation = robotAngleGyro.getDesiredRotationVelocity(rot, drive + strafe);
@@ -176,19 +186,6 @@ public class DriveTrain{
         }
     }
 
-    public void minimizeMovement(){
-        for (int i = 0; i < 4; i++){
-            driveTrainWheels[i].freezeInPlace();
-            enableTank();
-        }
-    }
-
-    public void normalMovement(){
-        for (int i = 0; i < 4; i++){
-            driveTrainWheels[i].normalMovement();
-        }
-    }
-
     public void enableTestMode(String wheelName){
         if (wheelName.equals("topLeft")){
         wheelNum = 0;        
@@ -233,11 +230,18 @@ public class DriveTrain{
     public void setPositionControl(){
         positionControl = true;
         robotAngleGyro.enablePositionMode();
+        for (int i = 0; i < 4; i++){
+            driveTrainWheels[i].freezeInPlace();
+            enableTank();
+        }
     }
 
     public void setVelocityControl(){
         positionControl = false;
         robotAngleGyro.enableVelocityMode();
+        for (int i = 0; i < 4; i++){
+            driveTrainWheels[i].normalMovement();
+        }
     }
 
 

@@ -15,6 +15,7 @@ import org.team3309.frc2014.timer.Timer;
  */
 public class Launcher {
 
+    private Compressor compressor;
     private Victor winchTopMotor;
     private Victor winchBottomMotor;
     private SolenoidBase latchPiston;
@@ -57,7 +58,7 @@ public class Launcher {
     private static final int disabled = 9;
     private static final int launchNow = 10;
 
-    public Launcher() {
+    public Launcher(Compressor compressor) {
 
         double [] launcherWinchMotorBot = ((double[]) ConstantTable.getConstantTable().getValue("Launcher.winchMotorBot"));
         double [] launcherWinchMotorTop = ((double[]) ConstantTable.getConstantTable().getValue("Launcher.winchMotorTop"));
@@ -114,6 +115,8 @@ public class Launcher {
         if (launcherDebug){
             System.out.println("Catapult status: unknown");
         }
+
+        this.compressor = compressor;
     }
 
     public boolean isCatapultInPos() {
@@ -123,7 +126,7 @@ public class Launcher {
     public boolean isCatapultLatched() {
         return !latchSensor.get();
     }
-    public void stateMachine(boolean[] launcherParameterArray, Compressor compressor) {
+    public void stateMachine(boolean[] launcherParameterArray) {
 
         boolean launchAndReset = launcherParameterArray[0];
         boolean manualLaunch = launcherParameterArray[1];
