@@ -18,6 +18,7 @@ import edu.wpi.first.wpilibj.command.Scheduler;
 import org.team3309.frc2014.constantmanager.ConstantTable;
 import org.team3309.frc2014.gmhandler.Intake;
 import org.team3309.frc2014.timer.Timer;
+import org.team3309.frc2014.Testmodes;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -39,10 +40,10 @@ public class Robot extends IterativeRobot {
     private Toggle drivePIDControllerToggle;
     private Toggle gyroToggle;
     private Toggle pocketPistonToggle;
-    private Toggle driveToggle;
     private Timer hotGoalTimer;
     private Timer stateTimer;
     private DigitalInput hotGoalSensor;
+    private Testmodes testModes;
     private double deadband;
     private double waitTime; // Autonomous variables
     private double hotTime;
@@ -97,6 +98,7 @@ public class Robot extends IterativeRobot {
         intakeRetractedToggle = new Toggle();
         pocketPistonToggle = new Toggle();
         
+        
         compressor = new Compressor((int) pressureSwitch[0], (int) pressureSwitch[1], (int) compressorRelay[0], (int) compressorRelay[1]);
         compressor.start();
         System.out.println("Robot ready");
@@ -111,6 +113,9 @@ public class Robot extends IterativeRobot {
             robotInitialized = true;
             deadband = ((Double) ConstantTable.getConstantTable().getValue("Controller.deadband")).doubleValue();
             constantIntakeSpeed = ((Boolean) ConstantTable.getConstantTable().getValue("Controller.constantIntakeSpeed")).booleanValue();
+            
+            
+            
         }
     }
 
@@ -306,16 +311,18 @@ public class Robot extends IterativeRobot {
     public void testInit(){
 
         robotEnable();
-        driveToggle = new Toggle();
+        testModes = new Testmodes(driveTrain , launcher, intake);
+        
+        
+        
+        
    
     }
 
     public void testPeriodic() {
         robotEnable();
-
-        boolean driverXButton = driveXbox.getXButton();        
-        boolean driverYButton = driveXbox.getYButton();
-        boolean driverAButton = driveXbox.getAButton();
+        testModes.enterTest();
+        
         
     }
 
