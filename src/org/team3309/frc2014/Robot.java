@@ -312,18 +312,11 @@ public class Robot extends IterativeRobot {
 
         robotEnable();
         testModes = new Testmodes(driveTrain , launcher, intake);
-        
-        
-        
-        
-   
     }
 
     public void testPeriodic() {
         robotEnable();
-        testModes.enterTest();
-        
-        
+        testModes.enterTest();        
     }
 
 

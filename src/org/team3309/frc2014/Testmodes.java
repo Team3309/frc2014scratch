@@ -30,9 +30,11 @@ import org.team3309.friarlib.XboxController;
     private Toggle driveToggle;
     private Toggle intakeToggle;
     private Toggle launcherToggle;
+    private Toggle sensorToggle;
     private boolean driveTest;
     private boolean intakeTest;
     private boolean launcherTest;
+    private boolean sensorTest;
     private boolean testComplete;
     
     
@@ -208,6 +210,13 @@ import org.team3309.friarlib.XboxController;
        
        private void sensorTest(){
            
+           if (launcher.isCatapultInPos()){
+               System.out.println("Catapult Sensor Working");
+           }
+           
+           if (launcher.isCatapultLatched()){
+               System.out.println("Latch Sensor Working");
+           }
        }
        
        private void stopTest (){
@@ -301,5 +310,18 @@ import org.team3309.friarlib.XboxController;
           }
           
             
+          if (sensorToggle.toggle(driverBButton)){
+              sensorTest = !sensorTest;
+              
+          if (sensorTest){
+              sensorTest();
+          }
+          
+          if (isTestComplete()){
+              sensorTest = false;
+          }
+          
+          }
+          
        }
 }
